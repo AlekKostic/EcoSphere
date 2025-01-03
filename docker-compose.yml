@@ -1,0 +1,32 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    ports: 
+      - "3306:3306"
+    environment: 
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=mts_app_konkurs
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mynetwork
+  backend:
+    build:
+      context: ./Backend
+    ports: 
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_container:3306/mts_app_konkurs
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    networks:
+      - mynetwork
+
+volumes:
+  mysql-data:
+
+networks:
+  mynetwork:
