@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import UserMenu from '../app/usermenu';
 import PictureSection from '../app/PictureSection';
 import Icon from '../app/Icon';
+
+import getWorkingHeight from '../app/VisinaEkrana';
 
 const Home = () => {
   const iconData = [
@@ -19,7 +21,6 @@ const Home = () => {
       <UserMenu />
       <PictureSection />
       
-      {/* Grid of Icons */}
       <View style={styles.gridContainer}>
         {iconData.map((item) => (
           <Icon key={item.id} source={item.source} />
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-around', 
-    marginTop: 20,
+    justifyContent: 'space-around',
+    marginTop: getWorkingHeight() * 0.02, 
   },
 });
 

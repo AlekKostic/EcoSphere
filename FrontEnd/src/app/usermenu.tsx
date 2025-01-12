@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import getWorkingHeight from './VisinaEkrana';
 
-const { height } = Dimensions.get('window');
 
 const UserMenu = () => {
   return (
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     flex: 1, 
   },
   rectangle: {
-    height: height * 0.05, 
+    height: getWorkingHeight() * 0.05, 
     backgroundColor: 'gray', 
     width: '100%', 
     position: 'absolute', 

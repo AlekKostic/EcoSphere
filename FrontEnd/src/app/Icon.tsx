@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, StyleSheet } from 'react-native';
+import getWorkingHeight from './VisinaEkrana';
 
-const { height } = Dimensions.get('window');
 
 const Icon = ({ source }) => {
   return (
@@ -14,8 +14,8 @@ const Icon = ({ source }) => {
 const styles = StyleSheet.create({
   iconContainer: {
     width: '45%',
-    height: height * 0.183, 
-    marginBottom: height * 0.03, 
+    height: getWorkingHeight() * 0.193, 
+    marginBottom: getWorkingHeight() * 0.02,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
