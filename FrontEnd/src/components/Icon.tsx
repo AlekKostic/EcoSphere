@@ -1,18 +1,17 @@
 import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import getWorkingHeight from '../components/VisinaEkrana';
+import getWorkingHeight from '../components/ScreenHeight';
 import { useRouter } from 'expo-router';
 
 const Icon = ({ source, route }) => {
   const router = useRouter();
 
-  // Handle press event and navigate
   const handlePress = () => {
-    router.push(route);  // Navigate to the route
+    router.push(route); 
   };
 
   return (
-    <TouchableOpacity style={styles.iconContainer} onPress={handlePress}>  {/* Removed parentheses from handlePress */}
+    <TouchableOpacity style={styles.iconContainer} onPress={handlePress}> 
       <Image source={source} style={styles.image} />
     </TouchableOpacity>
   );

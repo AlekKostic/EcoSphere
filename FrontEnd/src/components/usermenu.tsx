@@ -1,12 +1,25 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import getWorkingHeight from './VisinaEkrana';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import getWorkingHeight from './ScreenHeight';
+import { useRouter } from 'expo-router';
 
 
 const UserMenu = () => {
+
+  const router = useRouter()
+
+  const handleLogin = () =>
+  {
+     router.push('./Login')
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.rectangle} />
+      <View style={styles.rectangle}>
+        <TouchableOpacity style={styles.LoginButton} onPress={handleLogin}>
+          <Text style={styles.LoginText}>Login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -21,7 +34,18 @@ const styles = StyleSheet.create({
     width: '100%', 
     position: 'absolute', 
     top: 0, 
-    left: 0, 
+    right: 0, 
+  },LoginButton: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 'auto',
+  },
+  LoginText: {
+    alignSelf: 'flex-end',
+    paddingRight: 20,
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

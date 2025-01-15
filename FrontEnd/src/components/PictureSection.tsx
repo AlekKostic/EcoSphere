@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Image } from 'react-native';
-import getWorkingHeight from './VisinaEkrana';
+import getWorkingHeight from './ScreenHeight';
 
 const PictureSection = () => {
   return (

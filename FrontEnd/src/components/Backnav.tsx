@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import getWorkingHeight from './VisinaEkrana';
+import getWorkingHeight from './ScreenHeight';
 
 const BackNav = () => {
   const router = useRouter();  
@@ -33,8 +33,8 @@ const styles = StyleSheet.create({
     top: 0, 
     left: 0, 
     justifyContent: 'center',
-    alignItems: 'flex-start',  // Align text to the left
-    paddingLeft: 15,  // Add some padding to the left side
+    alignItems: 'flex-start',  
+    paddingLeft: 15,  
   },
   backButton: {
     paddingVertical: 5,
