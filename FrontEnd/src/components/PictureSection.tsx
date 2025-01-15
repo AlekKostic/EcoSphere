@@ -18,8 +18,6 @@ const styles = StyleSheet.create({
     height: getWorkingHeight() * 0.27,
     width: '100%',
     backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
     marginTop: getWorkingHeight()*0.05,
   },
   image: {

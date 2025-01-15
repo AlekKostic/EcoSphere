@@ -5,7 +5,9 @@ import Login from './Login'
 
 const App = () => {
   return (
-    <Home />
+    <View>
+      <Home />
+    </View>
   );
 };
 

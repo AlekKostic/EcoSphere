@@ -4,11 +4,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { useRouter } from 'expo-router';
 
-const Login = () => {
+const Signup = () => {
 
   const router = useRouter();
 
   const [form, setForm] = useState({
+    name: '',
+    surname: '',
+    city: '',
     email: '',
     password: '',
   });
@@ -17,12 +20,12 @@ const Login = () => {
 
   const handleLogin = () =>
   {
-    
+    router.push('/Login'); 
   }
   const handleSignin = () =>
-  {
-    router.push('/Signup'); 
-  }
+    {
+      
+    }
   const handleBack = () =>
   {
     router.push('/App'); 
@@ -39,17 +42,50 @@ const Login = () => {
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            Log in to <Text style={{ color: '#075eec' }}>EcoSphere</Text>
+            Sign up to <Text style={{ color: '#075eec' }}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
+          <View style={styles.input}>
+              <Text style={styles.inputLabel}>Name</Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={name => setForm({ ...form, name })}
+                placeholder="John"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                value={form.name} />
+            </View>
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>Surname</Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={surname => setForm({ ...form, surname })}
+                placeholder="Smith"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                value={form.surname} />
+            </View>
+
+            <View style={styles.input}>
+              <Text style={styles.inputLabel}>City</Text>
+              <TextInput
+                autoCapitalize="none"
+                autoCorrect={false}
+                onChangeText={city => setForm({ ...form, city })}
+                placeholder="Belgrade"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                value={form.city} />
+            </View>
+
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Email address</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
-              clearButtonMode="while-editing"
-              keyboardType="email-address"
               onChangeText={email => setForm({ ...form, email })}
               placeholder="john@example.com"
               placeholderTextColor="#6b7280"
@@ -60,7 +96,6 @@ const Login = () => {
             <Text style={styles.inputLabel}>Password</Text>
             <TextInput
               autoCorrect={false}
-              clearButtonMode="while-editing"
               onChangeText={password => setForm({ ...form, password })}
               placeholder="********"
               placeholderTextColor="#6b7280"
@@ -70,9 +105,9 @@ const Login = () => {
           </View>
           <View style={styles.formAction}>
             <TouchableOpacity
-              onPress={handleLogin}>
+              onPress={handleSignin}>
               <View style={styles.btn}>
-                <Text style={styles.btnText}>Log in</Text>
+                <Text style={styles.btnText}>Sign up</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -80,10 +115,10 @@ const Login = () => {
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity
-        onPress={handleSignin}>
+        onPress={handleLogin}>
         <Text style={styles.formFooter}>
-          Don't have an account?{' '}
-          <Text style={{ textDecorationLine: 'underline' }}>Sign up</Text>
+          Already have an account?{' '}
+          <Text style={{ textDecorationLine: 'underline' }}>Log in</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -91,7 +126,7 @@ const Login = () => {
 }
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: '30%',
+    paddingVertical: '5%',
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
@@ -203,4 +238,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Signup;
