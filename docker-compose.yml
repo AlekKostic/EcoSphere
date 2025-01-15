@@ -24,9 +24,12 @@ services:
       - SPRING_DATASOURCE_PASSWORD=root
     networks:
       - mynetwork
+    depends_on:
+      - mysql
 
 volumes:
   mysql-data:
 
 networks:
   mynetwork:
+    driver: bridge
