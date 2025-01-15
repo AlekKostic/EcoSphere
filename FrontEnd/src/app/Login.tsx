@@ -3,6 +3,7 @@ import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput } fro
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import BackNav from '../components/Backnav';
 
 const Login = () => {
 
@@ -33,10 +34,9 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <TouchableOpacity onPress={handleBack}>
-        <Text style={styles.backbtn}>Back</Text>
-      </TouchableOpacity>
+    <SafeAreaView style={{ flex: 1, backgroundColor:'white' }}>
+      
+      <BackNav />
 
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
@@ -193,15 +193,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: 18,
     color: 'red',
-  },
-  backbtn: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#222',
-    textAlign: 'right',
-    paddingRight: 24,
-    paddingTop: 24,
-    letterSpacing: 0.15,
   },
 });
 

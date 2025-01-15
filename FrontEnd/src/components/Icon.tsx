@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import getWorkingHeight from '../components/ScreenHeight';
 import { useRouter } from 'expo-router';
 
-const Icon = ({ source, route }) => {
+const Icon = ({source, route }) => {
   const router = useRouter();
 
   const handlePress = () => {

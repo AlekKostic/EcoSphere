@@ -6,44 +6,35 @@ import getWorkingHeight from './ScreenHeight';
 const BackNav = () => {
   const router = useRouter();  
 
-  const handleBackPress = () => {
+  const handleBack = () => {
     router.push('/Home'); 
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.rectangle}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-          <Text style={styles.backText}>Back</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <TouchableOpacity onPress={handleBack} style={styles.container}>
+      <Text style={styles.backbtn}>Back</Text>
+    </TouchableOpacity>
   );
 };
 
+
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-  },
-  rectangle: {
-    height: getWorkingHeight() * 0.05, 
-    backgroundColor: 'gray', 
-    width: '100%', 
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
+    backgroundColor:'white',
     justifyContent: 'center',
-    alignItems: 'flex-start',  
-    paddingLeft: 15,  
+    textAlignVertical: 'center',
   },
-  backButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-  },
-  backText: {
-    fontSize: 18,
-    color: 'white',
-    fontWeight: 'bold',
+  backbtn: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#222',
+    textAlign: 'right',
+    paddingRight: 24,
+    paddingTop: 12,
+    paddingBottom: 12,
+    letterSpacing: 0.15,
+    textAlignVertical: 'center',
   },
 });
 

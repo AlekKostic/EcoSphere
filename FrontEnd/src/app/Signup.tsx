@@ -37,7 +37,7 @@ const Signup = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor:'white' }}>
       
       <TouchableOpacity
         onPress={handleBack}>
@@ -126,7 +126,7 @@ const Signup = () => {
               </View>
             </TouchableOpacity>
           </View>
-          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Wrong email or password</Text></View>}
+          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Every field must be filled</Text></View>}
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity
@@ -141,7 +141,6 @@ const Signup = () => {
 }
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: '5%',
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
