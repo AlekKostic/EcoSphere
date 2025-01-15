@@ -10,7 +10,7 @@ import { Link } from 'expo-router';
 const Home = () => {
   const iconData = [
     { id: '1', source: require('../img/icon1.png'), route: '/icon1' },
-    { id: '2', source: require('../img/icon1.png'), route: '/icon2' },
+    { id: '2', source: require('../img/icon1.png'), route: '/Education' },
     { id: '3', source: require('../img/icon1.png'), route: '/icon3' },
     { id: '4', source: require('../img/icon1.png'), route: '/icon4' },
     { id: '5', source: require('../img/icon1.png'), route: '/icon5' },
