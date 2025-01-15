@@ -21,9 +21,10 @@ const BackNav = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor:'white',
     justifyContent: 'center',
     textAlignVertical: 'center',
+    borderBottomColor: 'black',
+    borderBottomWidth: 2,
   },
   backbtn: {
     fontSize: 15,
