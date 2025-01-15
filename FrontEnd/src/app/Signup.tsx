@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Keyboard } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 const Signup = () => {
@@ -17,6 +17,11 @@ const Signup = () => {
   });
 
   const [error, setEror] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+    const toggleShowPassword = () => {
+      setShowPassword(!showPassword);
+    };
 
   const handleLogin = () =>
   {
@@ -32,7 +37,7 @@ const Signup = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
+    <SafeAreaView style={{ flex: 1 }}>
       
       <TouchableOpacity
         onPress={handleBack}>
@@ -94,14 +99,24 @@ const Signup = () => {
           </View>
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Password</Text>
-            <TextInput
-              autoCorrect={false}
-              onChangeText={password => setForm({ ...form, password })}
-              placeholder="********"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              secureTextEntry={true}
-              value={form.password} />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                onChangeText={password => setForm({ ...form, password })}
+                placeholder="********"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                secureTextEntry={showPassword}
+                value={form.password} />
+              <MaterialCommunityIcons
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#aaa"
+                onPress={toggleShowPassword}
+                style={styles.icon}
+              />
+            </View>
           </View>
           <View style={styles.formAction}>
             <TouchableOpacity
@@ -191,6 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputControl: {
+    flex: 1,
     height: 50,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
@@ -235,6 +251,18 @@ const styles = StyleSheet.create({
     paddingRight: 24,
     paddingTop: 24,
     letterSpacing: 0.15,
+  },
+  passwordContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    position: 'absolute',
+    right: 16,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+    zIndex: 1, 
   },
 });
 

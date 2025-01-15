@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 const Login = () => {
@@ -14,25 +14,27 @@ const Login = () => {
   });
 
   const [error, setEror] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () =>
-  {
-    
-  }
-  const handleSignin = () =>
-  {
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleLogin = () => {
+    // handle login functionality
+  };
+
+  const handleSignin = () => {
     router.push('/Signup'); 
-  }
-  const handleBack = () =>
-  {
+  };
+
+  const handleBack = () => {
     router.push('/App'); 
-  }
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      
-      <TouchableOpacity
-        onPress={handleBack}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <TouchableOpacity onPress={handleBack}>
         <Text style={styles.backbtn}>Back</Text>
       </TouchableOpacity>
 
@@ -58,19 +60,27 @@ const Login = () => {
           </View>
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Password</Text>
-            <TextInput
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-              onChangeText={password => setForm({ ...form, password })}
-              placeholder="********"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              secureTextEntry={true}
-              value={form.password} />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                onChangeText={password => setForm({ ...form, password })}
+                placeholder="********"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                secureTextEntry={showPassword}
+                value={form.password} />
+              <MaterialCommunityIcons
+                name={showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#aaa"
+                onPress={toggleShowPassword}
+                style={styles.icon}
+              />
+            </View>
           </View>
           <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={handleLogin}>
+            <TouchableOpacity onPress={handleLogin}>
               <View style={styles.btn}>
                 <Text style={styles.btnText}>Log in</Text>
               </View>
@@ -79,8 +89,7 @@ const Login = () => {
           {error && <View style={styles.errorcontainer}><Text style={styles.error}>Wrong email or password</Text></View>}
         </View>
       </KeyboardAwareScrollView>
-      <TouchableOpacity
-        onPress={handleSignin}>
+      <TouchableOpacity onPress={handleSignin}>
         <Text style={styles.formFooter}>
           Don't have an account?{' '}
           <Text style={{ textDecorationLine: 'underline' }}>Sign up</Text>
@@ -88,7 +97,8 @@ const Login = () => {
       </TouchableOpacity>
     </SafeAreaView>
   );
-}
+};
+
 const styles = StyleSheet.create({
   container: {
     paddingVertical: '30%',
@@ -102,24 +112,11 @@ const styles = StyleSheet.create({
     color: '#1D2A32',
     marginBottom: 6,
   },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#929292',
-  },
-  /** Header */
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 36,
   },
-  headerImg: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-    marginBottom: 36,
-  },
-  /** Form */
   form: {
     marginBottom: 24,
     paddingHorizontal: 24,
@@ -131,12 +128,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 16,
   },
-  formLink: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#075eec',
-    textAlign: 'center',
-  },
   formFooter: {
     paddingVertical: 24,
     fontSize: 15,
@@ -145,7 +136,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.15,
   },
-  /** Input */
   input: {
     marginBottom: 16,
   },
@@ -156,6 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   inputControl: {
+    flex: 1,
     height: 50,
     backgroundColor: '#fff',
     paddingHorizontal: 16,
@@ -167,7 +158,18 @@ const styles = StyleSheet.create({
     borderColor: '#C9D3DB',
     borderStyle: 'solid',
   },
-  /** Button */
+  passwordContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    position: 'absolute',
+    right: 16,
+    top: '50%',
+    transform: [{ translateY: -12 }],
+    zIndex: 1, 
+  },
   btn: {
     flexDirection: 'row',
     alignItems: 'center',
