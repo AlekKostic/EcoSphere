@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Question = ({ quiz, onAnswer, showingFeedback }) => {
+export const Question = ({ quiz, onAnswer, showingFeedback }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState('');
-  const [feedbackColor, setFeedbackColor] = useState('green'); 
+  const [feedbackColor, setFeedbackColor] = useState('green');
 
   const handleOptionPress = (option) => {
-    if (showingFeedback) return; 
+    if (showingFeedback) return;
     setSelectedOption(option);
     const isCorrect = option === quiz.correctAnswer;
-    setFeedbackMessage(isCorrect ? "Tačno!" : "Netačno.");
+    setFeedbackMessage(isCorrect ? 'Tačno!' : 'Netačno.');
     setFeedbackColor(isCorrect ? 'green' : 'red');
-    onAnswer(isCorrect); 
+    onAnswer(isCorrect);
   };
 
   return (
@@ -56,6 +56,8 @@ const styles = StyleSheet.create({
   optionButton: {
     backgroundColor: '#e0e0e0',
     padding: 15,
+    alignContent: 'center',
+    justifyContent: 'center',
     borderRadius: 10,
     marginVertical: 10,
     width: '80%',

@@ -4,6 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BackNav from '../components/Backnav';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Signup = () => {
 
@@ -28,10 +29,34 @@ const Signup = () => {
   {
     router.push('/Login'); 
   }
-  const handleSignin = () =>
-    {
-      
+  const handleSignin = async () => {
+    const { name, surname, city, email, password } = form;
+  
+    if (!name || !surname || !city || !email || !password) {
+      setEror(true); 
+      return; 
     }
+  
+    setEror(false);
+  
+    const userInfo = {
+      name,
+      surname,
+      city,
+      email,
+      password,
+    };
+  
+    try {
+      await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
+      alert('Uspešna registracija!');
+    } catch (err) {
+      console.error('Greška prilikom registracije:', err);
+      alert('Greška prilikom registracije. Molimo pokušajte ponovo.');
+    }
+    router.push('/Home')
+  };
+  
   const handleBack = () =>
   {
     router.push('/App'); 
@@ -98,22 +123,23 @@ const Signup = () => {
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
-              <TextInput
-                autoCorrect={false}
-                clearButtonMode="while-editing"
-                onChangeText={password => setForm({ ...form, password })}
-                placeholder="********"
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                secureTextEntry={showPassword}
-                value={form.password} />
-              <MaterialCommunityIcons
-                name={showPassword ? 'eye-off' : 'eye'}
-                size={24}
-                color="#aaa"
-                onPress={toggleShowPassword}
-                style={styles.icon}
-              />
+            <TextInput
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            onChangeText={password => setForm({ ...form, password })}
+            placeholder="********"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            secureTextEntry={!showPassword} // This ensures the password is hidden initially
+            value={form.password}
+          />
+          <MaterialCommunityIcons
+            name={!showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="#aaa"
+            onPress={toggleShowPassword}
+            style={styles.icon}
+          />
             </View>
           </View>
           <View style={styles.formAction}>

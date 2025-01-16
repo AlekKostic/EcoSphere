@@ -58,7 +58,7 @@ const QuizPage = () => {
           Tačno ste odgovorili na {correctAnswers} od {questions.length} pitanja.
         </Text>
         <Text style={styles.resultText}>
-          Vratite se ponovo radite sutrašnji kviz!
+          Vratite se ponovo da radite sutrašnji kviz!
         </Text>
         </View>
       </View>

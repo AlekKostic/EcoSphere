@@ -61,22 +61,23 @@ const Login = () => {
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
-              <TextInput
-                autoCorrect={false}
-                clearButtonMode="while-editing"
-                onChangeText={password => setForm({ ...form, password })}
-                placeholder="********"
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                secureTextEntry={showPassword}
-                value={form.password} />
-              <MaterialCommunityIcons
-                name={showPassword ? 'eye-off' : 'eye'}
-                size={24}
-                color="#aaa"
-                onPress={toggleShowPassword}
-                style={styles.icon}
-              />
+            <TextInput
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            onChangeText={password => setForm({ ...form, password })}
+            placeholder="********"
+            placeholderTextColor="#6b7280"
+            style={styles.inputControl}
+            secureTextEntry={!showPassword}
+            value={form.password}
+          />
+          <MaterialCommunityIcons
+            name={!showPassword ? 'eye-off' : 'eye'}
+            size={24}
+            color="#aaa"
+            onPress={toggleShowPassword}
+            style={styles.icon}
+          />
             </View>
           </View>
           <View style={styles.formAction}>

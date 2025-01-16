@@ -11,8 +11,8 @@ const Home = () => {
   const iconData = [
     { id: '1', source: require('../img/icon1.png'), route: '/icon1' },
     { id: '2', source: require('../img/icon1.png'), route: '/Education' },
-    { id: '3', source: require('../img/icon1.png'), route: '/icon3' },
-    { id: '4', source: require('../img/icon1.png'), route: '/icon4' },
+    { id: '3', source: require('../img/icon1.png'), route: '/DIYIdeas' },
+    { id: '4', source: require('../img/icon1.png'), route: '/QuizIntro' },
     { id: '5', source: require('../img/icon1.png'), route: '/icon5' },
     { id: '6', source: require('../img/icon1.png'), route: '/icon6' },
   ];
