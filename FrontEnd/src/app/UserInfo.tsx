@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackNav from '../components/Backnav';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { router, useRouter } from 'expo-router';
 
 const UserInfo = () => {
   const [user, setUser] = useState({
@@ -16,6 +17,8 @@ const UserInfo = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter()
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -34,16 +37,13 @@ const UserInfo = () => {
   }, []);
 
   const handleChangePassword = async () => {
-
-    if(!newPassword )
-    {
-       setErrorMessage('Unesite novu lozinku.');
-       return;
+    if (!newPassword) {
+      setErrorMessage('Unesite novu lozinku.');
+      return;
     }
-    if(!newPassword )
-    {
-        setErrorMessage('Potvrdite novu lozinku.');
-        return;
+    if (!confirmPassword) {
+      setErrorMessage('Potvrdite novu lozinku.');
+      return;
     }
     if (newPassword !== confirmPassword) {
       setErrorMessage('Lozinke se ne poklapaju.');
@@ -52,7 +52,6 @@ const UserInfo = () => {
 
     if (currentPassword !== user.password) {
       setErrorMessage('Trenutna lozinka nije ispravna.');
-      setErrorMessage(currentPassword + " " + user.password)
       return;
     }
 
@@ -60,25 +59,53 @@ const UserInfo = () => {
 
     try {
       await AsyncStorage.setItem('userInfo', JSON.stringify(updatedUser));
-      setUser(updatedUser); 
+      setUser(updatedUser);
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setErrorMessage(''); 
+      setErrorMessage('');
     } catch (err) {
       console.error('Error updating password:', err);
       setErrorMessage('Greška prilikom promene lozinke.');
     }
   };
 
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      "Potvrdi brisanje",
+      "Da li ste sigurni da želite da obrišete svoj nalog? Ova akcija se ne može poništiti.",
+      [
+        { text: "Odustani", style: "cancel" },
+        {
+          text: "Obriši nalog",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Remove user data from AsyncStorage
+              await AsyncStorage.removeItem('userInfo');
+              setUser({
+                name: '',
+                surname: '',
+                email: '',
+                city: '',
+                password: '',
+              });
+              router.push('/Home')
+            } catch (err) {
+              console.error('Error deleting account:', err);
+              setErrorMessage('Greška prilikom brisanja naloga.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <BackNav />
       <View style={styles.profileContainer}>
-        <Image
-          source={require('../img/icon1.png')}
-          style={styles.profileImage}
-        />
+        <Image source={require('../img/icon1.png')} style={styles.profileImage} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>
             {user.name} {user.surname}
@@ -117,7 +144,7 @@ const UserInfo = () => {
 
         <Text style={styles.label}>Potvrdite novu lozinku</Text>
         <TextInput
-        autoCorrect={false}
+          autoCorrect={false}
           clearButtonMode="while-editing"
           style={styles.input}
           placeholder="Potvrdite novu lozinku..."
@@ -135,6 +162,10 @@ const UserInfo = () => {
           <Text style={styles.errorMessage}>{errorMessage}</Text>
         ) : null}
       </View>
+
+      <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
+        <Text style={styles.deleteButtonText}>Obrišite nalog</Text>
+      </TouchableOpacity>
     </KeyboardAwareScrollView>
   );
 };
@@ -194,7 +225,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    
     marginTop: 10,
     backgroundColor: '#075eec',
     paddingVertical: 10,
@@ -210,6 +240,20 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 16,
     marginTop: 10,
+  },
+  deleteButton: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 20,
+    backgroundColor: '#e74c3c',
+    paddingVertical: 10,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
 
