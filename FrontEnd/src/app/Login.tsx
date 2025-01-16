@@ -41,25 +41,25 @@ const Login = () => {
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            Log in to <Text style={{ color: '#075eec' }}>EcoSphere</Text>
+            Ulogujte se na <Text style={{ color: '#075eec' }}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Email address</Text>
+            <Text style={styles.inputLabel}>E-mail addresa</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               clearButtonMode="while-editing"
               keyboardType="email-address"
               onChangeText={email => setForm({ ...form, email })}
-              placeholder="john@example.com"
+              placeholder="mail@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
               value={form.email} />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Password</Text>
+            <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
@@ -82,17 +82,17 @@ const Login = () => {
           <View style={styles.formAction}>
             <TouchableOpacity onPress={handleLogin}>
               <View style={styles.btn}>
-                <Text style={styles.btnText}>Log in</Text>
+                <Text style={styles.btnText}>Ulogujte se</Text>
               </View>
             </TouchableOpacity>
           </View>
-          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Wrong email or password</Text></View>}
+          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Pogrešan e-mail ili lozinka</Text></View>}
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity onPress={handleSignin}>
         <Text style={styles.formFooter}>
-          Don't have an account?{' '}
-          <Text style={{ textDecorationLine: 'underline' }}>Sign up</Text>
+          Nemate nalog?{' '}
+          <Text style={{ textDecorationLine: 'underline' }}>Registrujte se</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>

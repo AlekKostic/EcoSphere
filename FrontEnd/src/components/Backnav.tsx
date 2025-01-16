@@ -12,7 +12,7 @@ const BackNav = () => {
 
   return (
     <TouchableOpacity onPress={handleBack} style={styles.container}>
-      <Text style={styles.backbtn}>Back</Text>
+      <Text style={styles.backbtn}>Nazad</Text>
     </TouchableOpacity>
   );
 };

@@ -17,7 +17,7 @@ const UserMenu = () => {
     <View style={styles.container}>
       <View style={styles.rectangle}>
         <TouchableOpacity style={styles.LoginButton} onPress={handleLogin}>
-          <Text style={styles.LoginText}>Login</Text>
+          <Text style={styles.LoginText}>Ulogujte se</Text>
         </TouchableOpacity>
       </View>
     </View>

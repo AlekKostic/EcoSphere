@@ -3,6 +3,7 @@ import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Keyb
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import BackNav from '../components/Backnav';
 
 const Signup = () => {
 
@@ -39,66 +40,63 @@ const Signup = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor:'white' }}>
       
-      <TouchableOpacity
-        onPress={handleBack}>
-        <Text style={styles.backbtn}>Back</Text>
-      </TouchableOpacity>
+      <BackNav />
 
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>
-            Sign up to <Text style={{ color: '#075eec' }}>EcoSphere</Text>
+            Registrujte se na <Text style={{ color: '#075eec' }}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
           <View style={styles.input}>
-              <Text style={styles.inputLabel}>Name</Text>
+              <Text style={styles.inputLabel}>Ime</Text>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
                 onChangeText={name => setForm({ ...form, name })}
-                placeholder="John"
+                placeholder="Ime..."
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={form.name} />
             </View>
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>Surname</Text>
+              <Text style={styles.inputLabel}>Prezime</Text>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
                 onChangeText={surname => setForm({ ...form, surname })}
-                placeholder="Smith"
+                placeholder="Prezime..."
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={form.surname} />
             </View>
 
             <View style={styles.input}>
-              <Text style={styles.inputLabel}>City</Text>
+              <Text style={styles.inputLabel}>Grad</Text>
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
                 onChangeText={city => setForm({ ...form, city })}
-                placeholder="Belgrade"
+                placeholder="Grad..."
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 value={form.city} />
             </View>
 
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Email address</Text>
+            <Text style={styles.inputLabel}>E-mail addresa</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               onChangeText={email => setForm({ ...form, email })}
-              placeholder="john@example.com"
+              placeholder="mail@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
               value={form.email} />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Password</Text>
+            <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
@@ -122,18 +120,18 @@ const Signup = () => {
             <TouchableOpacity
               onPress={handleSignin}>
               <View style={styles.btn}>
-                <Text style={styles.btnText}>Sign up</Text>
+                <Text style={styles.btnText}>Registrujte se</Text>
               </View>
             </TouchableOpacity>
           </View>
-          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Every field must be filled</Text></View>}
+          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Svako polje mora biti popunjeno</Text></View>}
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity
         onPress={handleLogin}>
         <Text style={styles.formFooter}>
-          Already have an account?{' '}
-          <Text style={{ textDecorationLine: 'underline' }}>Log in</Text>
+          Već imate nalog?{' '}
+          <Text style={{ textDecorationLine: 'underline' }}>Ulogujte se</Text>
         </Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
     flexBasis: 0,
   },
   title: {
-    fontSize: 31,
+    fontSize: 30,
     fontWeight: '700',
     color: '#1D2A32',
     marginBottom: 6,
