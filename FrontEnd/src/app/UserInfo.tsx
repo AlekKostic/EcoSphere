@@ -115,6 +115,12 @@ const UserInfo = () => {
         </View>
       </View>
 
+      <View style={styles.bodovicontainer}>
+        <Text style={styles.bodovi}>
+            Broj ostavrenih kviz bodova: 0
+        </Text>
+    </View>
+
       <View style={styles.passwordChangeContainer}>
         <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
 
@@ -254,6 +260,16 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  bodovicontainer: {
+    marginLeft: 20,
+    marginBottom: 15,
+    borderBottomWidth: 2,
+    paddingBottom:15,
+  },
+  bodovi: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
