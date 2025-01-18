@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*") // zameniti sa URL-om tvoje aplikacije ako je frontend na drugom portu
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
