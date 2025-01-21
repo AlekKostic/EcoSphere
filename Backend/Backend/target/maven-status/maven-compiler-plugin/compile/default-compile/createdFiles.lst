@@ -1,6 +1,14 @@
+com\example\Backend\Services\OdgovoriServices.class
+com\example\Backend\Services\PitanjaServices.class
+com\example\Backend\Repository\PitanjaRepository.class
+com\example\Backend\Repository\OdgovoriRepository.class
+com\example\Backend\Services\UserServices.class
+com\example\Backend\Controllers\UserController.class
 com\example\Backend\Repository\UserRepository.class
 com\example\Backend\BackendApplication.class
 com\example\Backend\Config\WebConfig.class
+com\example\Backend\Controllers\PitanjaController.class
 com\example\Backend\Models\User.class
-com\example\Backend\Services\UserServices.class
-com\example\Backend\Controllers\UserController.class
+com\example\Backend\Models\Odgovori.class
+com\example\Backend\Controllers\OdgovoriController.class
+com\example\Backend\Models\Pitanja.class

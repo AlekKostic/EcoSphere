@@ -29,6 +29,7 @@ services:
 
 volumes:
   mysql-data:
+     external: true
 
 networks:
   mynetwork:
