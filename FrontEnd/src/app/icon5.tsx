@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, ScrollView } from 'react-native';
 import BackNav from '../components/Backnav';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const NotificationsPage = () => {
   const [posts, setPosts] = useState([
-    { id: '1', text: 'Dobrodošli na našu stranicu!', profile: 'Admin', liked: false },
+    { id: '1', text: 'Dobrodošli na našu stranicu!', profile: 'Admin', liked: false, likes: 0 },
   ]);
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [likesModalVisible, setLikesModalVisible] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const addPost = () => {
     if (newPost.trim()) {
       setPosts([
-        { id: Date.now().toString(), text: newPost, profile: 'User', liked: false },
+        { id: Date.now().toString(), text: newPost, profile: 'User', liked: false, likes: 0 },
         ...posts,
       ]);
       setNewPost('');
@@ -23,9 +26,20 @@ const NotificationsPage = () => {
   const toggleLikePost = (id) => {
     setPosts(
       posts.map((post) =>
-        post.id === id ? { ...post, liked: !post.liked } : post
+        post.id === id
+          ? {
+              ...post,
+              liked: !post.liked,
+              likes: post.liked ? post.likes - 1 : post.likes + 1,
+            }
+          : post
       )
     );
+  };
+
+  const showLikes = (post) => {
+    setSelectedPost(post);
+    setLikesModalVisible(true);
   };
 
   const renderPost = ({ item }) => (
@@ -34,7 +48,15 @@ const NotificationsPage = () => {
       <Text style={styles.postText}>{item.text}</Text>
       <View style={styles.likeContainer}>
         <TouchableOpacity onPress={() => toggleLikePost(item.id)} style={styles.likeButton}>
-          <Text style={[styles.heartIcon, { color: item.liked ? 'red' : 'gray' }]}>❤️</Text>
+          <MaterialCommunityIcons
+            name={item.liked ? 'heart' : 'heart-outline'}
+            size={24}
+            color={item.liked ? 'red' : '#aaa'}
+          />
+        </TouchableOpacity>
+        <Text style={styles.likesCount}>{item.likes}</Text>
+        <TouchableOpacity onPress={() => showLikes(item)} style={styles.seeLikesContainer}>
+          <Text style={styles.seeLikesText}>Pogledaj sviđanja</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -83,6 +105,24 @@ const NotificationsPage = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Likes Modal (Bottom Pop-up) */}
+      <Modal
+        visible={likesModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setLikesModalVisible(false)}
+      >
+        <View style={styles.likesModalContainer}>
+          <View style={styles.likesModalContent}>
+            <Text style={styles.modalTitle}>Likes</Text>
+            <Text style={styles.likesCountText}>
+              Total Likes: {selectedPost?.likes}
+            </Text>
+            <Button title="Close" onPress={() => setLikesModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -126,21 +166,32 @@ const styles = StyleSheet.create({
   },
   profileText: {
     fontWeight: 'bold',
+    fontSize: 15,
     marginBottom: 5,
   },
   postText: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 5,
   },
   likeContainer: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   likeButton: {
     marginRight: 10,
   },
-  heartIcon: {
-    fontSize: 20,
+  likesCount: {
+    fontSize: 16,
+    color: '#555',
+  },
+  seeLikesContainer: {
+    marginLeft: 5,
+  },
+  seeLikesText: {
+    marginLeft: 5,
+    fontSize: 14,
+    color: '#aaa',
   },
   modalContainer: {
     flex: 1,
@@ -158,11 +209,33 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
+  likesModalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  likesModalContent: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 5,
+  },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+  },
+  likesCountText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginVertical: 20,
   },
   input: {
     borderColor: '#ccc',
