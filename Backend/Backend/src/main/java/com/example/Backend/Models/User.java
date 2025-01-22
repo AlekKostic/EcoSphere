@@ -1,6 +1,10 @@
 package com.example.Backend.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Table(name = "User")
 @Entity
@@ -24,6 +28,29 @@ public class User {
 
     @Column(name = "grad", nullable = false)
     private String grad;
+
+    @OneToMany(mappedBy = "user")
+    private List<Like> lajkovaneObjave;
+
+    @OneToMany(mappedBy = "author")
+    @JsonManagedReference
+    private List<Postovi> posts;
+
+    public List<Like> getLajkovaneObjave() {
+        return lajkovaneObjave;
+    }
+
+    public void setLajkovaneObjave(List<Like> lajkovaneObjave) {
+        this.lajkovaneObjave = lajkovaneObjave;
+    }
+
+    public List<Postovi> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Postovi> posts) {
+        this.posts = posts;
+    }
 
     public Long getId() {
         return Id;
