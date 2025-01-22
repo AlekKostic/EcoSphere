@@ -28,6 +28,9 @@ public class Odgovori {
         return id_Odgovora;
     }
 
+    public Odgovori() {
+    }
+
     public void setId_Odgovora(Long id_Odgovora) {
         this.id_Odgovora = id_Odgovora;
     }

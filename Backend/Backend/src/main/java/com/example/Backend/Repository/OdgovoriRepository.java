@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface OdgovoriRepository extends JpaRepository<Odgovori, Long> {
 
-    @Query(value = "SELECT * FROM Odgovori o WHERE o.id_Pitanja= :pitanjeId", nativeQuery = true)
+    @Query(value = "SELECT * FROM odgovori o WHERE o.id_Pitanja= :pitanjeId", nativeQuery = true)
     List<Odgovori> findByPitanjeId(@Param("pitanjeId") Long pitanjeId);
 }
