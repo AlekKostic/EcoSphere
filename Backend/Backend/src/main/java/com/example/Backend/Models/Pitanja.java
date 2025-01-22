@@ -31,4 +31,5 @@ public class Pitanja {
     public void setPitanje(String pitanje) {
         this.pitanje = pitanje;
     }
+
 }
