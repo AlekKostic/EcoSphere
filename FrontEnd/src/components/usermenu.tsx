@@ -27,10 +27,8 @@ const UserMenu = () => {
     try {
       await AsyncStorage.removeItem('userInfo');
       setUser(null);
-      alert('Successfully logged out!');
     } catch (err) {
-      console.error('Error logging out:', err);
-      alert('An error occurred while logging out.');
+      alert('Greška prilikom odjavljivanja.');
     }
   };
 

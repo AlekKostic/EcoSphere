@@ -81,7 +81,6 @@ const UserInfo = () => {
           style: "destructive",
           onPress: async () => {
             try {
-              // Remove user data from AsyncStorage
               await AsyncStorage.removeItem('userInfo');
               setUser({
                 name: '',

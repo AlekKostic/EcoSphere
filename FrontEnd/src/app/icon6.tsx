@@ -10,4 +10,4 @@ const icon6 = () => {
   )
 }
 
-export default icon6
+export default icon6;

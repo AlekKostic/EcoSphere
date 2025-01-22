@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Keyboard } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const Signup = () => {
-
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -18,53 +18,73 @@ const Signup = () => {
     password: '',
   });
 
-  const [error, setEror] = useState(false);
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
-  
-    const toggleShowPassword = () => {
-      setShowPassword(!showPassword);
-    };
 
-  const handleLogin = () =>
-  {
-    router.push('/Login'); 
-  }
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleLogin = () => {
+    router.push('/Login');
+  };
+
   const handleSignin = async () => {
     const { name, surname, city, email, password } = form;
-  
+
     if (!name || !surname || !city || !email || !password) {
-      setEror(true); 
-      return; 
+      setError(true);
+      return;
     }
-  
-    setEror(false);
-  
-    const userInfo = {
-      name,
-      surname,
-      city,
-      email,
-      password,
-    };
-  
+
+    setError(false);
+    setIsLoading(true);
+
     try {
+      const response = await axios.post(
+        'http://localhost:8080/v1/api',
+        {
+          ime: name,
+          prezime: surname,
+          email: email,
+          password: password,
+          grad: city,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const userId = response.data.id;
+      const userInfo = {
+        id: userId,
+        name,
+        surname,
+        city,
+        email,
+        password,
+      };
+
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
-      alert('Uspešna registracija!');
+
+      router.push('/Home');
     } catch (err) {
-      console.error('Greška prilikom registracije:', err);
       alert('Greška prilikom registracije. Molimo pokušajte ponovo.');
+      setError(true);
+    } finally {
+      setIsLoading(false); 
     }
-    router.push('/Home')
   };
-  
-  const handleBack = () =>
-  {
-    router.push('/App'); 
-  }
+
+  const handleBack = () => {
+    router.push('/App');
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor:'white' }}>
-      
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <BackNav />
 
       <KeyboardAwareScrollView style={styles.container}>
@@ -75,94 +95,103 @@ const Signup = () => {
         </View>
         <View style={styles.form}>
           <View style={styles.input}>
-              <Text style={styles.inputLabel}>Ime</Text>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={name => setForm({ ...form, name })}
-                placeholder="Ime..."
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                value={form.name} />
-            </View>
-            <View style={styles.input}>
-              <Text style={styles.inputLabel}>Prezime</Text>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={surname => setForm({ ...form, surname })}
-                placeholder="Prezime..."
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                value={form.surname} />
-            </View>
-
-            <View style={styles.input}>
-              <Text style={styles.inputLabel}>Grad</Text>
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                onChangeText={city => setForm({ ...form, city })}
-                placeholder="Grad..."
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                value={form.city} />
-            </View>
-
+            <Text style={styles.inputLabel}>Ime</Text>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(name) => setForm({ ...form, name })}
+              placeholder="Ime..."
+              placeholderTextColor="#6b7280"
+              style={styles.inputControl}
+              value={form.name}
+            />
+          </View>
+          <View style={styles.input}>
+            <Text style={styles.inputLabel}>Prezime</Text>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(surname) => setForm({ ...form, surname })}
+              placeholder="Prezime..."
+              placeholderTextColor="#6b7280"
+              style={styles.inputControl}
+              value={form.surname}
+            />
+          </View>
+          <View style={styles.input}>
+            <Text style={styles.inputLabel}>Grad</Text>
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={(city) => setForm({ ...form, city })}
+              placeholder="Grad..."
+              placeholderTextColor="#6b7280"
+              style={styles.inputControl}
+              value={form.city}
+            />
+          </View>
           <View style={styles.input}>
             <Text style={styles.inputLabel}>E-mail addresa</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
-              onChangeText={email => setForm({ ...form, email })}
+              onChangeText={(email) => setForm({ ...form, email })}
               placeholder="mail@example.com"
               placeholderTextColor="#6b7280"
               style={styles.inputControl}
-              value={form.email} />
+              value={form.email}
+            />
           </View>
           <View style={styles.input}>
             <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
-            <TextInput
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-            onChangeText={password => setForm({ ...form, password })}
-            placeholder="********"
-            placeholderTextColor="#6b7280"
-            style={styles.inputControl}
-            secureTextEntry={!showPassword} // This ensures the password is hidden initially
-            value={form.password}
-          />
-          <MaterialCommunityIcons
-            name={!showPassword ? 'eye-off' : 'eye'}
-            size={24}
-            color="#aaa"
-            onPress={toggleShowPassword}
-            style={styles.icon}
-          />
+              <TextInput
+                autoCorrect={false}
+                clearButtonMode="while-editing"
+                onChangeText={(password) => setForm({ ...form, password })}
+                placeholder="********"
+                placeholderTextColor="#6b7280"
+                style={styles.inputControl}
+                secureTextEntry={!showPassword}
+                value={form.password}
+              />
+              <MaterialCommunityIcons
+                name={!showPassword ? 'eye-off' : 'eye'}
+                size={24}
+                color="#aaa"
+                onPress={toggleShowPassword}
+                style={styles.icon}
+              />
             </View>
           </View>
           <View style={styles.formAction}>
-            <TouchableOpacity
-              onPress={handleSignin}>
-              <View style={styles.btn}>
+            <TouchableOpacity onPress={handleSignin} disabled={isLoading}>
+              <View style={[styles.btn, isLoading && { backgroundColor: '#ccc' }]}>
                 <Text style={styles.btnText}>Registrujte se</Text>
               </View>
             </TouchableOpacity>
           </View>
-          {error && <View style={styles.errorcontainer}><Text style={styles.error}>Svako polje mora biti popunjeno</Text></View>}
+          {error && (
+            <View style={styles.errorcontainer}>
+              <Text style={styles.error}>Svako polje mora biti popunjeno</Text>
+            </View>
+          )}
         </View>
       </KeyboardAwareScrollView>
-      <TouchableOpacity
-        onPress={handleLogin}>
+      <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.formFooter}>
-          Već imate nalog?{' '}
-          <Text style={{ textDecorationLine: 'underline' }}>Ulogujte se</Text>
+          Već imate nalog? <Text style={{ textDecorationLine: 'underline' }}>Ulogujte se</Text>
         </Text>
       </TouchableOpacity>
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#075eec" />
+          <Text style={styles.loadingText}>Kreiranje naloga...</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
-}
+};
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -286,6 +315,21 @@ const styles = StyleSheet.create({
     top: '50%',
     transform: [{ translateY: -12 }],
     zIndex: 1, 
+  },loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#fff',
   },
 });
 
