@@ -49,4 +49,9 @@ public class PostoviServices {
     public Postovi findLikesUser(Long id){
         return postoviRepository.findById(id).orElseThrow(() -> new RuntimeException("Post nije pronadjen"));
     }
+
+    public List<Postovi> findPosts(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        return postoviRepository.findAllByAuthor(user);
+    }
 }

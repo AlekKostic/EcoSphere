@@ -59,5 +59,19 @@ public class PostoviController {
         }
         return new PostDTO(postovi.getId(), postovi.getContent(), postovi.getAuthor().getId(), likes);
     }
+
+    @GetMapping("/post/{id}")
+    public List<PostDTO> findPosts(@PathVariable("id") Long id){
+        List<Postovi> postovi = postoviServices.findPosts(id);
+        return postovi.stream()
+                .map(post -> {
+                    List<Long> likedIds = post.getLajkovi().stream()
+                            .map(lajk -> lajk.getUser().getId())
+                            .collect(Collectors.toList());
+
+                    return new PostDTO(post.getId(), post.getContent(), post.getAuthor().getId(), likedIds);
+                })
+                .collect(Collectors.toList());
+    }
 }
 
