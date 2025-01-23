@@ -19,8 +19,12 @@ const Signup = () => {
   });
 
   const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState("");
   const [isLoading, setIsLoading] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
+
+  const config = require('../../config.json')
+  const ip = config.ipAddress
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -35,26 +39,28 @@ const Signup = () => {
 
     if (!name || !surname || !city || !email || !password) {
       setError(true);
+      setErrorText("Svako polje mora biti popunjeno")
       return;
     }
 
     setError(false);
+    setErrorText("")
     setIsLoading(true);
 
     try {
       const response = await axios.post(
-        'http://localhost:8080/v1/api',
+        `http://${ip}:8080/v1/api`,
         {
           ime: name,
           prezime: surname,
           email: email,
-          password: password,
-          grad: city,
+          password: password
         },
         {
           headers: {
             'Content-Type': 'application/json',
           },
+          timeout: 3000,
         }
       );
 
@@ -63,7 +69,6 @@ const Signup = () => {
         id: userId,
         name,
         surname,
-        city,
         email,
         password,
       };
@@ -72,7 +77,7 @@ const Signup = () => {
 
       router.push('/Home');
     } catch (err) {
-      alert('Greška prilikom registracije. Molimo pokušajte ponovo.');
+      setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.")
       setError(true);
     } finally {
       setIsLoading(false); 
@@ -173,7 +178,7 @@ const Signup = () => {
           </View>
           {error && (
             <View style={styles.errorcontainer}>
-              <Text style={styles.error}>Svako polje mora biti popunjeno</Text>
+              <Text style={styles.error}>{errorText}</Text>
             </View>
           )}
         </View>
@@ -202,7 +207,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '700',
     color: '#1D2A32',
-    marginBottom: 6,
   },
   subtitle: {
     fontSize: 15,
@@ -213,13 +217,13 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 36,
+    marginVertical: 30,
   },
   headerImg: {
     width: 80,
     height: 80,
     alignSelf: 'center',
-    marginBottom: 36,
+    marginBottom: 30,
   },
   /** Form */
   form: {

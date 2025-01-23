@@ -3,9 +3,14 @@ import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackNav from '../components/Backnav';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 
 const UserInfo = () => {
+
+  const route = useRoute();
+  const personal = route.params?.personal ?? false;
+
   const [user, setUser] = useState({
     name: '',
     surname: '',
@@ -17,8 +22,7 @@ const UserInfo = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter()
-
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -89,7 +93,7 @@ const UserInfo = () => {
                 city: '',
                 password: '',
               });
-              router.push('/Home')
+              router.push('/Home');
             } catch (err) {
               console.error('Error deleting account:', err);
               setErrorMessage('Greška prilikom brisanja naloga.');
@@ -115,62 +119,64 @@ const UserInfo = () => {
       </View>
 
       <View style={styles.bodovicontainer}>
-        <Text style={styles.bodovi}>
-            Broj ostavrenih kviz bodova: 0
-        </Text>
-    </View>
-
-      <View style={styles.passwordChangeContainer}>
-        <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
-
-        <Text style={styles.label}>Trenutna lozinka</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Unesite trenutnu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-
-        <Text style={styles.label}>Nova lozinka</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Unesite novu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-
-        <Text style={styles.label}>Potvrdite novu lozinku</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Potvrdite novu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-
-        <TouchableOpacity onPress={handleChangePassword} style={styles.button}>
-          <Text style={styles.buttonText}>Promenite lozinku</Text>
-        </TouchableOpacity>
-
-        {errorMessage ? (
-          <Text style={styles.errorMessage}>{errorMessage}</Text>
-        ) : null}
+        <Text style={styles.bodovi}>Broj ostvarenih kviz bodova: 0</Text>
       </View>
+
+      {personal && (<>
+        <View style={styles.passwordChangeContainer}>
+          <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
+
+          <Text style={styles.label}>Trenutna lozinka</Text>
+          <TextInput
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            style={styles.input}
+            placeholder="Unesite trenutnu lozinku..."
+            placeholderTextColor="gray"
+            secureTextEntry={true}
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+          />
+
+          <Text style={styles.label}>Nova lozinka</Text>
+          <TextInput
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            style={styles.input}
+            placeholder="Unesite novu lozinku..."
+            placeholderTextColor="gray"
+            secureTextEntry={true}
+            value={newPassword}
+            onChangeText={setNewPassword}
+          />
+
+          <Text style={styles.label}>Potvrdite novu lozinku</Text>
+          <TextInput
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            style={styles.input}
+            placeholder="Potvrdite novu lozinku..."
+            placeholderTextColor="gray"
+            secureTextEntry={true}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+          />
+
+          <TouchableOpacity onPress={handleChangePassword} style={styles.button}>
+            <Text style={styles.buttonText}>Promenite lozinku</Text>
+          </TouchableOpacity>
+
+          {errorMessage ? (
+            <Text style={styles.errorMessage}>{errorMessage}</Text>
+          ) : null}
+        </View>
+      
 
       <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
         <Text style={styles.deleteButtonText}>Obrišite nalog</Text>
       </TouchableOpacity>
+      </>
+      )}
     </KeyboardAwareScrollView>
   );
 };
@@ -264,7 +270,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 15,
     borderBottomWidth: 2,
-    paddingBottom:15,
+    paddingBottom: 15,
   },
   bodovi: {
     fontSize: 20,

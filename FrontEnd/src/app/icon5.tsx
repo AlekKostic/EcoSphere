@@ -1,53 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, ScrollView } from 'react-native';
 import BackNav from '../components/Backnav';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { getPathWithConventionsCollapsed } from 'expo-router/build/fork/getPathFromState-forks';
 
 const NotificationsPage = () => {
-  const [posts, setPosts] = useState([
-    { id: '1', text: 'Dobrodošli na našu stranicu!', profile: 'Admin', liked: false, likes: 0 },
-  ]);
+  const [posts, setPosts] = useState([{
+    "id": 1,
+    "content": "Dobrodosli",
+    "userid": 1,
+    "likes": []
+
+  }]);
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [likesModalVisible, setLikesModalVisible] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [logged, setLogged] = useState(false);
 
-  const addPost = () => {
-    if (newPost.trim()) {
-      setPosts([
-        { id: Date.now().toString(), text: newPost, profile: 'User', liked: false, likes: 0 },
-        ...posts,
-      ]);
-      setNewPost('');
-      setIsModalVisible(false);
+  const config = require('../../config.json');
+  const ip = config.ipAddress;
+
+  const getPosts = async() =>{
+
+    try{
+      console.log("sta")
+      const response = await axios.get(`http://${ip}:8080/v4/api`)
+      console.log("odgovoreno")
+      setPosts(response.data)
+      console.log(response.data)
+    }catch(error){
+      console.log(error)
     }
-  };
+  }
+  useEffect(()=>{getPosts()}, [])
 
-  const toggleLikePost = (id) => {
-    setPosts(
-      posts.map((post) =>
-        post.id === id
-          ? {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-            }
-          : post
-      )
-    );
-  };
-
-  const showLikes = (post) => {
-    setSelectedPost(post);
-    setLikesModalVisible(true);
-  };
 
   const renderPost = ({ item }) => (
     <View style={styles.postContainer}>
       <Text style={styles.profileText}>{item.profile}</Text>
-      <Text style={styles.postText}>{item.text}</Text>
+      <Text style={styles.postText}>{item.content}</Text>
       <View style={styles.likeContainer}>
-        <TouchableOpacity onPress={() => toggleLikePost(item.id)} style={styles.likeButton}>
+        <TouchableOpacity onPress={() => console.log("liked")} style={styles.likeButton}>
           <MaterialCommunityIcons
             name={item.liked ? 'heart' : 'heart-outline'}
             size={24}
@@ -55,78 +51,40 @@ const NotificationsPage = () => {
           />
         </TouchableOpacity>
         <Text style={styles.likesCount}>{item.likes}</Text>
-        <TouchableOpacity onPress={() => showLikes(item)} style={styles.seeLikesContainer}>
-          <Text style={styles.seeLikesText}>Pogledaj sviđanja</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
 
+  
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <BackNav />
         <Text style={styles.heading}>Oglasna tabla</Text>
         <Text style={styles.subheading}>
-          Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu sredinu za
-          koje smatrate da treba da vidi što veći broj ljudi.
+          Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu
+          sredinu za koje smatrate da treba da vidi što veći broj ljudi.
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.addPostButton}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
-      </TouchableOpacity>
+      {logged && (
+        <TouchableOpacity
+          style={styles.addPostButton}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
+        </TouchableOpacity>
+      )}
+
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.postsList}
       />
 
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nova objava</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Unesite tekst objave..."
-              value={newPost}
-              onChangeText={setNewPost}
-            />
-            <Button title="Dodaj" onPress={addPost} />
-            <Button title="Otkaži" color="red" onPress={() => setIsModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Likes Modal (Bottom Pop-up) */}
-      <Modal
-        visible={likesModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setLikesModalVisible(false)}
-      >
-        <View style={styles.likesModalContainer}>
-          <View style={styles.likesModalContent}>
-            <Text style={styles.modalTitle}>Likes</Text>
-            <Text style={styles.likesCountText}>
-              Total Likes: {selectedPost?.likes}
-            </Text>
-            <Button title="Close" onPress={() => setLikesModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

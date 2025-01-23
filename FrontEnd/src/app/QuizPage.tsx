@@ -2,40 +2,73 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import BackNav from '../components/Backnav';
 import Question from '../components/Question';
-import randomQuestions from '../data/questions';
+import axios from 'axios';
 
 const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
-  const [correctAnswers, setCorrectAnswers] = useState(0); 
+  const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showingFeedback, setShowingFeedback] = useState(false);
-  const [quizCompleted, setQuizCompleted] = useState(false); 
-
-  const questions = randomQuestions;
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
-    if (showingFeedback) return; 
+    getQuestions();
+  }, []);
+
+  const config = require('../../config.json');
+  const ip = config.ipAddress
+
+  const getQuestions = async () => {
+    try {
+      const response = await axios.get(`http://${ip}:8080/v2/api/`);
+      const allQuestions = response.data;
+      const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
+      const questionsWithAnswers = await Promise.all(
+        shuffledQuestions.map(async (question) => {
+          const answersResponse = await axios.get(`http://192.168.100.18:8080/v3/api/${question.id_Pitanja}`);
+          const answers = answersResponse.data;
+
+          const correctAnswer = answers.find(ans => ans.tacno)?.odgovor;
+
+          return {
+            question: question.pitanje,
+            options: answers.map(ans => ans.odgovor),
+            correctAnswer,
+          };
+        })
+      );
+
+      setQuestions(questionsWithAnswers);
+      console.log(questions);
+    } catch (error) {
+      console.error('Error fetching questions or answers:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (showingFeedback || quizCompleted) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev === 1) {
-          clearInterval(timer); 
-          handleNextQuestion(); 
+          clearInterval(timer);
+          handleNextQuestion();
         }
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [currentQuestionIndex, showingFeedback]);
+  }, [timeLeft, currentQuestionIndex, showingFeedback, quizCompleted]);
 
   const handleNextQuestion = () => {
-    setTimeLeft(15); 
-    setShowingFeedback(false); 
+    setTimeLeft(15);
+    setShowingFeedback(false);
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
-      setQuizCompleted(true); 
+      setQuizCompleted(true);
     }
   };
 
@@ -53,13 +86,11 @@ const QuizPage = () => {
       <View style={styles.container}>
         <BackNav />
         <View style={styles.container2}>
-        <Text style={styles.resultTitle}>Završen kviz!</Text>
-        <Text style={styles.resultText}>
-          Tačno ste odgovorili na {correctAnswers} od {questions.length} pitanja.
-        </Text>
-        <Text style={styles.resultText}>
-          Vratite se ponovo da radite sutrašnji kviz!
-        </Text>
+          <Text style={styles.resultTitle}>Završen kviz!</Text>
+          <Text style={styles.resultText}>
+            Tačno ste odgovorili na {correctAnswers} od {questions.length} pitanja.
+          </Text>
+          <Text style={styles.resultText}>Vratite se ponovo da radite sutrašnji kviz!</Text>
         </View>
       </View>
     );
@@ -69,11 +100,13 @@ const QuizPage = () => {
     <View style={styles.container}>
       <BackNav />
       <Text style={styles.timer}>Preostalo vremena: {timeLeft} sekundi</Text>
-      <Question
-        quiz={questions[currentQuestionIndex]}
-        onAnswer={handleAnswer}
-        showingFeedback={showingFeedback}
-      />
+      {questions.length > 0 && (
+        <Question
+          quiz={questions[currentQuestionIndex]}
+          onAnswer={handleAnswer}
+          showingFeedback={showingFeedback}
+        />
+      )}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           Pitanje {currentQuestionIndex + 1} od {questions.length}

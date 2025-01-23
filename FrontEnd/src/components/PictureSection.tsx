@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
   pictureSection: {
     height: getWorkingHeight() * 0.27,
     width: '100%',
+    
     backgroundColor: '#f0f0f0',
     marginTop: getWorkingHeight()*0.05,
   },

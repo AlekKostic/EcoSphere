@@ -38,7 +38,11 @@ const UserMenu = () => {
 
   const handleUserInfoClick = () => {
     if (user) {
-      router.push('/UserInfo'); 
+      router.push({
+        pathname: '/UserInfo',
+        params: { personal: true },
+      });
+      
     }
   };
 
