@@ -26,9 +26,6 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "grad", nullable = false)
-    private String grad;
-
     @OneToMany(mappedBy = "user")
     private List<Like> lajkovaneObjave;
 
@@ -92,11 +89,4 @@ public class User {
         this.password = password;
     }
 
-    public String getGrad() {
-        return grad;
-    }
-
-    public void setGrad(String grad) {
-        this.grad = grad;
-    }
 }
