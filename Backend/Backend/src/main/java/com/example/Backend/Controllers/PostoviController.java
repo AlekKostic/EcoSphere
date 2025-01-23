@@ -1,7 +1,9 @@
 package com.example.Backend.Controllers;
 
+import com.example.Backend.DTO.LikesDTO;
 import com.example.Backend.DTO.PostCreateDTO;
 import com.example.Backend.DTO.PostDTO;
+import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
 import com.example.Backend.Services.PostoviServices;
 
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,25 @@ public class PostoviController {
     @PostMapping("/create")
     public ResponseEntity<Postovi> create(@RequestBody PostCreateDTO postCreateDTO){
         return ResponseEntity.ok(postoviServices.create(postCreateDTO));
+    }
+
+    @GetMapping("/user/{id}")
+    public List<LikesDTO> findLike(@PathVariable("id") Long id){
+        List<Like> likes = postoviServices.findLike(id);
+        return likes.stream().map(like -> {
+            Postovi postovi = like.getPost();
+            return new LikesDTO(like.getId_like(), like.getPost());
+        }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
+    public PostDTO findLikesUser(@PathVariable("id") Long id){
+        Postovi postovi = postoviServices.findLikesUser(id);
+        List<Long> likes = new ArrayList<>();
+        for(Like like : postovi.getLajkovi()){
+            likes.add(like.getUser().getId());
+        }
+        return new PostDTO(postovi.getId(), postovi.getContent(), postovi.getAuthor().getId(), likes);
     }
 }
 
