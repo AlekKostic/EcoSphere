@@ -1,4 +1,4 @@
-package com.example.Backend.DTO;
+package com.example.Backend.DTO.Post;
 
 import java.util.List;
 

@@ -1,8 +1,7 @@
 package com.example.Backend.Services;
 
-import com.example.Backend.DTO.LikesDTO;
-import com.example.Backend.DTO.PostCreateDTO;
-import com.example.Backend.DTO.PostDTO;
+import com.example.Backend.DTO.Post.PostCreateDTO;
+import com.example.Backend.DTO.Post.PostLikeDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
 import com.example.Backend.Models.User;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PostoviServices {
@@ -53,5 +51,17 @@ public class PostoviServices {
     public List<Postovi> findPosts(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         return postoviRepository.findAllByAuthor(user);
+    }
+
+    public ResponseEntity like(PostLikeDTO postLikeDTO){
+        User user = userRepository.findById(postLikeDTO.getUser_id()).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        Postovi postovi = postoviRepository.findById(postLikeDTO.getPost_id()).orElseThrow(()-> new RuntimeException("Post nije pronadjen"));
+        Like like = new Like();
+        like.setPost(postovi);
+        like.setUser(user);
+        likeRepository.save(like);
+        user.getLajkovaneObjave().add(like);
+        userRepository.save(user);
+        return ResponseEntity.ok().build();
     }
 }

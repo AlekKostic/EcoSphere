@@ -1,8 +1,9 @@
 package com.example.Backend.Controllers;
 
 import com.example.Backend.DTO.LikesDTO;
-import com.example.Backend.DTO.PostCreateDTO;
-import com.example.Backend.DTO.PostDTO;
+import com.example.Backend.DTO.Post.PostCreateDTO;
+import com.example.Backend.DTO.Post.PostDTO;
+import com.example.Backend.DTO.Post.PostLikeDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
 import com.example.Backend.Services.PostoviServices;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +72,11 @@ public class PostoviController {
                     return new PostDTO(post.getId(), post.getContent(), post.getAuthor().getId(), likedIds);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity like(@RequestBody PostLikeDTO postLikeDTO){
+        return postoviServices.like(postLikeDTO);
     }
 }
 

@@ -1,6 +1,4 @@
-package com.example.Backend.DTO;
-
-import com.example.Backend.Models.User;
+package com.example.Backend.DTO.User;
 
 import java.util.List;
 

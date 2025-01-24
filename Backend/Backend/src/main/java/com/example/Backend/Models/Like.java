@@ -16,11 +16,11 @@ public class Like {
     private Long id_like;
 
     @ManyToOne
-    @JoinColumn(name = "post_id", referencedColumnName = "id_posta")
+    @JoinColumn(name = "post_id", referencedColumnName = "id_posta", nullable = true)
     private Postovi post;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
 
     public Long getId_like() {
@@ -45,5 +45,8 @@ public class Like {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Like() {
     }
 }

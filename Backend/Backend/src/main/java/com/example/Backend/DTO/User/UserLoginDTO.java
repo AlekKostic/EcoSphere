@@ -1,4 +1,4 @@
-package com.example.Backend.DTO;
+package com.example.Backend.DTO.User;
 
 public class UserLoginDTO {
     private String email;

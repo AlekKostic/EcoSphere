@@ -1,11 +1,12 @@
 package com.example.Backend.Services;
 
-import com.example.Backend.DTO.UserResetDTO;
-import com.example.Backend.DTO.UserDTO;
-import com.example.Backend.DTO.UserLoginDTO;
+import com.example.Backend.DTO.User.UserResetDTO;
+import com.example.Backend.DTO.User.UserDTO;
+import com.example.Backend.DTO.User.UserLoginDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
 import com.example.Backend.Models.User;
+import com.example.Backend.Repository.LikeRepository;
 import com.example.Backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +22,9 @@ import java.util.Optional;
 public class UserServices {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private LikeRepository likeRepository;
 
     public User saveUser(User user) {
         return userRepository.save(user);
@@ -43,11 +47,11 @@ public class UserServices {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         List<Long> likes = new ArrayList<>();
         for(Like like : user.getLajkovaneObjave()){
-            likes.add(like.getUser().getId());
+            likes.add(like.getPost().getId());
         }
         List<Long> posts =new ArrayList<>();
         for (Postovi postovi : user.getPosts()){
-            posts.add(user.getId());
+            posts.add(postovi.getId());
         }
         return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes);
     }
@@ -61,6 +65,7 @@ public class UserServices {
 
     public ResponseEntity delete(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        likeRepository.setLikesToNullForUser(id);
         userRepository.delete(user);
         return ResponseEntity.ok().build();
     }

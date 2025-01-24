@@ -27,7 +27,7 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<Like> lajkovaneObjave;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
