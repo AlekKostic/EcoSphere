@@ -1,6 +1,6 @@
 package com.example.Backend.Services;
 
-import com.example.Backend.Controllers.UserResetDTO;
+import com.example.Backend.DTO.UserResetDTO;
 import com.example.Backend.DTO.UserDTO;
 import com.example.Backend.DTO.UserLoginDTO;
 import com.example.Backend.Models.Like;

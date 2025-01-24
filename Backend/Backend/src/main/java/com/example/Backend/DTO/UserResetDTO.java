@@ -1,4 +1,4 @@
-package com.example.Backend.Controllers;
+package com.example.Backend.DTO;
 
 public class UserResetDTO {
     private Long id_user;
