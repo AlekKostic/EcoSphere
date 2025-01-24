@@ -7,8 +7,12 @@ C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\exam
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Controllers\UserController.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\LikesDTO.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\OdgovoriDTO.java
-C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\PostCreateDTO.java
-C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\PostDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\Post\PostCreateDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\Post\PostDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\Post\PostLikeDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\User\UserDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\User\UserLoginDTO.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\DTO\User\UserResetDTO.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Like.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Odgovori.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Pitanja.java
