@@ -74,7 +74,7 @@ public class PostoviController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/like")
+    @PostMapping("/like")
     public ResponseEntity like(@RequestBody PostLikeDTO postLikeDTO){
         return postoviServices.like(postLikeDTO);
     }
