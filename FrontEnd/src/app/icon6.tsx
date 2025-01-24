@@ -4,64 +4,43 @@ import * as ImagePicker from 'expo-image-picker'; // Za Expo
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import RNFS from 'react-native-fs';
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState([
-    {
-      id: '1',
-      name: 'Proizvod 1',
-      price: '1000 RSD',
-      description: 'Opis proizvoda 1',
-      user_id: { firstName: 'Marko', lastName: 'Marković' },
-      broj_telefona: '0601234567',
-      image: null,
-    },
-    {
-      id: '2',
-      name: 'Proizvod 2',
-      price: '2000 RSD',
-      description: 'Opis proizvoda 2',
-      user_id: { firstName: 'Ana', lastName: 'Anić' },
-      broj_telefona: '0612345678',
-      image: null,
-    },
-    {
-      id: '3',
-      name: 'Proizvod 3',
-      price: '1500 RSD',
-      description: 'Opis proizvoda 3',
-      user_id: { firstName: 'Jovan', lastName: 'Jovanović' },
-      broj_telefona: '0623456789',
-      image: null,
-    },
-  ]);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    user_id: { firstName: '', lastName: '' },
-    broj_telefona: '',
-    image: null,
-  });
+  const [products, setProducts] = useState([]);
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState(0);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [path, setPath] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter(); 
 
-  const [logged, setLogged] = useState(false)
+  const config = require('../../config.json');
+  const ip = config.ipAddress;
 
-  const check = async()=>{
-    const userInfo = await AsyncStorage.getItem('userInfo')
+  const [logged, setLogged] = useState(false);
 
+  const check = async () => {
+    const userInfo = await AsyncStorage.getItem('userInfo');
     if (userInfo) {
-      setLogged(true)
+      setLogged(true);
     }
-  }
+    try {
+      const response = await axios.get(`http://${ip}:8080/v5/api`);
+      setProducts(response.data);
+      setProducts((prevPosts) => [...prevPosts].reverse());
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     check();
   }, []);
 
-  // Funkcija za biranje slike
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -71,56 +50,58 @@ const ProductsPage = () => {
     });
 
     if (!result.canceled) {
-      setNewProduct({ ...newProduct, image: result.assets[0].uri });
+      setPath(result.assets[0].uri);
     }
+
   };
 
-  const addProduct = () => {
-    if (
-      newProduct.name.trim() &&
-      newProduct.price.trim() &&
-      newProduct.description.trim() &&
-      newProduct.user_id.firstName.trim() &&
-      newProduct.user_id.lastName.trim() &&
-      newProduct.broj_telefona.trim()
-    ) {
-      setProducts([ { id: Date.now().toString(), ...newProduct }, ...products ]);
-      setNewProduct({
-        name: '',
-        price: '',
-        description: '',
-        user_id: { firstName: '', lastName: '' },
-        broj_telefona: '',
-        image: null,
+  const addProduct = async () => {
+    try {
+      const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
+        "name": name,
+        "description": description,
+        "price": price,
+        "phoneNumber": phoneNumber,
+        "path": path
       });
-      setIsModalVisible(false);
+
+      
+
+      console.log(response.data)
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const renderProduct = ({ item }) => (
-    <View style={styles.productContainer}>
-      {item.image && <Image source={{ uri: item.image }} style={styles.productImage} />}
-      <View style={styles.productDetails}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productPrice}>{item.price}</Text>
-        <Text style={styles.productDescription}>{item.description}</Text>
-
-        <TouchableOpacity
-          onPress={() => router.push({ pathname: '/UserInfo'})}
-        >
-          <Text style={styles.productOwner}>
-            Prodavac: {item.user_id.firstName} {item.user_id.lastName}
-          </Text>
-        </TouchableOpacity>
-
-        <Text style={styles.productPhone}>Kontakt: {item.broj_telefona}</Text>
-      </View>
-    </View>
-  );
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setName('');
+    setDescription('');
+    setPrice(0);
+    setPhoneNumber('');
+    setPath('');
+  };
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const renderProduct = ({ item }) => {
+    return (
+      <View style={styles.productContainer}>
+        {item.image && <Image source={{ uri: item.image }} style={styles.productImage} />}
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productPrice}>{item.price}</Text>
+          <Text style={styles.productDescription}>{item.description}</Text>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/UserInfo' })}>
+            <Text style={styles.productOwner}>Prodavac:</Text>
+          </TouchableOpacity>
+          <Text style={styles.productPhone}>Kontakt: {item.phoneNumber}</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -132,25 +113,25 @@ const ProductsPage = () => {
         </Text>
       </View>
 
-      {/* Input za pretragu */}
       <TextInput
         style={styles.searchInput}
         placeholder="Pretraži proizvode..."
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
-  {(logged && 
-      <TouchableOpacity
-        style={styles.addProductButton}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
-      </TouchableOpacity>
+
+      {logged && (
+        <TouchableOpacity
+          style={styles.addProductButton}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
+        </TouchableOpacity>
       )}
 
       <FlatList
         data={filteredProducts}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.product_id.toString()}
         renderItem={renderProduct}
         contentContainerStyle={styles.productsList}
       />
@@ -159,7 +140,7 @@ const ProductsPage = () => {
         visible={isModalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
+        onRequestClose={closeModal}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -167,57 +148,37 @@ const ProductsPage = () => {
             <TextInput
               style={styles.input}
               placeholder="Ime proizvoda"
-              value={newProduct.name}
-              onChangeText={(text) => setNewProduct({ ...newProduct, name: text })}
+              value={name}
+              placeholderTextColor="black"
+              onChangeText={setName}
             />
             <TextInput
               style={styles.input}
               placeholder="Cena proizvoda"
-              value={newProduct.price}
-              onChangeText={(text) => setNewProduct({ ...newProduct, price: text })}
+              value={price}
+              placeholderTextColor="black"
+              onChangeText={setPrice}
             />
             <TextInput
               style={styles.input}
               placeholder="Opis proizvoda"
-              value={newProduct.description}
-              onChangeText={(text) => setNewProduct({ ...newProduct, description: text })}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Ime korisnika"
-              value={newProduct.user_id.firstName}
-              onChangeText={(text) =>
-                setNewProduct({
-                  ...newProduct,
-                  user_id: { ...newProduct.user_id, firstName: text },
-                })
-              }
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Prezime korisnika"
-              value={newProduct.user_id.lastName}
-              onChangeText={(text) =>
-                setNewProduct({
-                  ...newProduct,
-                  user_id: { ...newProduct.user_id, lastName: text },
-                })
-              }
+              placeholderTextColor="black"
+              value={description}
+              onChangeText={setDescription}
             />
             <TextInput
               style={styles.input}
               placeholder="Broj telefona"
-              value={newProduct.broj_telefona}
-              onChangeText={(text) => setNewProduct({ ...newProduct, broj_telefona: text })}
+              placeholderTextColor="black"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
             />
             <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
               <Text style={styles.imagePickerButtonText}>Izaberi sliku proizvoda</Text>
             </TouchableOpacity>
-            {newProduct.image && (
-              <Image source={{ uri: newProduct.image }} style={styles.previewImage} />
-            )}
+            {path && <Image source={{ uri: path }} style={styles.previewImage} />}
             <Button title="Dodaj" onPress={addProduct} />
-            <Button title="Otkaži" color="red" onPress={() => setIsModalVisible(false)} />
+            <Button title="Otkaži" color="red" onPress={closeModal} />
           </View>
         </View>
       </Modal>
@@ -302,8 +263,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   addProductButton: {
-    width: '40%',
-    marginLeft: '30%',
+    width: '50%',
+    marginLeft: '25%',
     backgroundColor: '#007BFF',
     borderRadius: 10,
     padding: 15,

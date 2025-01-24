@@ -1,61 +1,99 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, ScrollView } from 'react-native';
+import { 
+  View, Text, TextInput, FlatList, TouchableOpacity, 
+  StyleSheet, Modal, Button, ActivityIndicator 
+} from 'react-native';
 import BackNav from '../components/Backnav';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { getPathWithConventionsCollapsed } from 'expo-router/build/fork/getPathFromState-forks';
+import { useRouter } from 'expo-router';
+import Post from '../components/Post';
 
 const NotificationsPage = () => {
-  const [posts, setPosts] = useState([{
-    "id": 1,
-    "content": "Dobrodosli",
-    "userid": 1,
-    "likes": []
-
-  }]);
+  const router = useRouter();
+  const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [likesModalVisible, setLikesModalVisible] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
   const [logged, setLogged] = useState(false);
+  const [loading, setLoading] = useState(true); 
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  const getPosts = async() =>{
+  const getPosts = async () => {
+    try {
+      setLoading(true); 
+      const response = await axios.get(`http://${ip}:8080/v4/api`);
+      const fetchedPosts = response.data;
 
-    try{
-      console.log("sta")
-      const response = await axios.get(`http://${ip}:8080/v4/api`)
-      console.log("odgovoreno")
-      setPosts(response.data)
-      console.log(response.data)
-    }catch(error){
-      console.log(error)
+      console.log("Fetched posts:", fetchedPosts); 
+      const authorsResponses = await Promise.all(
+        fetchedPosts.map(post =>
+          axios.get(`http://${ip}:8080/v1/api/${post.authorId}`)
+            .then(res => res.data) 
+            .catch(() => ({ ime: "Nepoznato", prezime: "" }))         )
+      );
+      const postsWithAuthors = fetchedPosts.map((post, index) => ({
+        ...post,
+        author: authorsResponses[index]
+      }));
+
+      console.log("Posts with authors:", postsWithAuthors);
+
+      setPosts(postsWithAuthors.reverse()); 
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
     }
-  }
-  useEffect(()=>{getPosts()}, [])
 
+    const value = await AsyncStorage.getItem('userInfo');
+    if (value !== null) {
+      setLogged(true);
+    }
+  };
 
-  const renderPost = ({ item }) => (
-    <View style={styles.postContainer}>
-      <Text style={styles.profileText}>{item.profile}</Text>
-      <Text style={styles.postText}>{item.content}</Text>
-      <View style={styles.likeContainer}>
-        <TouchableOpacity onPress={() => console.log("liked")} style={styles.likeButton}>
-          <MaterialCommunityIcons
-            name={item.liked ? 'heart' : 'heart-outline'}
-            size={24}
-            color={item.liked ? 'red' : '#aaa'}
-          />
-        </TouchableOpacity>
-        <Text style={styles.likesCount}>{item.likes}</Text>
-      </View>
-    </View>
-  );
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  const likePost = (item) => {
+    if (!logged) {
+      router.push('/Login');
+    }
+  };
+
+  const addPost = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      const parsedUserInfo = JSON.parse(userInfo);
+  
+      const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
+        "context": newPost, 
+        "user_id": parsedUserInfo.id
+      });
+  
+      const newPostData = response.data;
+      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.id}`);
+      const authorData = authorResponse.data;
+  
+      const newPostWithAuthor = {
+        ...newPostData,
+        author: authorData
+      };
+  
+      setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+      setNewPost("");
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Error in API request:", error);
+    }
+  };
 
   
+  
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -66,6 +104,7 @@ const NotificationsPage = () => {
           sredinu za koje smatrate da treba da vidi što veći broj ljudi.
         </Text>
       </View>
+
       {logged && (
         <TouchableOpacity
           style={styles.addPostButton}
@@ -75,16 +114,45 @@ const NotificationsPage = () => {
         </TouchableOpacity>
       )}
 
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderPost}
-        contentContainerStyle={styles.postsList}
-      />
+      {loading ? ( 
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007BFF" />
+          <Text style={styles.loadingText}>Učitavanje objava...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <Post item={item} likePost={likePost} />}
+          contentContainerStyle={styles.postsList}
+        />
+      )}
 
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Nova objava</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Unesite tekst objave..."
+              placeholderTextColor="#ccc"
+              value={newPost}
+              onChangeText={setNewPost}
+            />
+            <Button title="Dodaj" onPress={addPost} />
+            <Button title="Otkaži" color="red" onPress={() => setIsModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -112,44 +180,29 @@ const styles = StyleSheet.create({
   postsList: {
     paddingBottom: 20,
   },
-  postContainer: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
+  addPostButton: {
+    width: '40%',
+    marginLeft: '30%',
+    backgroundColor: '#007BFF',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    padding: 15,
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  profileText: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    marginBottom: 5,
-  },
-  postText: {
+  addPostButtonText: {
+    color: '#fff',
     fontSize: 16,
-    marginBottom: 5,
+    fontWeight: 'bold',
   },
-  likeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  likeButton: {
-    marginRight: 10,
-  },
-  likesCount: {
+  loadingText: {
+    marginTop: 10,
     fontSize: 16,
     color: '#555',
-  },
-  seeLikesContainer: {
-    marginLeft: 5,
-  },
-  seeLikesText: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: '#aaa',
   },
   modalContainer: {
     flex: 1,
@@ -167,33 +220,11 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  likesModalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  likesModalContent: {
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
-  },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-  },
-  likesCountText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginVertical: 20,
   },
   input: {
     borderColor: '#ccc',
@@ -202,20 +233,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#fff',
-  },
-  addPostButton: {
-    width: '40%',
-    marginLeft: '30%',
-    backgroundColor: '#007BFF',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  addPostButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

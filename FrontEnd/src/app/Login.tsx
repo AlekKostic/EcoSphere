@@ -48,12 +48,14 @@ const Login = () => {
 
       if (response.data) {
         const transformedData = {
+          id: response.data.id,
           name: response.data.ime,
           surname: response.data.prezime,
           city: response.data.grad,
           email: response.data.email,
           password: response.data.password,
         };
+
 
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
         router.push('/Home');

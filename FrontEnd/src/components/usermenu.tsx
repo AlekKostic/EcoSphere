@@ -3,8 +3,12 @@ import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import getWorkingHeight from './ScreenHeight';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 
 const UserMenu = () => {
+
+  
+
   const [user, setUser] = useState(null);
   const router = useRouter();
 
@@ -36,12 +40,19 @@ const UserMenu = () => {
     router.push('./Login');
   };
 
-  const handleUserInfoClick = () => {
-    if (user) {
-      router.push({
-        pathname: '/UserInfo',
-        params: { personal: true },
-      });
+  const handleUserInfoClick = async() => {
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    
+    if (userInfo) {
+      const parsedUserInfo = JSON.parse(userInfo);
+
+      const userId = parsedUserInfo.id;
+      console.log(userId)
+        router.push({
+          pathname: '/UserInfo',
+          params: { personal: true, id: userId },
+        });
       
     }
   };
