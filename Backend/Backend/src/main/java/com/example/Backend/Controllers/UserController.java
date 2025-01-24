@@ -21,7 +21,7 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
-    @GetMapping(value = "/login")
+    @PostMapping(value = "/login")
     public UserDTO findUser(@RequestBody UserLoginDTO userLoginDTO){
        return userServices.findUser(userLoginDTO);
     }

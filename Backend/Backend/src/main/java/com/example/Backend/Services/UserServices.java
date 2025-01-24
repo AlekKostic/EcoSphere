@@ -27,7 +27,11 @@ public class UserServices {
     private LikeRepository likeRepository;
 
     public User saveUser(User user) {
-        return userRepository.save(user);
+        if(userRepository.existsUserByEmail(user.getEmail())){
+            return null;
+        }else {
+            return userRepository.save(user);
+        }
     }
 
     public UserDTO findUser(UserLoginDTO userLoginDTO) {
