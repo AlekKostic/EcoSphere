@@ -29,14 +29,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/login")
-    public ResponseEntity<Optional<User>> findUser(@RequestBody UserLoginDTO userLoginDTO){
-
-        Optional<User> user = userServices.findUser(userLoginDTO);
-        if(user.isPresent()){
-            return ResponseEntity.ok(user);
-        }else {
-            return ResponseEntity.notFound().build();
-        }
+    public UserDTO findUser(@RequestBody UserLoginDTO userLoginDTO){
+       return userServices.findUser(userLoginDTO);
     }
 
     @GetMapping("/{id}")
@@ -44,4 +38,13 @@ public class UserController {
         return userServices.find(id);
     }
 
+    @PostMapping("/reset")
+    public ResponseEntity reset(@RequestBody UserResetDTO userResetDTO){
+        return userServices.reset(userResetDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id){
+        return userServices.delete(id);
+    }
 }
