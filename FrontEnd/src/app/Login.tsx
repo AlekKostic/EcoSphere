@@ -15,6 +15,9 @@ const Login = () => {
     password: '',
   });
 
+  const config = require('../../config.json');
+  const ip = config.ipAddress
+
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,19 +41,21 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.get(`http://localhost:8080/v1/api/login/${email}/${password}`);
+      const response = await axios.get(`http://${ip}:8080/v1/api/login/${email}/${password}`);
       setError(false);
       setErrorText("");
       setIsLoading(false);
 
       if (response.data) {
         const transformedData = {
+          id: response.data.id,
           name: response.data.ime,
           surname: response.data.prezime,
           city: response.data.grad,
           email: response.data.email,
           password: response.data.password,
         };
+
 
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
         router.push('/Home');
@@ -75,17 +80,18 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#124460' }}>
       <BackNav />
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
+          <Text style={styles.subtitle}>Održivost počinje ovde.</Text>
           <Text style={styles.title}>
-            Ulogujte se na <Text style={{ color: '#075eec' }}>EcoSphere</Text>
+            Ulogujte se na <Text style={{ color: '#6ac17f' }}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
+        <Text style={styles.inputLabel}>E-mail adresa</Text>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>E-mail adresa</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
@@ -93,20 +99,20 @@ const Login = () => {
               keyboardType="email-address"
               onChangeText={email => setForm({ ...form, email })}
               placeholder="mail@example.com"
-              placeholderTextColor="#6b7280"
+              placeholderTextColor="#124460"
               style={styles.inputControl}
               value={form.email}
             />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Lozinka</Text>
+          <Text style={styles.inputLabel}>Lozinka</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
                 clearButtonMode="while-editing"
                 onChangeText={password => setForm({ ...form, password })}
                 placeholder="********"
-                placeholderTextColor="#6b7280"
+                placeholderTextColor="#124460"
                 style={styles.inputControl}
                 secureTextEntry={!showPassword}
                 value={form.password}
@@ -161,8 +167,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 31,
     fontWeight: '700',
-    color: '#1D2A32',
+    color: 'white',
     marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 23,
+    fontWeight: '700',
+    color: '#6ac17f',
+    marginBottom: 10,
   },
   header: {
     alignItems: 'center',
@@ -184,7 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     fontSize: 15,
     fontWeight: '600',
-    color: '#222',
+    color: 'white',
     textAlign: 'center',
     letterSpacing: 0.15,
   },
@@ -194,7 +206,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#222',
+    color: 'white',
     marginBottom: 8,
   },
   inputControl: {
@@ -207,7 +219,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#222',
     borderWidth: 1,
-    borderColor: '#C9D3DB',
+    borderColor: 'white',
     borderStyle: 'solid',
   },
   passwordContainer: {
@@ -230,14 +242,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
-    backgroundColor: '#075eec',
-    borderColor: '#075eec',
+    backgroundColor: '#6ac17f',
+    borderColor: '#6ac17f',
   },
   btnText: {
     fontSize: 18,
     lineHeight: 26,
     fontWeight: '600',
-    color: '#fff',
+    color: '#124460',
   },
   errorContainer: {
     alignItems: 'center',
@@ -256,7 +268,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 18,
-    color: '#fff',
+    color: '#124460',
   },
 });
 

@@ -2,12 +2,21 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import BackNav from '../components/Backnav';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Icon4 = () => {
   const router = useRouter();
 
-  const handleStartQuiz = () => {
-    router.push('/QuizPage');
+  const handleStartQuiz = async() => {
+
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+
+    if (userInfo) {
+      router.push('/QuizPage');
+    } else {
+      router.push('/Login');
+    }
   };
 
   return (

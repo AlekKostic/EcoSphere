@@ -39,7 +39,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
+    
     marginTop: getWorkingHeight() * 0.02, 
+    marginLeft: 20,
+    marginRight: 20,
+    
   },
 });
 

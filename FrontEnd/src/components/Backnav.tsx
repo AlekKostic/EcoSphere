@@ -23,13 +23,13 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     textAlignVertical: 'center',
-    borderBottomColor: 'black',
+    borderBottomColor: 'back',
     borderBottomWidth: 2,
   },
   backbtn: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#222',
+    color: 'black',
     textAlign: 'right',
     paddingRight: 24,
     paddingTop: 12,

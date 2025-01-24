@@ -1,66 +1,98 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { 
+  View, Text, TextInput, FlatList, TouchableOpacity, 
+  StyleSheet, Modal, Button, ActivityIndicator 
+} from 'react-native';
 import BackNav from '../components/Backnav';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useRouter } from 'expo-router';
+import Post from '../components/Post';
 
 const NotificationsPage = () => {
-  const [posts, setPosts] = useState([
-    { id: '1', text: 'Dobrodošli na našu stranicu!', profile: 'Admin', liked: false, likes: 0 },
-  ]);
+  const router = useRouter();
+  const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [likesModalVisible, setLikesModalVisible] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [logged, setLogged] = useState(false);
+  const [loading, setLoading] = useState(true); 
 
-  const addPost = () => {
-    if (newPost.trim()) {
-      setPosts([
-        { id: Date.now().toString(), text: newPost, profile: 'User', liked: false, likes: 0 },
-        ...posts,
-      ]);
-      setNewPost('');
-      setIsModalVisible(false);
+  const config = require('../../config.json');
+  const ip = config.ipAddress;
+
+  const getPosts = async () => {
+    try {
+      setLoading(true); 
+      const response = await axios.get(`http://${ip}:8080/v4/api`);
+      const fetchedPosts = response.data;
+
+      console.log("Fetched posts:", fetchedPosts); 
+      const authorsResponses = await Promise.all(
+        fetchedPosts.map(post =>
+          axios.get(`http://${ip}:8080/v1/api/${post.authorId}`)
+            .then(res => res.data) 
+            .catch(() => ({ ime: "Nepoznato", prezime: "" }))         )
+      );
+      const postsWithAuthors = fetchedPosts.map((post, index) => ({
+        ...post,
+        author: authorsResponses[index]
+      }));
+
+      console.log("Posts with authors:", postsWithAuthors);
+
+      setPosts(postsWithAuthors.reverse()); 
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+
+    const value = await AsyncStorage.getItem('userInfo');
+    if (value !== null) {
+      setLogged(true);
     }
   };
 
-  const toggleLikePost = (id) => {
-    setPosts(
-      posts.map((post) =>
-        post.id === id
-          ? {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-            }
-          : post
-      )
-    );
+  useEffect(() => {
+    getPosts();
+  }, []);
+
+  const likePost = (item) => {
+    if (!logged) {
+      router.push('/Login');
+    }
   };
 
-  const showLikes = (post) => {
-    setSelectedPost(post);
-    setLikesModalVisible(true);
+  const addPost = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      const parsedUserInfo = JSON.parse(userInfo);
+  
+      const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
+        "context": newPost, 
+        "user_id": parsedUserInfo.id
+      });
+  
+      const newPostData = response.data;
+      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.id}`);
+      const authorData = authorResponse.data;
+  
+      const newPostWithAuthor = {
+        ...newPostData,
+        author: authorData
+      };
+  
+      setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+      setNewPost("");
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error("Error in API request:", error);
+    }
   };
 
-  const renderPost = ({ item }) => (
-    <View style={styles.postContainer}>
-      <Text style={styles.profileText}>{item.profile}</Text>
-      <Text style={styles.postText}>{item.text}</Text>
-      <View style={styles.likeContainer}>
-        <TouchableOpacity onPress={() => toggleLikePost(item.id)} style={styles.likeButton}>
-          <MaterialCommunityIcons
-            name={item.liked ? 'heart' : 'heart-outline'}
-            size={24}
-            color={item.liked ? 'red' : '#aaa'}
-          />
-        </TouchableOpacity>
-        <Text style={styles.likesCount}>{item.likes}</Text>
-        <TouchableOpacity onPress={() => showLikes(item)} style={styles.seeLikesContainer}>
-          <Text style={styles.seeLikesText}>Pogledaj sviđanja</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  
+  
+  
 
   return (
     <View style={styles.container}>
@@ -68,22 +100,33 @@ const NotificationsPage = () => {
         <BackNav />
         <Text style={styles.heading}>Oglasna tabla</Text>
         <Text style={styles.subheading}>
-          Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu sredinu za
-          koje smatrate da treba da vidi što veći broj ljudi.
+          Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu
+          sredinu za koje smatrate da treba da vidi što veći broj ljudi.
         </Text>
       </View>
-      <TouchableOpacity
-        style={styles.addPostButton}
-        onPress={() => setIsModalVisible(true)}
-      >
-        <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
-      </TouchableOpacity>
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
-        renderItem={renderPost}
-        contentContainerStyle={styles.postsList}
-      />
+
+      {logged && (
+        <TouchableOpacity
+          style={styles.addPostButton}
+          onPress={() => setIsModalVisible(true)}
+        >
+          <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
+        </TouchableOpacity>
+      )}
+
+      {loading ? ( 
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007BFF" />
+          <Text style={styles.loadingText}>Učitavanje objava...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <Post item={item} likePost={likePost} />}
+          contentContainerStyle={styles.postsList}
+        />
+      )}
 
       <Modal
         visible={isModalVisible}
@@ -97,29 +140,12 @@ const NotificationsPage = () => {
             <TextInput
               style={styles.input}
               placeholder="Unesite tekst objave..."
+              placeholderTextColor="#ccc"
               value={newPost}
               onChangeText={setNewPost}
             />
             <Button title="Dodaj" onPress={addPost} />
             <Button title="Otkaži" color="red" onPress={() => setIsModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Likes Modal (Bottom Pop-up) */}
-      <Modal
-        visible={likesModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setLikesModalVisible(false)}
-      >
-        <View style={styles.likesModalContainer}>
-          <View style={styles.likesModalContent}>
-            <Text style={styles.modalTitle}>Likes</Text>
-            <Text style={styles.likesCountText}>
-              Total Likes: {selectedPost?.likes}
-            </Text>
-            <Button title="Close" onPress={() => setLikesModalVisible(false)} />
           </View>
         </View>
       </Modal>
@@ -154,44 +180,29 @@ const styles = StyleSheet.create({
   postsList: {
     paddingBottom: 20,
   },
-  postContainer: {
-    backgroundColor: '#fff',
-    padding: 15,
-    marginBottom: 10,
+  addPostButton: {
+    width: '40%',
+    marginLeft: '30%',
+    backgroundColor: '#007BFF',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    padding: 15,
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  profileText: {
-    fontWeight: 'bold',
-    fontSize: 15,
-    marginBottom: 5,
-  },
-  postText: {
+  addPostButtonText: {
+    color: '#fff',
     fontSize: 16,
-    marginBottom: 5,
+    fontWeight: 'bold',
   },
-  likeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  likeButton: {
-    marginRight: 10,
-  },
-  likesCount: {
+  loadingText: {
+    marginTop: 10,
     fontSize: 16,
     color: '#555',
-  },
-  seeLikesContainer: {
-    marginLeft: 5,
-  },
-  seeLikesText: {
-    marginLeft: 5,
-    fontSize: 14,
-    color: '#aaa',
   },
   modalContainer: {
     flex: 1,
@@ -209,33 +220,11 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  likesModalContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  likesModalContent: {
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
-  },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-  },
-  likesCountText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginVertical: 20,
   },
   input: {
     borderColor: '#ccc',
@@ -244,20 +233,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#fff',
-  },
-  addPostButton: {
-    width: '40%',
-    marginLeft: '30%',
-    backgroundColor: '#007BFF',
-    borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  addPostButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

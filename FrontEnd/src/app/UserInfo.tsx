@@ -1,33 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert, FlatList, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackNav from '../components/Backnav';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { router, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
+import axios from 'axios';
+import Post from '../components/Post';
+import { useRoute } from '@react-navigation/native';
 
 const UserInfo = () => {
+  const route = useRoute();
+  const iduser = route.params?.id ?? false;
+
   const [user, setUser] = useState({
-    name: '',
-    surname: '',
     email: '',
-    city: '',
-    password: '',
+    ime: '',
+    likesids: [],
+    postsids: [],
+    prezime: '',
   });
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter()
-
+  const [personal, setPersonal] = useState(false);
+  const [changing, setChanging] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(true); // State for loading posts
+  const router = useRouter();
+  const config = require('../../config.json');
+  const ip = config.ipAddress;
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem('userInfo');
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
+        const userInfo = await AsyncStorage.getItem('userInfo');
+        if (userInfo) {
+          const parsedUserInfo = JSON.parse(userInfo);
+          const userId = parsedUserInfo.id;
+          if (userId.toString() === iduser.toString()) {
+            setPersonal(true);
+          }
         }
+        const userres = await axios.get(`http://${ip}:8080/v1/api/${iduser}`);
+        setUser(userres.data);
+
+        const postsWithAuthors = await Promise.all(
+          userres.data.postsids.map(async (postId) => {
+            const postResponse = await axios.get(`http://${ip}:8080/v4/api/${postId}`);
+            const postData = postResponse.data;
+            const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${postData.authorId}`); // Fetch author data
+            const authorData = authorResponse.data;
+
+            return {
+              ...postData,
+              author: authorData,
+            };
+          })
+        );
+        console.log(postsWithAuthors)
+        setPosts(postsWithAuthors)
+        setLoadingPosts(false); 
       } catch (err) {
         console.error('Error fetching user info:', err);
       }
@@ -37,16 +69,12 @@ const UserInfo = () => {
   }, []);
 
   const handleChangePassword = async () => {
+    if (!changing) {
+      setChanging(true);
+      return;
+    }
     if (!newPassword) {
       setErrorMessage('Unesite novu lozinku.');
-      return;
-    }
-    if (!confirmPassword) {
-      setErrorMessage('Potvrdite novu lozinku.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setErrorMessage('Lozinke se ne poklapaju.');
       return;
     }
 
@@ -62,23 +90,34 @@ const UserInfo = () => {
       setUser(updatedUser);
       setCurrentPassword('');
       setNewPassword('');
-      setConfirmPassword('');
       setErrorMessage('');
+      setChanging(false);
     } catch (err) {
       console.error('Error updating password:', err);
       setErrorMessage('Greška prilikom promene lozinke.');
     }
   };
 
+  const handleCancelChangePassword = () => {
+    setChanging(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setErrorMessage('');
+  };
+
+  const likePost2 = () => {
+    return
+  };
+
   const handleDeleteAccount = async () => {
     Alert.alert(
-      "Potvrdi brisanje",
-      "Da li ste sigurni da želite da obrišete svoj nalog? Ova akcija se ne može poništiti.",
+      'Potvrdi brisanje',
+      'Da li ste sigurni da želite da obrišete svoj nalog? Ova akcija se ne može poništiti.',
       [
-        { text: "Odustani", style: "cancel" },
+        { text: 'Odustani', style: 'cancel' },
         {
-          text: "Obriši nalog",
-          style: "destructive",
+          text: 'Obriši nalog',
+          style: 'destructive',
           onPress: async () => {
             try {
               await AsyncStorage.removeItem('userInfo');
@@ -89,7 +128,7 @@ const UserInfo = () => {
                 city: '',
                 password: '',
               });
-              router.push('/Home')
+              router.push('/Home');
             } catch (err) {
               console.error('Error deleting account:', err);
               setErrorMessage('Greška prilikom brisanja naloga.');
@@ -101,76 +140,86 @@ const UserInfo = () => {
   };
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+    <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <BackNav />
       <View style={styles.profileContainer}>
         <Image source={require('../img/icon1.png')} style={styles.profileImage} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>
-            {user.name} {user.surname}
+            {user.ime + ' ' + user.prezime}
           </Text>
-          <Text style={styles.userDetails}>{"E-mail: " + (user.email || 'E-mail nije naveden')}</Text>
-          <Text style={styles.userDetails}>{"Grad: " + (user.city || 'Grad nije naveden')}</Text>
+          <Text style={styles.userDetails}>
+            {'E-mail: ' + (user.email || 'E-mail nije naveden')}
+          </Text>
         </View>
       </View>
 
       <View style={styles.bodovicontainer}>
-        <Text style={styles.bodovi}>
-            Broj ostavrenih kviz bodova: 0
-        </Text>
-    </View>
-
-      <View style={styles.passwordChangeContainer}>
-        <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
-
-        <Text style={styles.label}>Trenutna lozinka</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Unesite trenutnu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-        />
-
-        <Text style={styles.label}>Nova lozinka</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Unesite novu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-
-        <Text style={styles.label}>Potvrdite novu lozinku</Text>
-        <TextInput
-          autoCorrect={false}
-          clearButtonMode="while-editing"
-          style={styles.input}
-          placeholder="Potvrdite novu lozinku..."
-          placeholderTextColor="gray"
-          secureTextEntry={true}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-        />
-
-        <TouchableOpacity onPress={handleChangePassword} style={styles.button}>
-          <Text style={styles.buttonText}>Promenite lozinku</Text>
-        </TouchableOpacity>
-
-        {errorMessage ? (
-          <Text style={styles.errorMessage}>{errorMessage}</Text>
-        ) : null}
+        <Text style={styles.bodovi}>Broj ostavrenih kviz bodova: 0</Text>
       </View>
 
-      <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
-        <Text style={styles.deleteButtonText}>Obrišite nalog</Text>
-      </TouchableOpacity>
+      {personal && (
+        <>
+          <View style={styles.passwordChangeContainer}>
+            {changing && (
+              <>
+                <View style={styles.changePasswordHeader}>
+                  <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
+                  <TouchableOpacity onPress={handleCancelChangePassword} style={styles.cancelButton}>
+                    <Text style={styles.buttonText}>X</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.label}>Trenutna lozinka</Text>
+                <TextInput
+                  autoCorrect={false}
+                  clearButtonMode="while-editing"
+                  style={styles.input}
+                  placeholder="Unesite trenutnu lozinku..."
+                  placeholderTextColor="gray"
+                  secureTextEntry={true}
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+
+                <Text style={styles.label}>Nova lozinka</Text>
+                <TextInput
+                  autoCorrect={false}
+                  clearButtonMode="while-editing"
+                  style={styles.input}
+                  placeholder="Unesite novu lozinku..."
+                  placeholderTextColor="gray"
+                  secureTextEntry={true}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                />
+              </>
+            )}
+
+            <TouchableOpacity onPress={handleChangePassword} style={styles.button}>
+              <Text style={styles.buttonText}>Promenite lozinku</Text>
+            </TouchableOpacity>
+
+            {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+          </View>
+
+          <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
+            <Text style={styles.deleteButtonText}>Obrišite nalog</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      <Text style={styles.postsHeader}>Objave korisnika</Text>
+
+      {loadingPosts ? (
+        <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
+      ) : posts.length > 0 ? (
+        posts.map((post) => (
+          <Post item={post} likePost={likePost2} />
+        ))
+      ) : (
+        <Text style={styles.noPostsText}>Nema postova za prikazivanje.</Text>
+      )}
     </KeyboardAwareScrollView>
   );
 };
@@ -181,6 +230,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
   },
+  postsHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginLeft: 20,
+    color: '#333',
+  },
+  loadingIndicator: {
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   profileContainer: {
     backgroundColor: '#dedddc',
     flexDirection: 'row',
@@ -190,8 +251,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   profileImage: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 50,
     marginRight: 20,
   },
@@ -199,21 +260,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   userName: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#333',
   },
   userDetails: {
+    marginTop: 5,
     fontSize: 15,
     color: '#666',
   },
   passwordChangeContainer: {
     paddingHorizontal: 20,
   },
+  changePasswordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   changePasswordTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 30,
+    alignItems: 'center',
   },
   label: {
     fontSize: 16,
@@ -264,11 +338,16 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginBottom: 15,
     borderBottomWidth: 2,
-    paddingBottom:15,
+    paddingBottom: 15,
   },
   bodovi: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  noPostsText: {
+    fontSize: 16,
+    color: '#888',
+    marginTop: 20,
   },
 });
 
