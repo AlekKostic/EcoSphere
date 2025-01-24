@@ -8,6 +8,16 @@ public class UserDTO {
     private String email;
     private List<Long> postsids;
     private List<Long> likesids;
+    private Long user_id;
+
+    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.email = email;
+        this.postsids = postsids;
+        this.likesids = likesids;
+        this.user_id = user_id;
+    }
 
     public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids) {
         this.ime = ime;
@@ -15,6 +25,14 @@ public class UserDTO {
         this.email = email;
         this.postsids = postsids;
         this.likesids = likesids;
+    }
+
+    public Long getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(Long user_id) {
+        this.user_id = user_id;
     }
 
     public String getIme() {

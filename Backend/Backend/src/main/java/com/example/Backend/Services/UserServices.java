@@ -44,7 +44,7 @@ public class UserServices {
         for (Postovi postovi : user.get().getPosts()){
             posts.add(user.get().getId());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes);
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId());
     }
 
     public UserDTO find(Long id){

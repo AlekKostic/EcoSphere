@@ -41,7 +41,7 @@ public class PostoviController {
         return ResponseEntity.ok(postoviServices.create(postCreateDTO));
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/user/{id}") // koje postove je user lajkovao
     public List<LikesDTO> findLike(@PathVariable("id") Long id){
         List<Like> likes = postoviServices.findLike(id);
         return likes.stream().map(like -> {
@@ -50,7 +50,7 @@ public class PostoviController {
         }).collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // ko je lajkovao postove
     public PostDTO findLikesUser(@PathVariable("id") Long id){
         Postovi postovi = postoviServices.findLikesUser(id);
         List<Long> likes = new ArrayList<>();
