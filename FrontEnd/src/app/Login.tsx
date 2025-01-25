@@ -41,20 +41,27 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.get(`http://${ip}:8080/v1/api/login/${email}/${password}`);
+      const response = await axios.post(`http://${ip}:8080/v1/api/login`,{
+        email: email,
+        password: password
+      });
+
+      console.log(response)
+      
       setError(false);
       setErrorText("");
       setIsLoading(false);
 
       if (response.data) {
         const transformedData = {
-          id: response.data.id,
+          userId: response.data.user_id,
           name: response.data.ime,
           surname: response.data.prezime,
-          city: response.data.grad,
           email: response.data.email,
-          password: response.data.password,
+          password: password,
         };
+
+        console.log(transformedData)
 
 
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
@@ -62,13 +69,13 @@ const Login = () => {
       }
     } catch (error) {
 
-      if(error.status=="404"){
+      if(error.status=="500"){
         setError(true);
         setErrorText("Pogrešan e-mail ili lozinka.");
         setIsLoading(false); 
         return;
       }
-
+      alert(error)
       setError(true);
       setErrorText('Greška prilikom logovanja. Molimo pokušajte ponovo.');
       setIsLoading(false); 

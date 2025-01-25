@@ -19,7 +19,7 @@ const Icon = ({ source, route }) => {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: '38.5%',
+    width: '38%',
     height: getWorkingHeight() * 0.193,
     marginBottom: getWorkingHeight() * 0.02,
     justifyContent: 'center',
