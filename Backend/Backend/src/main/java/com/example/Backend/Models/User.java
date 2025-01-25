@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.engine.internal.Cascade;
 
+import java.util.Date;
 import java.util.List;
 
 @Table(name = "User")
@@ -36,6 +37,9 @@ public class User {
 
     @Column(name = "brojPoena", nullable = false)
     private Integer brojPoena;
+
+    @Column(name = "kviz_radjen")
+    private Date poslednjiKviz;
 
     public List<Like> getLajkovaneObjave() {
         return lajkovaneObjave;
@@ -99,5 +103,13 @@ public class User {
 
     public void setBrojPoena(Integer brojPoena) {
         this.brojPoena = brojPoena;
+    }
+
+    public Date getPoslednjiKviz() {
+        return poslednjiKviz;
+    }
+
+    public void setPoslednjiKviz(Date poslednjiKviz) {
+        this.poslednjiKviz = poslednjiKviz;
     }
 }

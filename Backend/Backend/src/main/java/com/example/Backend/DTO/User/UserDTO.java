@@ -1,5 +1,6 @@
 package com.example.Backend.DTO.User;
 
+import java.util.Date;
 import java.util.List;
 
 public class UserDTO {
@@ -10,8 +11,9 @@ public class UserDTO {
     private List<Long> likesids;
     private Long user_id;
     private Integer broj_bodova;
+    private Date radjen;
 
-    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova) {
+    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova, Date radjen) {
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
@@ -19,6 +21,7 @@ public class UserDTO {
         this.likesids = likesids;
         this.user_id = user_id;
         this.broj_bodova = broj_bodova;
+        this.radjen = radjen;
     }
 
     public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids) {
@@ -83,5 +86,13 @@ public class UserDTO {
 
     public void setBroj_bodova(Integer broj_bodova) {
         this.broj_bodova = broj_bodova;
+    }
+
+    public Date getRadjen() {
+        return radjen;
+    }
+
+    public void setRadjen(Date radjen) {
+        this.radjen = radjen;
     }
 }

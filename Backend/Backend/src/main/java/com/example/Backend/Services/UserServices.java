@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class UserServices {
 
     @Autowired
     private LikeRepository likeRepository;
+
 
     public User saveUser(User user) {
         if(userRepository.existsUserByEmail(user.getEmail())){
@@ -45,7 +47,7 @@ public class UserServices {
         for (Postovi postovi : user.get().getPosts()){
             posts.add(user.get().getId());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena());
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz());
     }
 
     public UserDTO find(Long id){
@@ -58,7 +60,7 @@ public class UserServices {
         for (Postovi postovi : user.getPosts()){
             posts.add(postovi.getId());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena());
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz());
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){
@@ -78,6 +80,24 @@ public class UserServices {
     public ResponseEntity plus(UserPoeniDTO userPoeniDTO){
         User user = userRepository.findById(userPoeniDTO.getUser_id()).orElseThrow(()->new RuntimeException("User nije pronadjen"));
         user.setBrojPoena(user.getBrojPoena() + userPoeniDTO.getBroj_poena());
+        userRepository.save(user);
+        return ResponseEntity.ok().build();
+    }
+
+    public Boolean radjen(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        Date date = new Date();
+        if(user.getPoslednjiKviz() == date){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public ResponseEntity uradjen(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        Date date = new Date();
+        user.setPoslednjiKviz(date);
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }

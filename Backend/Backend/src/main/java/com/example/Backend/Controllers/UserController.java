@@ -47,4 +47,14 @@ public class UserController {
     public ResponseEntity bodovi(@RequestBody UserPoeniDTO userPoeniDTO){
         return userServices.plus(userPoeniDTO);
     }
+
+    @GetMapping("/radjen/{id}")
+    public Boolean radjen(@PathVariable("id") Long id){
+        return  userServices.radjen(id);
+    }
+
+    @PutMapping("/uradjen/{id}")
+    public ResponseEntity uradjen(@PathVariable("id") Long id){
+        return userServices.uradjen(id);
+    }
 }
