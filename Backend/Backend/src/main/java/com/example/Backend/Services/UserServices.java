@@ -1,5 +1,6 @@
 package com.example.Backend.Services;
 
+import com.example.Backend.DTO.User.UserPoeniDTO;
 import com.example.Backend.DTO.User.UserResetDTO;
 import com.example.Backend.DTO.User.UserDTO;
 import com.example.Backend.DTO.User.UserLoginDTO;
@@ -44,7 +45,7 @@ public class UserServices {
         for (Postovi postovi : user.get().getPosts()){
             posts.add(user.get().getId());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId());
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena());
     }
 
     public UserDTO find(Long id){
@@ -57,7 +58,7 @@ public class UserServices {
         for (Postovi postovi : user.getPosts()){
             posts.add(postovi.getId());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes);
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena());
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){
@@ -71,6 +72,13 @@ public class UserServices {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         likeRepository.setLikesToNullForUser(id);
         userRepository.delete(user);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity plus(UserPoeniDTO userPoeniDTO){
+        User user = userRepository.findById(userPoeniDTO.getUser_id()).orElseThrow(()->new RuntimeException("User nije pronadjen"));
+        user.setBrojPoena(user.getBrojPoena() + userPoeniDTO.getBroj_poena());
+        userRepository.save(user);
         return ResponseEntity.ok().build();
     }
 }

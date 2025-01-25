@@ -2,6 +2,7 @@ package com.example.Backend.Controllers;
 
 import com.example.Backend.DTO.User.UserDTO;
 import com.example.Backend.DTO.User.UserLoginDTO;
+import com.example.Backend.DTO.User.UserPoeniDTO;
 import com.example.Backend.DTO.User.UserResetDTO;
 import com.example.Backend.Models.User;
 import com.example.Backend.Services.UserServices;
@@ -40,5 +41,10 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable("id") Long id){
         return userServices.delete(id);
+    }
+
+    @PutMapping("/bodovi")
+    public ResponseEntity bodovi(@RequestBody UserPoeniDTO userPoeniDTO){
+        return userServices.plus(userPoeniDTO);
     }
 }

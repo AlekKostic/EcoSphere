@@ -64,4 +64,16 @@ public class PostoviServices {
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
+
+    public ResponseEntity unlike(PostLikeDTO postLikeDTO){
+        Like like = likeRepository.findByPost_IdAndUser_Id(postLikeDTO.getPost_id(), postLikeDTO.getUser_id());
+        like.setUser(null);
+        like.setPost(null);
+        likeRepository.save(like);
+        Postovi postovi = postoviRepository.findById(postLikeDTO.getPost_id()).orElseThrow(()->new RuntimeException("Post ne postoji"));
+        Integer index = postovi.getLajkovi().indexOf(like);
+        postovi.getLajkovi().remove(index);
+        postoviRepository.save(postovi);
+        return ResponseEntity.ok().build();
+    }
 }

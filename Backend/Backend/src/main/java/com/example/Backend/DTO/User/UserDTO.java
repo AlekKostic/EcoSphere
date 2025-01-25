@@ -9,14 +9,16 @@ public class UserDTO {
     private List<Long> postsids;
     private List<Long> likesids;
     private Long user_id;
+    private Integer broj_bodova;
 
-    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id) {
+    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova) {
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
         this.postsids = postsids;
         this.likesids = likesids;
         this.user_id = user_id;
+        this.broj_bodova = broj_bodova;
     }
 
     public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids) {
@@ -73,5 +75,13 @@ public class UserDTO {
 
     public void setLikesids(List<Long> likesids) {
         this.likesids = likesids;
+    }
+
+    public Integer getBroj_bodova() {
+        return broj_bodova;
+    }
+
+    public void setBroj_bodova(Integer broj_bodova) {
+        this.broj_bodova = broj_bodova;
     }
 }

@@ -19,4 +19,5 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     void setLikesToNullForUser(@Param("userId") Long userId);
     List<Like> findAllByUser(User user);
 
+    Like findByPost_IdAndUser_Id(Long postId, Long userId);
 }

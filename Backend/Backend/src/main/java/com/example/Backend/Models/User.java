@@ -34,6 +34,9 @@ public class User {
     @JsonManagedReference
     private List<Postovi> posts;
 
+    @Column(name = "brojPoena", nullable = false)
+    private Integer brojPoena;
+
     public List<Like> getLajkovaneObjave() {
         return lajkovaneObjave;
     }
@@ -90,4 +93,11 @@ public class User {
         this.password = password;
     }
 
+    public Integer getBrojPoena() {
+        return brojPoena;
+    }
+
+    public void setBrojPoena(Integer brojPoena) {
+        this.brojPoena = brojPoena;
+    }
 }

@@ -78,5 +78,10 @@ public class PostoviController {
     public ResponseEntity like(@RequestBody PostLikeDTO postLikeDTO){
         return postoviServices.like(postLikeDTO);
     }
+
+    @PutMapping("/unlike")
+    public ResponseEntity unlike(@RequestBody PostLikeDTO postLikeDTO){
+        return postoviServices.unlike(postLikeDTO);
+    }
 }
 
