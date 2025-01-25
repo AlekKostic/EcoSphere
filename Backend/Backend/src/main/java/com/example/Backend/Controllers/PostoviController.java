@@ -83,5 +83,10 @@ public class PostoviController {
     public ResponseEntity unlike(@RequestBody PostLikeDTO postLikeDTO){
         return postoviServices.unlike(postLikeDTO);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity delete(@PathVariable("id") Long id){
+        return postoviServices.delete(id);
+    }
 }
 

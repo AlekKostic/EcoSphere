@@ -76,4 +76,18 @@ public class PostoviServices {
         postoviRepository.save(postovi);
         return ResponseEntity.ok().build();
     }
+
+    public ResponseEntity delete(Long id){
+        List<Like> likes = likeRepository.findAllByPost_Id(id);
+
+        for (Like like : likes) {
+            like.setPost(null);
+            like.setUser(null);
+            likeRepository.save(like);
+        }
+
+        postoviRepository.deleteById(id);
+
+        return ResponseEntity.ok().build();
+    }
 }
