@@ -66,7 +66,7 @@ const Signup = () => {
 
       const userId = response.data.id;
       const userInfo = {
-        id: userId,
+        userId: userId,
         name,
         surname,
         email,

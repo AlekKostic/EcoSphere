@@ -1,77 +1,41 @@
-import { View, Text, Linking, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 'react-native';
-import React, { useState } from 'react';
+import { 
+  View, Text, Linking, TouchableOpacity, StyleSheet, 
+  TextInput, Keyboard, TouchableWithoutFeedback 
+} from 'react-native';
+import React, { useState, useRef, useMemo } from 'react';
 import BackNav from '../components/Backnav';
+import { MaterialIcons } from '@expo/vector-icons';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const icon2 = () => {
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+const Icon2 = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const inputRef = useRef(null);
 
   const videoLinks = [
     { title: 'Radionica "Reciklaža nije gnjavaža" za decu', link: 'https://www.tiktok.com/@mojsvetns/video/7435042170282806584' },
     { title: 'Common Waste - Common Libraries - Goethe-Institut Srbija', link: 'https://www.goethe.de/ins/cs/sr/kul/sup/cnw.html' },
     { title: 'Uvođenje sistema reciklaže i ekološko obrazovanje', link: 'https://openjicareport.jica.go.jp/pdf/1000052997_02.pdf' },
     { title: 'Eko aktivnosti - Oaza znanja', link: 'https://nvooazaznanja.wordpress.com/wp-content/uploads/2019/05/eko-aktivnosti.pdf' },
-    { title: 'U deset škola mašine za reciklažu plastike i 3D štampači', link: 'https://rtcg.me/vijesti/drustvo/442210/u-deset-skola-masine-za-reciklazu-plastike-i-3d-stampaci.html' },
-    { title: 'Gimnazija u Tutinu obilježila Dan reciklaže', link: 'https://www.instagram.com/p/C4tAlCsILJ3/' },
-    { title: 'Niz besplatnih programa u omladinskom centru CK13', link: 'https://www.021.rs/story/ZIPA-info/CK-13/93115/Niz-besplatnih-programa-u-omladinskom-centru-CK13.html' },
-    { title: 'Vodič za smanjenje generisanja otpada i uticaja na životnu sredinu', link: 'https://reciklaza.biz/rec-struke/vodic-za-smanjenje-generisanja-otpada-i-uticaja-na-zivotnu-sredinu/' },
-    { title: 'Reciklaža: stvar ekološke svesti ili potencijalni didaktički materijal', link: 'https://www.mayflower.rs/reciklaza-stvar-ekoloske-svesti-ili-potencijalni-didakticki-material/' },
-    { title: 'Pojam i značaj reciklaže', link: 'https://www.scribd.com/document/517427643/Pojam-i-Zna%C4%8Daj-Recikla%C5%BEe' },
-    { title: 'Zabavna Reciklaža II - Reciklirajmo zajedno AIESEC', link: 'https://www.subotica.com/desavanja/08.maj.2012.zabavna-reciklaza-ii-reciklirajmo-zajedno-aiesec-id4112.html' },
-    { title: 'EkoSistem - Podržani projekti 2024', link: 'https://ekosistem.mis.org.rs/podrzani-projekti-2024/' },
-    { title: 'O nastavnom planu i programu ogleda za obrazovni profil tehničar za reciklažu', link: 'https://demo.paragraf.rs/demo/combined/Old/t/t2015_08/t08_0241.htm' },
-    { title: 'Angažovanje i edukacija građana - Europa.rs', link: 'https://europa.rs/images/publikacije/Angazovanje-i-edukacija.pdf' },
-    { title: 'Reciklaža u Srbiji: Stanje i perspektive', link: 'https://www.ekologija.gov.rs/sites/default/files/reciklaza_u_srbiji.pdf' },
-    { title: 'Edukativni materijali o reciklaži za osnovne škole', link: 'https://www.osnovneskole.edu.rs/edukativni-materijali/reciklaza' },
-    { title: 'Kako pravilno reciklirati elektronski otpad', link: 'https://www.tehnomanija.rs/blog/reciklaža-elektronskog-otpada' },
-    { title: 'Zelena Srbija - Inicijative za reciklažu i očuvanje životne sredine', link: 'https://www.zelenasrbija.rs/reciklaza' },
-    { title: 'Eko kampanje i radionice o reciklaži u lokalnim zajednicama', link: 'https://www.lokalnevesti.rs/eko-kampanje-reciklaza' },
-    { title: 'Priručnik za reciklažu plastike u kućnim uslovima', link: 'https://www.plastika.rs/prirucnik-za-reciklazu' },
-    { title: 'Edukativni video: Proces reciklaže papira', link: 'https://www.youtube.com/watch?v=example1' },
-    { title: 'Dokumentarni film: Reciklaža metala i njen značaj', link: 'https://www.youtube.com/watch?v=example2' },
-    { title: 'Kako funkcioniše reciklaža stakla - Edukativni video', link: 'https://www.youtube.com/watch?v=example3' },
-    { title: 'Eko škola: Programi edukacije o reciklaži za decu', link: 'https://www.ekoskola.edu.rs/programi/reciklaza' },
-    { title: 'NVO Oaza znanja - Projekti o zaštiti životne sredine', link: 'https://nvooazaznanja.wordpress.com/projekti/eko-aktivnosti' },
-    { title: 'Reciklaža tekstila: Vodič za ponovnu upotrebu odeće', link: 'https://www.modnireciklaza.rs/vodic' },
-    { title: 'Edukativni centar Kruševac - Radionice o reciklaži', link: 'https://www.edukacijakv.rs/radionice/reciklaza' },
-    { title: 'Kako smanjiti upotrebu plastike u svakodnevnom životu', link: 'https://www.zivotbezplastike.rs/saveti' },
-    { title: 'Eko forum Subotica - Inicijative za reciklažu u lokalnoj zajednici', link: 'https://www.ekoforumsubotica.rs/projekti/reciklaza' },
-    { title: 'Pravilno odlaganje baterija i elektronskog otpada', link: 'https://www.elektroreciklaža.rs/saveti' },
-    { title: 'Niz besplatnih programa u omladinskom centru CK13', link: 'https://www.021.rs/story/ZIPA-info/CK-13/93115/Niz-besplatnih-programa-u-omladinskom-centru-CK13.html' },
-    { title: 'Vodič za smanjenje generisanja otpada i uticaja na životnu sredinu', link: 'https://reciklaza.biz/rec-struke/vodic-za-smanjenje-generisanja-otpada-i-uticaja-na-zivotnu-sredinu/' },
-    { title: 'Reciklaža: stvar ekološke svesti ili potencijalni didaktički materijal', link: 'https://www.mayflower.rs/reciklaza-stvar-ekoloske-svesti-ili-potencijalni-didakticki-material/' },
-    { title: 'Pojam i značaj reciklaže', link: 'https://www.scribd.com/document/517427643/Pojam-i-Zna%C4%8Daj-Recikla%C5%BEe' },
-    { title: 'Zabavna Reciklaža II - Reciklirajmo zajedno AIESEC', link: 'https://www.subotica.com/desavanja/08.maj.2012.zabavna-reciklaza-ii-reciklirajmo-zajedno-aiesec-id4112.html' },
-    { title: 'EkoSistem - Podržani projekti 2024', link: 'https://ekosistem.mis.org.rs/podrzani-projekti-2024/' },
-    { title: 'O nastavnom planu i programu ogleda za obrazovni profil tehničar za reciklažu', link: 'https://demo.paragraf.rs/demo/combined/Old/t/t2015_08/t08_0241.htm' },
-    { title: 'Angažovanje i edukacija građana - Europa.rs', link: 'https://europa.rs/images/publikacije/Angazovanje-i-edukacija.pdf' },
-    { title: 'Reciklaža u Srbiji: Stanje i perspektive', link: 'https://www.ekologija.gov.rs/sites/default/files/reciklaza_u_srbiji.pdf' },
-    { title: 'Edukativni materijali o reciklaži za osnovne škole', link: 'https://www.osnovneskole.edu.rs/edukativni-materijali/reciklaza' },
-    { title: 'Kako pravilno reciklirati elektronski otpad', link: 'https://www.tehnomanija.rs/blog/reciklaža-elektronskog-otpada' },
-    { title: 'Zelena Srbija - Inicijative za reciklažu i očuvanje životne sredine', link: 'https://www.zelenasrbija.rs/reciklaza' },
-    { title: 'Eko kampanje i radionice o reciklaži u lokalnim zajednicama', link: 'https://www.lokalnevesti.rs/eko-kampanje-reciklaza' },
-    { title: 'Priručnik za reciklažu plastike u kućnim uslovima', link: 'https://www.plastika.rs/prirucnik-za-reciklazu' },
-    { title: 'Edukativni video: Proces reciklaže papira', link: 'https://www.youtube.com/watch?v=example1' },
-    { title: 'Dokumentarni film: Reciklaža metala i njen značaj', link: 'https://www.youtube.com/watch?v=example2' },
-    { title: 'Kako funkcioniše reciklaža stakla - Edukativni video', link: 'https://www.youtube.com/watch?v=example3' },
-    { title: 'Eko škola: Programi edukacije o reciklaži za decu', link: 'https://www.ekoskola.edu.rs/programi/reciklaza' },
-    { title: 'NVO Oaza znanja - Projekti o zaštiti životne sredine', link: 'https://nvooazaznanja.wordpress.com/projekti/eko-aktivnosti' },
-    { title: 'Reciklaža tekstila: Vodič za ponovnu upotrebu odeće', link: 'https://www.modnireciklaza.rs/vodic' },
-    { title: 'Edukativni centar Kruševac - Radionice o reciklaži', link: 'https://www.edukacijakv.rs/radionice/reciklaza' },
-    { title: 'Kako smanjiti upotrebu plastike u svakodnevnom životu', link: 'https://www.zivotbezplastike.rs/saveti' },
-    { title: 'Eko forum Subotica - Inicijative za reciklažu u lokalnoj zajednici', link: 'https://www.ekoforumsubotica.rs/projekti/reciklaza' },
-    { title: 'Pravilno odlaganje baterija i elektronskog otpada', link: 'https://www.elektroreciklaža.rs/saveti' },
-    { title: 'Edukativni video: Kako reciklirati ambalažu', link: 'https://www.youtube.com/watch?v=example4' },
-    { title: 'Uloga reciklaže u smanjenju globalnog zagrevanja', link: 'https://www.youtube.com/watch?v=example5' },
-    { title: 'Zašto je važno reciklirati staklo?', link: 'https://www.youtube.com/watch?v=example6' },
-    { title: 'Reciklaža na globalnom nivou: Uloga zajednice', link: 'https://www.youtube.com/watch?v=example7' },
-    { title: 'Inovacije u reciklaži plastike - Tokom 2024. godine', link: 'https://www.youtube.com/watch?v=example8' },
-    { title: 'Edukativni video o kompostiranju - reciklaža organskog otpada', link: 'https://www.youtube.com/watch?v=example9' }
   ];
-   
-  
+
+  const icons = ['recycling', 'public', 'favorite', 'eco', 'lightbulb', 'language', 'search'];
+
+  // Generišemo nasumične ikone SAMO jednom i čuvamo ih u memoriji
+  const assignedIcons = useMemo(() => {
+    return videoLinks.map(() => {
+      const randomIndex = Math.floor(Math.random() * icons.length);
+      return icons[randomIndex];
+    });
+  }, []);
 
   const handlePress = (url) => {
     Linking.openURL(url);
+  };
+
+  const toggleKeyboard = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const filteredLinks = videoLinks.filter((video) =>
@@ -79,33 +43,50 @@ const icon2 = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <BackNav />
-      <Text style={styles.heading}>Edukacija o Reciklaži i Zaštiti Životne Sredine</Text>
-      <Text style={styles.subheading}>
-        Ovde možete pronaći edukativne materijale u vidu sajtova i snimaka koji podižu svest o važnosti brige o životnoj sredini
-      </Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <BackNav />
+        <Text style={styles.heading}>Edukacija o Reciklaži i Zaštiti Životne Sredine</Text>
+        <Text style={styles.subheading}>
+          Ovde možete pronaći edukativne materijale u vidu sajtova i snimaka koji podižu svest o važnosti brige o životnoj sredini.
+        </Text>
 
-      {/* Search Bar */}
-      <View style={styles.contai}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Pretraži..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#888" // Set the placeholder color
-        />
+        {/* Pretraga sa ikonicom desno */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            ref={inputRef}
+            style={styles.searchInput}
+            placeholder="Pretraži..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#888"
+          />
+          <TouchableOpacity onPress={toggleKeyboard} style={styles.iconWrapper}>
+            <MaterialIcons name="search" size={24} color="#888" />
+          </TouchableOpacity>
+        </View>
+
+        {/* KeyboardAwareScrollView sa persistent scrollbar */}
+        <KeyboardAwareScrollView
+          style={styles.postsContainer}
+          persistentScrollbar={true}
+          keyboardShouldPersistTaps="handled"
+        >
+          {filteredLinks.length === 0 ? (
+            <Text style={styles.noResults}>Nema rezultata</Text>
+          ) : (
+            filteredLinks.map((video, index) => (
+              <TouchableOpacity key={index} onPress={() => handlePress(video.link)} style={styles.videoLink}>
+                <View style={styles.card}>
+                  <MaterialIcons name={assignedIcons[index]} size={24} color="#333" style={styles.icon} />
+                  <Text style={styles.videoTitle}>{video.title}</Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
+        </KeyboardAwareScrollView>
       </View>
-
-      {/* Display filtered videos */}
-      {filteredLinks.map((video, index) => (
-        <TouchableOpacity key={index} onPress={() => handlePress(video.link)} style={styles.videoLink}>
-          <View style={styles.card}>
-            <Text style={styles.videoTitle}>{video.title}</Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -123,20 +104,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  contai: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  searchInput: {
-    height: 45,
-    width: '70%',
-    borderColor: '#ddd',
-    backgroundColor: '#e6e5e3',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingLeft: 15,
-    marginBottom: 20,
-  },
   subheading: {
     fontSize: 20,
     color: '#333',
@@ -146,21 +113,67 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     borderBottomWidth: 2,
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6e5e3',
+    borderRadius: 10,
+    marginBottom: 20,
+    width: '70%',
+    alignSelf: 'center',
+    position: 'relative',
+  },
+  searchInput: {
+    flex: 1,
+    height: 45,
+    borderRadius: 10,
+    paddingLeft: 15,
+    fontSize: 16,
+    paddingRight: 40,
+  },
+  iconWrapper: {
+    position: 'absolute',
+    right: 10,
+    padding: 5,
+  },
+  postsContainer: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+  },
   videoLink: {
-    marginBottom: 15,
+    marginBottom: 10,
   },
   card: {
     padding: 15,
     backgroundColor: '#fff',
     borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 3,
+    marginTop: 5,
+  },
+  icon: {
+    marginRight: 15,
   },
   videoTitle: {
     fontSize: 18,
     color: '#333',
     fontWeight: 'bold',
+    flexShrink: 1,
+  },
+  noResults: {
+    fontSize: 18,
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 
-export default icon2;
+export default Icon2;

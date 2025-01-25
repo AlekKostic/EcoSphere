@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import getWorkingHeight from './ScreenHeight';
 
 const BackNav = () => {
-  const router = useRouter();  
+  const router = useRouter();
 
   const handleBack = () => {
-    router.push('/Home'); 
+    router.back(); // Go back to the previous screen
   };
 
   return (
@@ -17,13 +16,11 @@ const BackNav = () => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     textAlignVertical: 'center',
-    borderBottomColor: 'back',
+    borderBottomColor: 'black',
     borderBottomWidth: 2,
   },
   backbtn: {

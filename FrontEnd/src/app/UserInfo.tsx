@@ -20,6 +20,7 @@ const UserInfo = () => {
     prezime: '',
   });
   const [currentPassword, setCurrentPassword] = useState('');
+  const [logged, setLogged]=useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [personal, setPersonal] = useState(false);
@@ -30,43 +31,82 @@ const UserInfo = () => {
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const userInfo = await AsyncStorage.getItem('userInfo');
-        if (userInfo) {
-          const parsedUserInfo = JSON.parse(userInfo);
-          const userId = parsedUserInfo.id;
-          if (userId.toString() === iduser.toString()) {
-            setPersonal(true);
-          }
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      if (userInfo) {
+        const parsedUserInfo = JSON.parse(userInfo);
+        const userId = parsedUserInfo.userId;
+        if (userId.toString() === iduser.toString()) {
+          setPersonal(true);
         }
-        const userres = await axios.get(`http://${ip}:8080/v1/api/${iduser}`);
-        setUser(userres.data);
-
-        const postsWithAuthors = await Promise.all(
-          userres.data.postsids.map(async (postId) => {
-            const postResponse = await axios.get(`http://${ip}:8080/v4/api/${postId}`);
-            const postData = postResponse.data;
-            const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${postData.authorId}`); // Fetch author data
-            const authorData = authorResponse.data;
-
-            return {
-              ...postData,
-              author: authorData,
-            };
-          })
-        );
-        console.log(postsWithAuthors)
-        setPosts(postsWithAuthors)
-        setLoadingPosts(false); 
-      } catch (err) {
-        console.error('Error fetching user info:', err);
+        
+        setLogged(true)
       }
-    };
+    } catch (err) {
+      console.error('Error fetching user info:', err);
+    }
+  };
 
+  useEffect(() => {
+  
     fetchUserInfo();
   }, []);
+  const fetchPostsData = async () => {
+    try {
+      
+      console.log("ovde" + iduser)
+      const userres = await axios.get(`http://${ip}:8080/v1/api/${iduser}`);
+      setUser(userres.data);
+      
+      const response = await axios.get(`http://${ip}:8080/v4/api`);
+      const fetchedPosts = response.data;
+
+      let dictionary = {};
+
+      if (logged) {
+        const userInfo2 = await AsyncStorage.getItem('userInfo');
+        const parsedUserInfo2 = JSON.parse(userInfo2);
+        const userId2 = parsedUserInfo2.userId;
+        console.log("ovde");
+
+        const response2 = await axios.get(`http://${ip}:8080/v4/api/user/${userId2}`);
+        console.log(response2.data);
+
+        response2.data.forEach(item => {
+          console.log(item.postovis.id);
+          dictionary[item.postovis.id] = true;
+        });
+      }
+
+      console.log(dictionary);
+
+      // Fetching posts with authors and handling likes when logged is false
+      const postsWithAuthors = await Promise.all(
+        userres.data.postsids.map(async (postId) => {
+          const postResponse = await axios.get(`http://${ip}:8080/v4/api/${postId}`);
+          const postData = postResponse.data;
+          const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${postData.authorId}`);
+          const authorData = authorResponse.data;
+          return {
+            ...postData,
+            author: authorData,
+            likes: logged ? dictionary[postId] || false : false, // Set likes to false if not logged
+          };
+        })
+      );
+
+      setPosts(postsWithAuthors);
+      setLoadingPosts(false);
+
+    } catch (err) {
+      console.error('Error fetching posts data:', err);
+    }
+  };
+  useEffect(() => {
+    fetchPostsData();
+  }, [logged]);  // This effect runs whenever 'logged' changes
+  
 
   const handleChangePassword = async () => {
     if (!changing) {
@@ -77,11 +117,21 @@ const UserInfo = () => {
       setErrorMessage('Unesite novu lozinku.');
       return;
     }
+    const odg = await AsyncStorage.getItem('userInfo');
+    const parsedUserInfo = JSON.parse(odg);
+    const userPas = parsedUserInfo.password;
 
-    if (currentPassword !== user.password) {
+    
+    if (currentPassword !== userPas) {
+      console.log(currentPassword + " " + user.password)
       setErrorMessage('Trenutna lozinka nije ispravna.');
       return;
     }
+
+    await axios.post(`http://${ip}:8080/v1/api/reset`,{
+      "id_user": iduser,
+      "password": currentPassword
+    })
 
     const updatedUser = { ...user, password: newPassword };
 
@@ -105,11 +155,36 @@ const UserInfo = () => {
     setErrorMessage('');
   };
 
-  const likePost2 = () => {
-    return
+  const likePost2 = async(item) => {
+    if (!logged) {
+      router.push('/Login');
+      return; // Prekida izvršavanje funkcije ako nije prijavljen
+    }
+
+    if (!item.likes) {
+      item.likes = true;
+      const value = await AsyncStorage.getItem('userInfo');
+      const userInfo = value ? JSON.parse(value) : null;
+      const userId = userInfo?.userId;
+
+      console.log(userId + " " + item.id)
+      try {
+        const response = await axios.post(`http://${ip}:8080/v4/api/like`, {
+          "user_id": userId,
+          "post_id": item.id
+        });
+      
+        console.log("Like response:", response.data);
+        fetchPostsData()
+      
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const handleDeleteAccount = async () => {
+    console.log('Delete account clicked'); // Add this to verify the function is triggered
     Alert.alert(
       'Potvrdi brisanje',
       'Da li ste sigurni da želite da obrišete svoj nalog? Ova akcija se ne može poništiti.',
@@ -119,15 +194,11 @@ const UserInfo = () => {
           text: 'Obriši nalog',
           style: 'destructive',
           onPress: async () => {
+            console.log('Deleting account...'); // Add this to confirm account deletion
             try {
               await AsyncStorage.removeItem('userInfo');
-              setUser({
-                name: '',
-                surname: '',
-                email: '',
-                city: '',
-                password: '',
-              });
+              console.log(iduser)
+              await axios.delete(`http://${ip}:8080/v1/api/delete/${iduser}`);
               router.push('/Home');
             } catch (err) {
               console.error('Error deleting account:', err);
@@ -138,12 +209,13 @@ const UserInfo = () => {
       ]
     );
   };
+  
 
   return (
     <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
       <BackNav />
       <View style={styles.profileContainer}>
-        <Image source={require('../img/icon1.png')} style={styles.profileImage} />
+        <Image source={require('../img/profilna.png')} style={styles.profileImage} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>
             {user.ime + ' ' + user.prezime}
@@ -215,7 +287,7 @@ const UserInfo = () => {
         <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
       ) : posts.length > 0 ? (
         posts.map((post) => (
-          <Post item={post} likePost={likePost2} />
+          <Post key={post.id} item={post} likePost={likePost2} />
         ))
       ) : (
         <Text style={styles.noPostsText}>Nema postova za prikazivanje.</Text>
@@ -348,6 +420,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
     marginTop: 20,
+    marginLeft: 20,
   },
 });
 

@@ -22,44 +22,92 @@ const NotificationsPage = () => {
 
   const getPosts = async () => {
     try {
-      setLoading(true); 
+      setLoading(true);
+  
+      // Dohvatanje user info iz AsyncStorage
+      const value = await AsyncStorage.getItem('userInfo');
+      const userInfo = value ? JSON.parse(value) : null;
+      const userId = userInfo?.userId;
+      const isLogged = !!userId; // Ako postoji userId, korisnik je ulogovan
+  
+      setLogged(isLogged);
+  
+      console.log("log?" + userId);
+  
+      // Dohvatanje postova
       const response = await axios.get(`http://${ip}:8080/v4/api`);
       const fetchedPosts = response.data;
-
-      console.log("Fetched posts:", fetchedPosts); 
+  
+      let dictionary = {}; // Dictionary za lajkove
+      if (isLogged) {
+        const response2 = await axios.get(`http://${ip}:8080/v4/api/user/${userId}`);
+        console.log("Likes response:", response2.data);
+  
+        // Popunjavanje dictionary-a
+        response2.data.forEach(item => {
+          dictionary[item.postovis.id] = true;
+        });
+      }
+  
+      console.log("Fetched posts:", fetchedPosts);
+  
+      // Dohvatanje informacija o autorima
       const authorsResponses = await Promise.all(
         fetchedPosts.map(post =>
           axios.get(`http://${ip}:8080/v1/api/${post.authorId}`)
-            .then(res => res.data) 
-            .catch(() => ({ ime: "Nepoznato", prezime: "" }))         )
+            .then(res => res.data)
+            .catch(() => ({ ime: "Nepoznato", prezime: "" }))
+        )
       );
+  
+      // Spajanje postova sa autorima
       const postsWithAuthors = fetchedPosts.map((post, index) => ({
         ...post,
-        author: authorsResponses[index]
+        author: authorsResponses[index],
+        likes: isLogged ? !!dictionary[post.id] : false, // Ako je prijavljen, koristi dictionary, inače false
       }));
-
-      console.log("Posts with authors:", postsWithAuthors);
-
-      setPosts(postsWithAuthors.reverse()); 
+  
+      console.log("Posts with authors and likes:", postsWithAuthors);
+  
+      // Postavljanje postova u state
+      setPosts(postsWithAuthors.reverse());
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
-
-    const value = await AsyncStorage.getItem('userInfo');
-    if (value !== null) {
-      setLogged(true);
-    }
   };
-
+  
   useEffect(() => {
     getPosts();
   }, []);
 
-  const likePost = (item) => {
+  const likePost = async (item) => {
     if (!logged) {
       router.push('/Login');
+      return; // Prekida izvršavanje funkcije ako nije prijavljen
+    }
+
+    if (!item.likes) {
+      item.likes = true;
+      const value = await AsyncStorage.getItem('userInfo');
+      const userInfo = value ? JSON.parse(value) : null;
+      const userId = userInfo?.userId;
+
+      console.log(userId + " " + item.id)
+      try {
+        const response = await axios.post(`http://${ip}:8080/v4/api/like`, {
+          "user_id": userId,
+          "post_id": item.id
+        });
+      
+        console.log("Like response:", response.data);
+      
+        // Ponovo učitaj postove da vidiš da li je lajk sačuvan
+        getPosts();
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -70,11 +118,11 @@ const NotificationsPage = () => {
   
       const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
         "context": newPost, 
-        "user_id": parsedUserInfo.id
+        "user_id": parsedUserInfo.userId // Ispravljeno sa id na userId
       });
   
       const newPostData = response.data;
-      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.id}`);
+      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.userId}`);
       const authorData = authorResponse.data;
   
       const newPostWithAuthor = {
@@ -89,10 +137,6 @@ const NotificationsPage = () => {
       console.error("Error in API request:", error);
     }
   };
-
-  
-  
-  
 
   return (
     <View style={styles.container}>
@@ -120,12 +164,15 @@ const NotificationsPage = () => {
           <Text style={styles.loadingText}>Učitavanje objava...</Text>
         </View>
       ) : (
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <Post item={item} likePost={likePost} />}
-          contentContainerStyle={styles.postsList}
-        />
+        <>
+          {posts.length === 0 && <Text style={styles.noPostsText}>Budite prvi da objavite!</Text>}
+          <FlatList
+            data={posts}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <Post item={item} likePost={likePost} />}
+            contentContainerStyle={styles.postsList}
+          />
+        </>
       )}
 
       <Modal
@@ -233,6 +280,11 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     backgroundColor: '#fff',
+  },noPostsText: {
+    fontSize: 16,
+    color: '#888',
+    marginTop: 20,
+    marginLeft: 20,
   },
 });
 

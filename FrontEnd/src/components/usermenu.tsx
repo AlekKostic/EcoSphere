@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
 import getWorkingHeight from './ScreenHeight';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useRoute } from '@react-navigation/native';
 
 const UserMenu = () => {
-
-  
-
   const [user, setUser] = useState(null);
   const router = useRouter();
 
@@ -16,6 +13,7 @@ const UserMenu = () => {
     const fetchUserInfo = async () => {
       try {
         const storedUser = await AsyncStorage.getItem('userInfo');
+        console.log(storedUser)
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
@@ -47,12 +45,11 @@ const UserMenu = () => {
     if (userInfo) {
       const parsedUserInfo = JSON.parse(userInfo);
 
-      const userId = parsedUserInfo.id;
-      console.log(userId)
-        router.push({
-          pathname: '/UserInfo',
-          params: { personal: true, id: userId },
-        });
+      const userId = parsedUserInfo.userId;
+      router.push({
+        pathname: '/UserInfo',
+        params: {id: userId },
+      });
       
     }
   };
@@ -84,9 +81,10 @@ const UserMenu = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: Platform.OS === 'android' ? getWorkingHeight() * 0.01 : 0, 
   },
   rectangle: {
-    height: getWorkingHeight() * 0.05,
+    height: getWorkingHeight() * 0.051,
     backgroundColor: 'gray',
     width: '100%',
     position: 'absolute',

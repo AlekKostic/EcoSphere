@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import UserMenu from '../components/usermenu';
 import PictureSection from '../components/PictureSection';
 import Icon from '../components/Icon';
-
 import getWorkingHeight from '../components/ScreenHeight';
 import { Link } from 'expo-router';
 
@@ -34,16 +33,15 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: Platform.OS === 'android' ? 20 : 0, 
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    
     marginTop: getWorkingHeight() * 0.02, 
     marginLeft: 20,
     marginRight: 20,
-    
   },
 });
 

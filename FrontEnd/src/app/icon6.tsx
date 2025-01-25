@@ -5,7 +5,8 @@ import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import RNFS from 'react-native-fs';
+import * as FileSystem from 'expo-file-system';
+import { storage, ref, uploadBytes, getDownloadURL } from '../firebaseConfig'; // Importuj Firebase Storage
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -22,6 +23,7 @@ const ProductsPage = () => {
   const ip = config.ipAddress;
 
   const [logged, setLogged] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const check = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
@@ -52,25 +54,64 @@ const ProductsPage = () => {
     if (!result.canceled) {
       setPath(result.assets[0].uri);
     }
-
   };
 
+
   const addProduct = async () => {
-    try {
+    if (!name || !description || !price || !phoneNumber || !path) {
+      setErrorMessage('Molimo vas da popunite sva polja'); 
+      return;
+    }
+
+    try{
+
+      console.log(path)
+
+      try {
+        // Odredi putanju gde želiš da sačuvaš sliku
+        const destinationUri = 'FrontEnd/src/img/savedImage.png';
+    
+        // Kopiraj sliku sa izvornog URI-ja na odredište
+        await FileSystem.copyAsync({
+          from: path,
+          to: destinationUri,
+        });
+    
+        console.log('Slika je uspešno sačuvana!', destinationUri);
+      } catch (error) {
+        console.error('Greška prilikom čuvanja slike: ', error);
+      }
+
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
-        "name": name,
-        "description": description,
-        "price": price,
-        "phoneNumber": phoneNumber,
-        "path": path
+        name: name,
+        description: description,
+        price: price,
+        phoneNumber: phoneNumber,
+        path: path
       });
 
-      
-
-      console.log(response.data)
+      console.log('Product added successfully:', response.data);
+      setIsModalVisible(false);
+      check();
     } catch (error) {
-      console.log(error);
+      console.log('Error adding product:', error);
     }
+  };
+
+  const renderProduct = ({ item }) => {
+    return (
+      <View style={styles.productContainer}>
+        {item.path && <Image source={{ uri: item.path }} style={styles.productImage} />}
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productPrice}>Cena: {item.price}</Text>
+          <Text style={styles.productDescription}>{item.description}</Text>
+          <TouchableOpacity onPress={() => router.push({ pathname: '/UserInfo' })}>
+            <Text style={styles.productPhone}>Kontakt telefon: {item.phoneNumber}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
   };
 
   const closeModal = () => {
@@ -86,21 +127,13 @@ const ProductsPage = () => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderProduct = ({ item }) => {
-    return (
-      <View style={styles.productContainer}>
-        {item.image && <Image source={{ uri: item.image }} style={styles.productImage} />}
-        <View style={styles.productDetails}>
-          <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>{item.price}</Text>
-          <Text style={styles.productDescription}>{item.description}</Text>
-          <TouchableOpacity onPress={() => router.push({ pathname: '/UserInfo' })}>
-            <Text style={styles.productOwner}>Prodavac:</Text>
-          </TouchableOpacity>
-          <Text style={styles.productPhone}>Kontakt: {item.phoneNumber}</Text>
-        </View>
-      </View>
-    );
+  const checkImageExists = async ({ path }) => {
+    const fileInfo = await FileSystem.getInfoAsync(path);
+    if (fileInfo.exists) {
+      alert('Image exists at the path: ' + path);
+    } else {
+      alert('Image does not exist at the path');
+    }
   };
 
   return (
@@ -145,6 +178,9 @@ const ProductsPage = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Dodaj novi proizvod</Text>
+            {errorMessage ? (
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            ) : null}
             <TextInput
               style={styles.input}
               placeholder="Ime proizvoda"
@@ -154,7 +190,7 @@ const ProductsPage = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Cena proizvoda"
+              placeholder="Cena proizvoda u dinarima"
               value={price}
               placeholderTextColor="black"
               onChangeText={setPrice}
@@ -245,15 +281,11 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 5,
   },
-  productOwner: {
-    textDecorationLine: "underline",
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
   productPhone: {
     fontSize: 14,
     color: '#555',
+    textDecorationLine: "underline",
+    fontWeight: 'bold',
   },
   searchInput: {
     borderWidth: 1,
@@ -317,6 +349,12 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 10,
     marginBottom: 10,
+  },
+  errorMessage: {
+    color: 'red',
+    fontSize: 14,
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 
