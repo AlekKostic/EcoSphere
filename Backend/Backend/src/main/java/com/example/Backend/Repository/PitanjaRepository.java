@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface PitanjaRepository extends JpaRepository<Pitanja, Long> {
-    @Query(value = "SELECT * FROM Pitanja", nativeQuery = true)
+    @Query(value = "SELECT * FROM pitanja", nativeQuery = true)
     List<Pitanja> findAllNative();
 }
