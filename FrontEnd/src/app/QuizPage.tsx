@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import BackNav from '../components/Backnav';
+import BackNav from '../components/Backnavhome';
 import Question from '../components/Question';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -82,7 +83,23 @@ const QuizPage = () => {
     }, 3000);
   };
 
+  const dodajBodove = async() =>{
+
+    const value = await AsyncStorage.getItem('userInfo');
+    const userInfo = value ? JSON.parse(value) : null;
+    const userId = userInfo?.userId;
+
+    await axios.put(`http://${ip}:8080/v1/api/bodovi`,{
+      "user_id": userId,
+      "broj_poena": correctAnswers
+    })
+
+    await axios.put(`http://${ip}:8080/v1/api/uradjen/${userId}`)
+  }
+
   if (quizCompleted) {
+
+    dodajBodove();
     return (
       <View style={styles.container}>
         <BackNav />
