@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import UserMenu from '../components/usermenu';
 import PictureSection from '../components/PictureSection';
@@ -8,13 +8,15 @@ import { Link } from 'expo-router';
 
 const Home = () => {
   const iconData = [
-    { id: '1', source: require('../img/maps.png'), route: '/icon1' },
+    { id: '1', source: require('../img/maps.png'), route: '/Map' },
     { id: '2', source: require('../img/education.png'), route: '/Education' },
     { id: '3', source: require('../img/DIY.png'), route: '/DIYIdeas' },
     { id: '4', source: require('../img/quiz.png'), route: '/QuizIntro' },
-    { id: '5', source: require('../img/forum.png'), route: '/icon5' },
-    { id: '6', source: require('../img/marketplace.png'), route: '/icon6' },
+    { id: '5', source: require('../img/forum.png'), route: '/Forum' },
+    { id: '6', source: require('../img/marketplace.png'), route: '/Marketplace' },
   ];
+
+  useEffect(()=>{console.log(getWorkingHeight())}, [])
 
   return (
     <View style={styles.container}>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
-import getWorkingHeight from './ScreenHeight';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react'; 
+import { View, StyleSheet, Text, TouchableOpacity, Platform } from 'react-native'; 
+import getWorkingHeight from './ScreenHeight'; 
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { useRouter } from 'expo-router'; 
 import { useRoute } from '@react-navigation/native';
 
 const UserMenu = () => {
@@ -13,7 +13,6 @@ const UserMenu = () => {
     const fetchUserInfo = async () => {
       try {
         const storedUser = await AsyncStorage.getItem('userInfo');
-        console.log(storedUser)
         if (storedUser) {
           setUser(JSON.parse(storedUser));
         }
@@ -38,24 +37,21 @@ const UserMenu = () => {
     router.push('./Login');
   };
 
-  const handleUserInfoClick = async() => {
-
+  const handleUserInfoClick = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
     
     if (userInfo) {
       const parsedUserInfo = JSON.parse(userInfo);
-
       const userId = parsedUserInfo.userId;
       router.push({
         pathname: '/UserInfo',
-        params: {id: userId },
+        params: { id: userId },
       });
-      
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: user ? 0 : 0 }]}>
       <View style={styles.rectangle}>
         {user ? (
           <View style={styles.userInfo}>
@@ -81,15 +77,12 @@ const UserMenu = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'android' ? getWorkingHeight() * 0.01 : 0, 
+    flexGrow: 0,
   },
   rectangle: {
-    height: getWorkingHeight() * 0.051,
+    height: getWorkingHeight() * 0.05,
     backgroundColor: 'gray',
     width: '100%',
-    position: 'absolute',
-    top: 0,
-    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,

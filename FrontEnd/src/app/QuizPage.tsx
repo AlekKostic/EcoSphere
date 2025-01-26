@@ -23,6 +23,7 @@ const QuizPage = () => {
     try {
       const response = await axios.get(`http://${ip}:8080/v2/api/`);
       const allQuestions = response.data;
+      console.log(allQuestions)
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
       const questionsWithAnswers = await Promise.all(
         shuffledQuestions.map(async (question) => {

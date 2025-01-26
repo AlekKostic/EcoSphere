@@ -1,54 +1,92 @@
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Image } from 'react-native';
 import React, { useState } from 'react';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 
-const Post = ({ item, likePost, index }) => {
+const Post = ({ item, likePost, index, personal=false, handleDelete }) => {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  const onAuthorPress = (author) => {
-    console.log("Clicked on author:", author);
+  const onAuthorPress = () => {
+    console.log("Clicked on author:", item);
     router.push({
       pathname: '/UserInfo',
-      params: { id: item.authorId },
+      params: { id: item.author.user_id },
     });
   };
 
   const onSeeLikesPress = async () => {
     const users = new Set(item.likedIds);
-    console.log(users);
-
+  
     const userDetails = [];
     for (const value of users) {
       const odg = await axios.get(`http://${ip}:8080/v1/api/${value}`);
-      console.log(odg.data);
-
-      userDetails.push({ ime: odg.data.ime, prezime: odg.data.prezime, id: value });
+  
+      // Determine the profile image for the liked user
+      const imageId = value % 6 + 1; // Dynamically set image ID based on liked user ID
+      let profileImageSource = require('../img/profilna6.png');
+  
+      if (imageId === 1) profileImageSource = require('../img/profilna1.png');
+      else if (imageId === 2) profileImageSource = require('../img/profilna2.png');
+      else if (imageId === 3) profileImageSource = require('../img/profilna3.png');
+      else if (imageId === 4) profileImageSource = require('../img/profilna4.png');
+      else if (imageId === 5) profileImageSource = require('../img/profilna5.png');
+  
+      userDetails.push({
+        ime: odg.data.ime,
+        prezime: odg.data.prezime,
+        id: value,
+        profileImage: profileImageSource, // Add profile image for the liked user
+      });
     }
-    setLikedUsers(userDetails); // Update liked users
+    setLikedUsers(userDetails);
     setModalVisible(true); // Show modal
   };
+  
+  
 
-  const onUserPress = (userId) => {
-    console.log("Clicked on user:", userId);
+  const onUserPress = (user) => {
+    console.log(user.id);
     router.push({
       pathname: '/UserInfo',
-      params: { id: userId },
+      params: { id: user.id },
     });
   };
+  
+  
+
+  const imageId = item.authorId % 6 + 1;
+  let profileImageSource = require('../img/profilna6.png');
+
+  if(imageId==1)profileImageSource = require('../img/profilna1.png')
+  else if(imageId==2)profileImageSource = require('../img/profilna2.png')
+  else if(imageId==3)profileImageSource = require('../img/profilna3.png')
+  else if(imageId==4)profileImageSource = require('../img/profilna4.png')
+  else if(imageId==5)profileImageSource = require('../img/profilna5.png')
 
   return (
     <View style={styles.postContainer}>
-
-      <TouchableOpacity onPress={onAuthorPress}>
+      <View style={styles.infoContainer}>
+      
+      <TouchableOpacity onPress={onAuthorPress} style={styles.authorContainer} disabled={personal}>
+        <Image
+          source={profileImageSource} 
+          style={styles.profileImage}
+        />
         <Text style={styles.profileText}>{item.author.ime + " " + item.author.prezime}</Text>
       </TouchableOpacity>
-
+        {personal && (
+          <View style={styles.trashc}>
+            <TouchableOpacity onPress={() => handleDelete(item.id)}>
+              <Ionicons name="trash-outline" size={24} color="gray" />
+            </TouchableOpacity>
+          </View>
+        )}
+         </View>
       <Text style={styles.postText}>{item.content}</Text>
 
       <View style={styles.likeContainer}>
@@ -81,15 +119,20 @@ const Post = ({ item, likePost, index }) => {
             {likedUsers.length === 0 ? (
               <Text style={styles.noLikesText}>Nema lajkova</Text>
             ) : (
+              // Rendering liked users in the modal
               <FlatList
-                data={likedUsers}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity onPress={() => onUserPress(item.id)} style={styles.modalUserContainer}>
-                    <Text style={styles.modalUserText}>{item.ime} {item.prezime}</Text>
-                  </TouchableOpacity>
-                )}
-              />
+              data={likedUsers}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => onUserPress(item)} style={styles.modalUserContainer}>
+                  <Image
+                    source={item.profileImage} // Use the dynamically set profile image
+                    style={styles.modalProfileImage}
+                  />
+                  <Text style={styles.modalUserText}>{item.ime} {item.prezime}</Text>
+                </TouchableOpacity>
+              )}
+            />
             )}
           </View>
         </View>
@@ -110,14 +153,25 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
+  authorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    marginRight: 10,
+  },
   profileText: {
     fontWeight: 'bold',
     fontSize: 15,
-    marginBottom: 5,
   },
   postText: {
     fontSize: 16,
     marginBottom: 5,
+    marginLeft: 5,
   },
   likeContainer: {
     flexDirection: 'row',
@@ -172,9 +226,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
-    
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalProfileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    marginRight: 10,
   },
   modalUserText: {
     fontSize: 16,
@@ -189,6 +248,15 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom:30,
   },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // This ensures the trash icon is on the right
+  },
+  trashc: {
+    marginLeft: 'auto', // This pushes the trash can to the far right
+  },
 });
+
 
 export default Post;

@@ -54,7 +54,8 @@ const Signup = () => {
           ime: name,
           prezime: surname,
           email: email,
-          password: password
+          password: password,
+          brojPoena: 0
         },
         {
           headers: {
