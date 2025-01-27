@@ -220,8 +220,8 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   logo: {
-    width: 50, 
-    height: 50, 
+    width: 40, 
+    height: 40, 
     marginBottom: 20, 
   },
   subtitle: {
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     color: '#6ac17f',
   },
   title: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: '700',
     color: '#1D2A32',
   },
@@ -278,10 +278,10 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   input: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   inputLabel: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '600',
     color: '#222',
     marginBottom: 8,
@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   error: {
-    fontSize: 18,
+    fontSize: 15,
     color: '#9a2626',
   },
   loadingOverlay: {

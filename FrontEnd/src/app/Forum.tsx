@@ -160,14 +160,13 @@ const NotificationsPage = () => {
         </Text>
       </View>
 
-      {logged && (
         <TouchableOpacity
           style={[styles.addPostButton, { backgroundColor: dark ? '#6ac17f' : '#6ac17f' }]}
-          onPress={() => setIsModalVisible(true)}
+          onPress={() =>{ if(!logged)router.push('/Login')
+            else setIsModalVisible(true)}}
         >
           <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
         </TouchableOpacity>
-      )}
 
       {loading ? (
         <View style={styles.loadingContainer}>

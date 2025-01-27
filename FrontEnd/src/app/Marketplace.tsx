@@ -71,7 +71,7 @@ const ProductsPage = () => {
   };
 
   const addProduct = async () => {
-    if (!name || !description || !price || !phoneNumber || !path) {
+    if (!name || !description || !phoneNumber || !path) {
       setErrorMessage('Molimo vas da popunite sva polja'); 
       return;
     }
@@ -80,7 +80,7 @@ const ProductsPage = () => {
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
         name: name,
         description: description,
-        price: price,
+        price: 0,
         phoneNumber: phoneNumber,
         path: path
       });
@@ -138,8 +138,8 @@ const ProductsPage = () => {
         <Text style={[styles.subheading, {color: dark? 'white': '#124460', 
           borderBottomColor: dark?'white':'#124460'
         }]}>
-          Ovde možete podeliti proizvode koje želite da ponudite drugim korisnicima,
-          kao i da pogledate koje to proizvode drugi korisnici nude.
+          Ovde možete podeliti proizvode koje želite da poklonite drugim korisnicima,
+          kao i da pogledate koje to proizvode drugi korisnici poklanjaju.
         </Text>
       </View>
   
@@ -153,14 +153,13 @@ const ProductsPage = () => {
         onChangeText={setSearchQuery}
       />
   
-      {logged && (
         <TouchableOpacity
           style={styles.addProductButton}
-          onPress={() => setIsModalVisible(true)}
+          onPress={() => { if(!logged)router.push('/Login')
+             else setIsModalVisible(true)}}
         >
           <Text style={[styles.addProductButtonText]}>+ Dodaj proizvod</Text>
         </TouchableOpacity>
-      )}
   
       {products.length === 0 ? (
         <Text style={[styles.noProductsText, {color: dark?'white':'#124460'}]}>Objavite prvi proizvod!</Text>
@@ -193,15 +192,6 @@ const ProductsPage = () => {
               value={name}
               placeholderTextColor="#124460"
               onChangeText={setName}
-            />
-            <TextInput
-              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
-                color: dark ? '#124460' : '#124460',
-                borderColor: '#124460' }]}
-              placeholder="Cena proizvoda u dinarima"
-              value={price}
-              placeholderTextColor="#124460"
-              onChangeText={setPrice}
             />
             <TextInput
               style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
