@@ -86,6 +86,8 @@ const Icon4 = () => {
         <Text style={[styles.title, { color: dark ? 'white' : '#333' }]}>Dobrodošli u kviz!</Text>
         <Text style={[styles.subtitle, { color: dark ? 'white' : '#555' }]}>
           Pred Vama je dnevni kviz o životnoj sredini. Sastoji se od 5 pitanja.
+          Kviz možete raditi samo jednom dnevno i nakon urađenog kviza dobijate odgovarajući broj
+          kviz bodova.
         </Text>
 
         <TouchableOpacity

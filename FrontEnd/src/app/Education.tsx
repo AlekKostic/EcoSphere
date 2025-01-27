@@ -23,11 +23,34 @@ const Icon2 = () => {
   }, []);
 
   const videoLinks = [
-    { title: 'Radionica "Reciklaža nije gnjavaža" za decu', link: 'https://www.tiktok.com/@mojsvetns/video/7435042170282806584' },
-    { title: 'Common Waste - Common Libraries - Goethe-Institut Srbija', link: 'https://www.goethe.de/ins/cs/sr/kul/sup/cnw.html' },
-    { title: 'Uvođenje sistema reciklaže i ekološko obrazovanje', link: 'https://openjicareport.jica.go.jp/pdf/1000052997_02.pdf' },
-    { title: 'Eko aktivnosti - Oaza znanja', link: 'https://nvooazaznanja.wordpress.com/wp-content/uploads/2019/05/eko-aktivnosti.pdf' },
+    { title: 'Savetodavni portal za reciklažu - Recycle Now', link: 'https://www.recyclenow.com' },
+    { title: 'Američko udruženje za šume i papirnu industriju', link: 'https://www.afandpa.org' },
+    { title: 'Plastika i reciklaža - Plastics Europe', link: 'https://plasticseurope.org' },
+    { title: 'Reciklaža plastike u praksi', link: 'https://www.reciklaza-plastike.com' },
+    { title: 'Reciklaža plastike - Srpski resursi', link: 'http://reciklazaplastike.rs' },
+    { title: 'Eko Flor - Ekološki proizvodi i reciklaža', link: 'http://www.ekoflor-nordtrade.co.rs' },
+    { title: 'Inicijativa "Ja bolji građanin" - Ekološki saveti', link: 'https://jaboljigradjanin.com' },
+    { title: 'Reciklaža metala - Metal Kat', link: 'https://metalkatrecycle.com' },
+    { title: 'Besplatno recikliranje - Freecycle', link: 'https://www.freecycle.org' },
+    { title: 'Pretraživanje resursa za reciklažu - Zemlja 911', link: 'https://search.earth911.com' },
+    { title: 'Top 50 sajtova za reciklažu - Zelena šibica', link: 'https://www.greenmatch.co.uk/blog/2015/07/top-50-recycling-sites' },
+    { title: 'TerraCycle - Inovativna reciklaža', link: 'https://www.terracycle.com/en-US/?srsltid=AfmBOoq7b01drY3XYYOUdl_rxQfvMUADYD2N4PB3KmXsk4Q0DHf-o804' },
+    { title: 'Upravljanje otpadom - Lokacije za odlaganje', link: 'https://www.wm.com/us/en/drop-off-locations' },
+    { title: 'Reciklaža kartona - Love Junk', link: 'https://www.lovejunk.com/cardboard-recycling' },
+    { title: 'Gde možete reciklirati? - Recycle More', link: 'https://www.recycle-more.co.uk/where-can-i-recycle' },
+    { title: 'Recikliranje u vašem kraju - Recycling Near You', link: 'https://recyclingnearyou.com.au/paper-cardboard/' },
+    { title: 'Globalno zagrevanje i reciklaža - Climate Reality', link: 'https://www.climaterealityproject.org' },
+    { title: 'Reciklaža u gradovima - Sustainable Cities', link: 'https://www.sustainablecities.eu' },
+    { title: 'Važnost reciklaže za budućnost', link: 'https://www.recycleacrossamerica.org/why-recycling-matters' },
+    { title: 'Učinite planetu zdravijom - WWF', link: 'https://www.worldwildlife.org' },
+    { title: 'Ekološki otisak i reciklaža - Global Footprint Network', link: 'https://www.footprintnetwork.org' },
+    { title: 'Zeleni gradovi i održivost - Eco-Cities', link: 'https://www.ecocitybuilders.org' },
+    { title: 'Savetnik za zelenu energiju i reciklažu - Green Energy Solutions', link: 'https://www.greenenergysolutions.org' },
+    { title: 'Uloga reciklaže u smanjenju otpada - Zero Waste Europe', link: 'https://www.zerowasteeurope.eu' },
+    { title: 'Kako smanjiti otpad i povećati reciklažu - Waste Management', link: 'https://www.wm.com' }
   ];
+  
+  
 
   const icons = ['recycling', 'public', 'favorite', 'eco', 'lightbulb', 'language', 'search'];
 

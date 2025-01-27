@@ -16,16 +16,108 @@ const Icon2 = () => {
   const inputRef = useRef(null);
 
   const videoLinks = [
-    { title: 'Kako od plastičnih poklopaca napraviti tanjir', 
+    { 
+      title: 'Kako od plastičnih poklopaca napraviti tanjir', 
       link: 'https://youtu.be/FORrE5dB2gc?si=z16cXnDXd2smTJMb', 
-      thumbnail: 'https://img.youtube.com/vi/FORrE5dB2gc/0.jpg' },
-    { title: 'Kako jedan Dubrovčanin čisti more od plastike i reciklira je', 
+      thumbnail: 'https://img.youtube.com/vi/FORrE5dB2gc/0.jpg' 
+    },
+    { 
+      title: 'Kako jedan Dubrovčanin čisti more od plastike i reciklira je', 
       link: 'https://youtu.be/FTftktsN4yA?si=i7CQko9Fh7NzEY_8', 
-      thumbnail: 'https://img.youtube.com/vi/FTftktsN4yA/0.jpg' },
-    { title: 'Ideje za ponovnu upotrbu predmeta od metala', 
+      thumbnail: 'https://img.youtube.com/vi/FTftktsN4yA/0.jpg' 
+    },
+    { 
+      title: 'Kako reciklirati papir', 
+      link: 'https://youtu.be/pkf4anK0a-A?feature=shared', 
+      thumbnail: 'https://img.youtube.com/vi/pkf4anK0a-A/0.jpg' 
+    },
+    { 
+      title: 'Reciklaža papira', 
+      link: 'https://youtu.be/gqv7_HCNsRo?si=aGiUQX1is2LlbrwC', 
+      thumbnail: 'https://img.youtube.com/vi/gqv7_HCNsRo/0.jpg' 
+    },
+    { 
+      title: 'Ideje za ponovnu upotrbu predmeta od metala', 
       link: 'https://youtu.be/pLrTWRlxDXw?si=jAbRuLSw1VALjTsP', 
-      thumbnail: 'https://img.youtube.com/vi/pLrTWRlxDXw/0.jpg' },
+      thumbnail: 'https://img.youtube.com/vi/pLrTWRlxDXw/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti svica od starog metala', 
+      link: 'https://youtu.be/R16S-SU5JPg?si=AS4vtPXrjLIQF5Vj', 
+      thumbnail: 'https://img.youtube.com/vi/R16S-SU5JPg/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti lonac od recikliranog aluminijuma', 
+      link: 'https://youtu.be/URDQTDhon7c?si=PcvFm6A7fN7cmXG2', 
+      thumbnail: 'https://img.youtube.com/vi/URDQTDhon7c/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti reciklirane grede od plastike', 
+      link: 'https://youtu.be/avdOxtKywbk?si=_UeQXptwf81gaTO9', 
+      thumbnail: 'https://img.youtube.com/vi/avdOxtKywbk/0.jpg' 
+    },
+    { 
+      title: 'Genijalne reciklaže ideje', 
+      link: 'https://youtu.be/4v5WOkVtx4k?si=vYO95j63kSjngs76', 
+      thumbnail: 'https://img.youtube.com/vi/4v5WOkVtx4k/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti haljinu od papira', 
+      link: 'https://youtube.com/shorts/MZ6Yc__eezg?si=7kWau4vu7xcsCO1D', 
+      thumbnail: 'https://img.youtube.com/vi/MZ6Yc__eezg/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti sto od reciklirane plastike', 
+      link: 'https://youtu.be/WJnVAQqkdcQ?si=EBzcbYmYWjH0H8ln', 
+      thumbnail: 'https://img.youtube.com/vi/WJnVAQqkdcQ/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti fontanu od plastičnih flaša', 
+      link: 'https://youtube.com/shorts/gLZs3dmO91M?si=5wQBFw2b4e8I_-t1', 
+      thumbnail: 'https://img.youtube.com/vi/gLZs3dmO91M/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti peskasti sat od plastičnih flaša', 
+      link: 'https://youtube.com/shorts/O7JkFJXcOKM?si=6tRWLgc_AtCEnVGn', 
+      thumbnail: 'https://img.youtube.com/vi/O7JkFJXcOKM/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti narukvice od plastičnih flaša', 
+      link: 'https://youtu.be/e1ZHnVn-vPc?si=tbnYWMlzG9zEPEBK', 
+      thumbnail: 'https://img.youtube.com/vi/e1ZHnVn-vPc/0.jpg' 
+    },
+    { 
+      title: '10 divnih reciklažnih ideja', 
+      link: 'https://youtu.be/HkHEJEzMKwc?feature=shared', 
+      thumbnail: 'https://img.youtube.com/vi/HkHEJEzMKwc/0.jpg' 
+    },
+    { 
+      title: '10 genijalnih reciklažnih ideja', 
+      link: 'https://youtu.be/t6sf0fsh0Hs?si=j52ZFu6wHKG83p_g', 
+      thumbnail: 'https://img.youtube.com/vi/t6sf0fsh0Hs/0.jpg' 
+    },
+    { 
+      title: '38 kreativnih ideja za plastičnim flašama', 
+      link: 'https://youtu.be/xEAOvFG1AmM?si=VgL0B6VQd0zp41Uz', 
+      thumbnail: 'https://img.youtube.com/vi/xEAOvFG1AmM/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti kućnu dekoraciju od starog papira', 
+      link: 'https://youtu.be/GsrQRj94aFo?si=PTpdFfq6ggWkI-7F', 
+      thumbnail: 'https://img.youtube.com/vi/GsrQRj94aFo/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti papir od trave', 
+      link: 'https://youtu.be/FOb34_s-K1M?si=qoCwLhG9hYX58iDq', 
+      thumbnail: 'https://img.youtube.com/vi/FOb34_s-K1M/0.jpg' 
+    },
+    { 
+      title: 'Kako napraviti držač za olovke od papira', 
+      link: 'https://youtu.be/6LcSC62t4ow?si=feL0R1xmtC3Z4lw5', 
+      thumbnail: 'https://img.youtube.com/vi/6LcSC62t4ow/0.jpg' 
+    }
   ];
+  
 
   const icons = ['recycling', 'public', 'favorite', 'eco', 'lightbulb', 'language', 'search'];
 

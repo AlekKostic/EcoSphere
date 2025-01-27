@@ -138,7 +138,8 @@ const ProductsPage = () => {
         <Text style={[styles.subheading, {color: dark? 'white': '#124460', 
           borderBottomColor: dark?'white':'#124460'
         }]}>
-          Ovde možete podeliti proizvode koje želite da ponudite drugim korisnicima.
+          Ovde možete podeliti proizvode koje želite da ponudite drugim korisnicima,
+          kao i da pogledate koje to proizvode drugi korisnici nude.
         </Text>
       </View>
   

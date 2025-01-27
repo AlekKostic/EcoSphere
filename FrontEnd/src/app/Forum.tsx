@@ -154,8 +154,9 @@ const NotificationsPage = () => {
         <BackNav />
         <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Oglasna tabla</Text>
         <Text style={[styles.subheading, { color: dark ? 'white' : '#124660', borderBottomColor: dark ? '#fff' : '#124460' }]}>
-          Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu
-          sredinu za koje smatrate da treba da vidi što veći broj ljudi.
+          Ovde možete pročitati i podeliti obaveštenja o dešavanjima vezanim za životnu
+          sredinu koji mogu biti korisni i koje treba da vidi što veći broj ljudi.
+
         </Text>
       </View>
 
