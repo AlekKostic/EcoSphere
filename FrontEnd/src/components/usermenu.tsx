@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'; 
-import { View, StyleSheet, Text, TouchableOpacity, Animated } from 'react-native'; 
+import { View, StyleSheet, Text, TouchableOpacity, Animated, Platform } from 'react-native'; 
 import getWorkingHeight from './ScreenHeight'; 
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import { useRouter } from 'expo-router'; 
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 0,
+    ...(Platform.OS === 'android' && { marginTop: '5%' }),
   },
   containerLight: {
     backgroundColor: 'white',

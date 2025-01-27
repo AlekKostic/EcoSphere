@@ -41,25 +41,21 @@ const Icon = ({ source, route }) => {
 const styles = StyleSheet.create({
   iconContainer: {
     width: '38%',
-    height: getWorkingHeight() * 0.193,
+    height: getWorkingHeight() * 0.18,
     marginBottom: getWorkingHeight() * 0.02,
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 20,
+    borderRadius:10,
+    elevation: 3,
   },
   iconContainerLight: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3, 
+    backgroundColor: 'black',
+    elevation: 5, 
   },
-  iconContainerDark: {
-    shadowColor: 'black', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 3,
+  iconContainerDark:{
+    backgroundColor: '#124460',
+    elevation: 5, 
   },
   image: {
     width: '100%', 
