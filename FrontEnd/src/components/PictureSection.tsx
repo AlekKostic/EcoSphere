@@ -2,11 +2,11 @@ import React from 'react';
 import { View, StyleSheet, Image, Platform } from 'react-native';
 import getWorkingHeight from './ScreenHeight';
 
-const PictureSection = () => {
+const PictureSection = ({ darkMode }) => {
   return (
     <View style={styles.pictureSection}>
       <Image
-        source={require('../img/hero.png')} 
+        source={darkMode ? require('../img/darkHero.png') : require('../img/lightHero.png')} 
         style={styles.image}
       />
     </View>

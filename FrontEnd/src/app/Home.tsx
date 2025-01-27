@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Platform, StatusBar } from 'react-native';
 import UserMenu from '../components/usermenu';
 import PictureSection from '../components/PictureSection';
 import Icon from '../components/Icon';
@@ -7,25 +7,25 @@ import getWorkingHeight from '../components/ScreenHeight';
 import { Link } from 'expo-router';
 
 const Home = () => {
+  const [darkMode, setDarkMode] = useState(false);
+
   const iconData = [
-    { id: '1', source: require('../img/maps.png'), route: '/Map' },
-    { id: '2', source: require('../img/education.png'), route: '/Education' },
-    { id: '3', source: require('../img/DIY.png'), route: '/DIYIdeas' },
-    { id: '4', source: require('../img/quiz.png'), route: '/QuizIntro' },
-    { id: '5', source: require('../img/forum.png'), route: '/Forum' },
-    { id: '6', source: require('../img/marketplace.png'), route: '/Marketplace' },
+    { id: '1', source: !darkMode?require('../img/lightMap.png'):require('../img/darkMap.png'), route: '/Map' },
+    { id: '2', source: !darkMode?require('../img/lightE.png'):require('../img/darkE.png'), route: '/Education' },
+    { id: '3', source: !darkMode?require('../img/lightDIY.png'):require('../img/darkDIY.png'), route: '/DIYIdeas' },
+    { id: '4', source: !darkMode?require('../img/lightQuiz.png'):require('../img/darkQuiz.png'), route: '/QuizIntro' },
+    { id: '5', source: !darkMode?require('../img/lightForum.png'):require('../img/darkForum.png'), route: '/Forum' },
+    { id: '6', source: !darkMode?require('../img/lightMarket.png'):require('../img/darkMarket.png'), route: '/Marketplace' },
   ];
 
-  useEffect(()=>{console.log(getWorkingHeight())}, [])
-
   return (
-    <View style={styles.container}>
-      <UserMenu />
-      <PictureSection />
-      
+    <View style={darkMode ? styles.darkModeContainer : styles.lightModeContainer}>
+      <UserMenu setDarkMode2={setDarkMode} />
+      <PictureSection darkMode={darkMode}/>
+
       <View style={styles.gridContainer}>
         {iconData.map((item) => (
-            <Icon key={item.id.toString()} source={item.source} route={item.route} />
+          <Icon key={item.id.toString()} source={item.source} route={item.route} />
         ))}
       </View>
     </View>
@@ -35,13 +35,19 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === 'android' ? 20 : 0, 
+    marginTop: Platform.OS === 'android' ? 20 : 0,
+  },
+  darkModeContainer: {
+    backgroundColor: '#124460', 
+  },
+  lightModeContainer: {
+    backgroundColor: '#fff', 
   },
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    marginTop: getWorkingHeight() * 0.02, 
+    marginTop: getWorkingHeight() * 0.02,
     marginLeft: 20,
     marginRight: 20,
   },

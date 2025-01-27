@@ -12,6 +12,20 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const UserInfo = () => {
   const route = useRoute();
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const getMode = async () => {
+      const storedMode = await AsyncStorage.getItem('darkMode');
+      if (storedMode === 'true') {
+        setDark(true);
+      } else {
+        setDark(false);
+      }
+    };
+
+    getMode();
+  }, []);
   const iduser = route.params?.id ?? false;
 
   const [user, setUser] = useState({
@@ -167,7 +181,7 @@ const UserInfo = () => {
   const likePost = async (item) => {
     if (!logged) {
       router.push('/Login');
-      return; // Prekida izvršavanje funkcije ako nije prijavljen
+      return;
     }
 
     if (!item.likes) {
@@ -185,7 +199,6 @@ const UserInfo = () => {
       
         console.log("Like response:", response.data);
       
-        // Ponovo učitaj postove da vidiš da li je lajk sačuvan
         fetchPostsData();
       } catch (error) {
         console.log(error);
@@ -237,22 +250,26 @@ const UserInfo = () => {
   };
 
   return (
-    <KeyboardAwareScrollView style={styles.container} keyboardShouldPersistTaps="handled">
+    <KeyboardAwareScrollView style={[styles.container, {
+      backgroundColor: dark?'#124460':'white'
+    }]} keyboardShouldPersistTaps="handled">
       <BackNav />
-      <View style={styles.profileContainer}>
+      <View style={[styles.profileContainer,{
+      backgroundColor: dark?'#1b5975':'#dfeaf0'
+    }]}>
         <Image source={profileImageSource} style={styles.profileImage} />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>
+          <Text style={[styles.userName,{color: dark?'white':'#124460'}]}>
             {user.ime + ' ' + user.prezime}
           </Text>
-          <Text style={styles.userDetails}>
+          <Text style={[styles.userDetails, {color: dark?'white':'#124460'}]}>
             {'E-mail: ' + (user.email || 'E-mail nije naveden')}
           </Text>
         </View>
       </View>
 
-      <View style={styles.bodovicontainer}>
-        <Text style={styles.bodovi}>Broj ostavrenih kviz bodova: {user.broj_bodova}</Text>
+      <View style={[styles.bodovicontainer, , {borderColor: dark?'white':'#124460'}]}>
+        <Text style={[styles.bodovi , {color: dark?'white':'#124460'}]}>Broj ostavrenih kviz bodova: {user.broj_bodova}</Text>
       </View>
 
       {personal && (
@@ -260,14 +277,14 @@ const UserInfo = () => {
           <View style={styles.passwordChangeContainer}>
             {changing && (
               <>
-                <View style={styles.changePasswordHeader}>
-                  <Text style={styles.changePasswordTitle}>Promena lozinke</Text>
+                <View style={[styles.changePasswordHeader, {color: dark?'white':'#124460'}]}>
+                  <Text style={[styles.changePasswordTitle,  {color: dark?'white':'#124460'}]}>Promena lozinke</Text>
                   <TouchableOpacity onPress={() => setChanging(false)} style={styles.cancelButton}>
                     <Text style={styles.buttonText}>X</Text>
                   </TouchableOpacity>
                 </View>
 
-                <Text style={styles.label}>Trenutna lozinka</Text>
+                <Text style={[styles.label, {color: dark?'white':'#124460'}]}>Trenutna lozinka</Text>
                 <TextInput
                   autoCorrect={false}
                   clearButtonMode="while-editing"
@@ -279,7 +296,7 @@ const UserInfo = () => {
                   onChangeText={setCurrentPassword}
                 />
 
-                <Text style={styles.label}>Nova lozinka</Text>
+                <Text style={[styles.label, {color: dark?'white':'#124460'}]}>Nova lozinka</Text>
                 <TextInput
                   autoCorrect={false}
                   clearButtonMode="while-editing"
@@ -293,7 +310,9 @@ const UserInfo = () => {
               </>
             )}
 
-            <TouchableOpacity onPress={handleChangePassword} style={styles.button}>
+            <TouchableOpacity onPress={handleChangePassword} style={[styles.button,{
+              backgroundColor: dark? '#6ac17f':'#124460'
+            }]}>
               <Text style={styles.buttonText}>Promenite lozinku</Text>
             </TouchableOpacity>
 
@@ -306,7 +325,7 @@ const UserInfo = () => {
         </>
       )}
 
-      <Text style={styles.postsHeader}>Objave korisnika</Text>
+      <Text style={[styles.postsHeader, {color:dark?'white':'#124460'}]}>Objave korisnika</Text>
 
       {loadingPosts ? (
         <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
@@ -316,7 +335,7 @@ const UserInfo = () => {
           handleDelete={() => { setPostToDelete(post.id); setDeleteModalVisible(true); }} />
         ))
       ) : (
-        <Text style={styles.noPostsText}>Nema postova za prikazivanje.</Text>
+        <Text style={[styles.noPostsText,{color:dark?'white':'#124460'}]}>Nema postova za prikazivanje.</Text>
       )}
 
       <Modal
@@ -325,21 +344,21 @@ const UserInfo = () => {
         onRequestClose={() => setDeleteModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Potvrdi brisanje</Text>
+          <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
+            <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
+              <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
             </View>
-            <Text style={styles.modalText}>Da li ste sigurni da želite da obrišete ovaj post?</Text>
+            <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>Da li ste sigurni da želite da obrišete ovaj post?</Text>
             <View style={styles.modalActions}>
               <TouchableOpacity
                 onPress={handleDeletePost}
               >
-                <Text style={styles.deleteButtonText2}>Obriši</Text>
+                <Text style={[styles.deleteButtonText2, , {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setDeleteModalVisible(false)}
               >
-                <Text style={styles.cancelButtonText}>Otkaži</Text>
+                <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -371,6 +390,7 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     backgroundColor: '#dedddc',
+    borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
@@ -443,7 +463,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorMessage: {
-    color: 'red',
+    color: '#9a2626',
     fontSize: 16,
     marginTop: 10,
   },
@@ -451,7 +471,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginTop: 20,
-    backgroundColor: '#e74c3c',
+    backgroundColor: '#9a2626',
     paddingVertical: 10,
     borderRadius: 30,
     alignItems: 'center',
@@ -513,7 +533,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },deleteButtonText2: {
-    color: 'red',
+
     fontSize: 18,
     fontWeight: '600',
   }

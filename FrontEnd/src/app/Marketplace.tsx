@@ -1,14 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // Za Expo
+import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
-import { storage, ref, uploadBytes, getDownloadURL } from '../firebaseConfig'; // Importuj Firebase Storage
-
 const ProductsPage = () => {
+
+  const [dark, setDark] = useState(false); 
+
+  useEffect(() => {
+    const getMode = async () => {
+      const storedMode = await AsyncStorage.getItem('darkMode');
+      if (storedMode === 'true') {
+        setDark(true);
+      } else {
+        setDark(false);
+      }
+    };
+
+    getMode();
+  }, []);
+
   const [products, setProducts] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -56,19 +70,13 @@ const ProductsPage = () => {
     }
   };
 
-
   const addProduct = async () => {
     if (!name || !description || !price || !phoneNumber || !path) {
       setErrorMessage('Molimo vas da popunite sva polja'); 
       return;
     }
 
-    try{
-
-      console.log(path)
-
-      
-
+    try {
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
         name: name,
         description: description,
@@ -87,14 +95,13 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <View style={styles.productContainer}>
+      <View style={[styles.productContainer, {backgroundColor: dark ? '#2f6d8c' : '#fff'}]}>
         {item.path && <Image source={{ uri: item.path }} style={styles.productImage} />}
         <View style={styles.productDetails}>
-          <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productPrice}>Cena: {item.price}</Text>
-          <Text style={styles.productDescription}>{item.description}</Text>
+          <Text style={[styles.productName, {color: dark?'white':"#124460"}]}>{item.name}</Text>
+          <Text style={[styles.productDescription, {color: dark?'white':"#124460"}]}>{item.description}</Text>
           <TouchableOpacity onPress={() => router.push({ pathname: '/UserInfo' })}>
-            <Text style={styles.productPhone}>Kontakt telefon: {item.phoneNumber}</Text>
+            <Text style={[styles.productPhone, {color: dark?'white':"#124460"}]}>Kontakt telefon: {item.phoneNumber}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -124,17 +131,22 @@ const ProductsPage = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {backgroundColor: dark? '#124460': 'white'}]}>
       <View style={styles.headerContainer}>
         <BackNav />
-        <Text style={styles.heading}>Prodavnica</Text>
-        <Text style={styles.subheading}>
+        <Text style={[styles.heading,{color: dark? 'white': '#124460'}]}>Prodavnica</Text>
+        <Text style={[styles.subheading, {color: dark? 'white': '#124460', 
+          borderBottomColor: dark?'white':'#124460'
+        }]}>
           Ovde možete podeliti proizvode koje želite da ponudite drugim korisnicima.
         </Text>
       </View>
   
       <TextInput
-        style={styles.searchInput}
+        style={[styles.searchInput, {backgroundColor: dark? 'white': 'white',
+          borderColor: dark? 'white': '#124460'
+        }]}
+        placeholderTextColor= { dark? '#124460': '#124460'}
         placeholder="Pretraži proizvode..."
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -145,13 +157,12 @@ const ProductsPage = () => {
           style={styles.addProductButton}
           onPress={() => setIsModalVisible(true)}
         >
-          <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
+          <Text style={[styles.addProductButtonText]}>+ Dodaj proizvod</Text>
         </TouchableOpacity>
       )}
   
-      {/* Check if there are no products */}
       {products.length === 0 ? (
-        <Text style={styles.noProductsText}>Objavite prvi proizvod!</Text>
+        <Text style={[styles.noProductsText, {color: dark?'white':'#124460'}]}>Objavite prvi proizvod!</Text>
       ) : (
         <FlatList
           data={filteredProducts}
@@ -167,37 +178,45 @@ const ProductsPage = () => {
         animationType="slide"
         onRequestClose={closeModal}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Dodaj novi proizvod</Text>
+        <View style={[styles.modalContainer]}>
+          <View style={[styles.modalContent,{backgroundColor: dark?'#124460':'white'}]}>
+            <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Dodaj novi proizvod</Text>
             {errorMessage ? (
               <Text style={styles.errorMessage}>{errorMessage}</Text>
             ) : null}
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460' }]}
               placeholder="Ime proizvoda"
               value={name}
-              placeholderTextColor="black"
+              placeholderTextColor="#124460"
               onChangeText={setName}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460' }]}
               placeholder="Cena proizvoda u dinarima"
               value={price}
-              placeholderTextColor="black"
+              placeholderTextColor="#124460"
               onChangeText={setPrice}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460' }]}
               placeholder="Opis proizvoda"
-              placeholderTextColor="black"
+              placeholderTextColor="#124460"
               value={description}
               onChangeText={setDescription}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460' }]}
               placeholder="Broj telefona"
-              placeholderTextColor="black"
+              placeholderTextColor="#124460"
               value={phoneNumber}
               onChangeText={setPhoneNumber}
             />
@@ -205,8 +224,18 @@ const ProductsPage = () => {
               <Text style={styles.imagePickerButtonText}>Izaberi sliku proizvoda</Text>
             </TouchableOpacity>
             {path && <Image source={{ uri: path }} style={styles.previewImage} />}
-            <Button title="Dodaj" onPress={addProduct} />
-            <Button title="Otkaži" color="red" onPress={closeModal} />
+            <View style={styles.modalActions}>
+                          <TouchableOpacity
+                            onPress={addProduct}
+                          >
+                            <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={closeModal}
+                          >
+                            <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+                          </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -218,7 +247,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+  },
+  darkBackground: {
+    backgroundColor: '#124460', 
   },
   headerContainer: {
     marginBottom: 20,
@@ -238,21 +269,31 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     borderBottomWidth: 2,
   },
+  darkText: {
+    color: '#fff',
+  },
   productsList: {
+    paddingTop:10,
     paddingBottom: 20,
+    paddingHorizontal:10,
   },
   productContainer: {
     backgroundColor: '#fff',
     marginBottom: 20,
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 3,
   },
+  darkProduct: {
+    backgroundColor: '#1b5975', 
+  },
   productImage: {
-    width: '100%',
-    height: 250,  // Veća slika, slično Instagram objavi
+    marginTop:5,
+    marginLeft:'5%',
+    width: '90%',
+    height: 250,
     borderRadius: 10,
   },
   productDetails: {
@@ -276,7 +317,7 @@ const styles = StyleSheet.create({
   productPhone: {
     fontSize: 14,
     color: '#555',
-    textDecorationLine: "underline",
+    textDecorationLine: 'underline',
     fontWeight: 'bold',
   },
   searchInput: {
@@ -286,12 +327,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     width: '70%',
-    marginLeft: '15%'
+    marginLeft: '15%',
+  },
+  darkInput: {
+    backgroundColor: '#333',
+    color: '#fff',
   },
   addProductButton: {
     width: '50%',
     marginLeft: '25%',
-    backgroundColor: '#007BFF',
+    backgroundColor: '#6ac17f',
     borderRadius: 10,
     padding: 15,
     alignItems: 'center',
@@ -306,7 +351,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.5)'
   },
   modalContent: {
     width: '80%',
@@ -314,10 +359,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
   },
+  darkModal: {
+    backgroundColor: '#333',
+  },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: 'center',
   },
   input: {
@@ -328,7 +376,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imagePickerButton: {
-    backgroundColor: '#007BFF',
+    backgroundColor: '#6ac17f',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -336,6 +384,7 @@ const styles = StyleSheet.create({
   },
   imagePickerButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   previewImage: {
@@ -345,16 +394,31 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   errorMessage: {
-    color: 'red',
+    color: '#ff999c',
     fontSize: 14,
     marginBottom: 10,
     textAlign: 'center',
-  },noProductsText: {
+  },
+  noProductsText: {
     fontSize: 16,
     color: '#888',
     marginTop: 20,
     marginLeft: 20,
   },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop:20,
+  },
+  cancelButtonText: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: '600',
+  },deleteButtonText2: {
+
+    fontSize: 18,
+    fontWeight: '600',
+  }
 });
 
 export default ProductsPage;

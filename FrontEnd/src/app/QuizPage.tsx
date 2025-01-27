@@ -12,19 +12,29 @@ const QuizPage = () => {
   const [showingFeedback, setShowingFeedback] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [questions, setQuestions] = useState([]);
+  const [dark, setDark] = useState(false); 
 
   useEffect(() => {
     getQuestions();
+    getMode();
   }, []);
 
   const config = require('../../config.json');
-  const ip = config.ipAddress
+  const ip = config.ipAddress;
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") {
+      setDark(true);
+    } else {
+      setDark(false);
+    }
+  };
 
   const getQuestions = async () => {
     try {
       const response = await axios.get(`http://${ip}:8080/v2/api/`);
       const allQuestions = response.data;
-      console.log(allQuestions)
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
       const questionsWithAnswers = await Promise.all(
         shuffledQuestions.map(async (question) => {
@@ -42,7 +52,6 @@ const QuizPage = () => {
       );
 
       setQuestions(questionsWithAnswers);
-      console.log(questions);
     } catch (error) {
       console.error('Error fetching questions or answers:', error);
     }
@@ -83,41 +92,39 @@ const QuizPage = () => {
     }, 3000);
   };
 
-  const dodajBodove = async() =>{
-
+  const dodajBodove = async () => {
     const value = await AsyncStorage.getItem('userInfo');
     const userInfo = value ? JSON.parse(value) : null;
     const userId = userInfo?.userId;
 
-    await axios.put(`http://${ip}:8080/v1/api/bodovi`,{
+    await axios.put(`http://${ip}:8080/v1/api/bodovi`, {
       "user_id": userId,
-      "broj_poena": correctAnswers
-    })
+      "broj_poena": correctAnswers,
+    });
 
-    await axios.put(`http://${ip}:8080/v1/api/uradjen/${userId}`)
-  }
+    await axios.put(`http://${ip}:8080/v1/api/uradjen/${userId}`);
+  };
 
   if (quizCompleted) {
-
     dodajBodove();
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
         <BackNav />
         <View style={styles.container2}>
-          <Text style={styles.resultTitle}>Završen kviz!</Text>
-          <Text style={styles.resultText}>
+          <Text style={[styles.resultTitle, { color: dark ? 'white' : '#124460' }]}>Završen kviz!</Text>
+          <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>
             Tačno ste odgovorili na {correctAnswers} od {questions.length} pitanja.
           </Text>
-          <Text style={styles.resultText}>Vratite se ponovo da radite sutrašnji kviz!</Text>
+          <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>Vratite se ponovo da radite sutrašnji kviz!</Text>
         </View>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <BackNav />
-      <Text style={styles.timer}>Preostalo vremena: {timeLeft} sekundi</Text>
+      <Text style={[styles.timer, { color: dark ? 'white' : '#9a2626' }]}>Preostalo vremena: {timeLeft} sekundi</Text>
       {questions.length > 0 && (
         <Question
           quiz={questions[currentQuestionIndex]}
@@ -126,7 +133,7 @@ const QuizPage = () => {
         />
       )}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>
+        <Text style={[styles.footerText, { color: dark ? 'white' : '#333' }]}>
           Pitanje {currentQuestionIndex + 1} od {questions.length}
         </Text>
       </View>
@@ -137,11 +144,9 @@ const QuizPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   container2: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -150,7 +155,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 10,
-    color: 'red',
   },
   resultTitle: {
     fontSize: 28,
@@ -167,13 +171,11 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 10,
-    backgroundColor: '#f0f0f0',
     alignItems: 'center',
   },
   footerText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
   },
 });
 

@@ -15,7 +15,8 @@ const NotificationsPage = () => {
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
+  const [dark, setDark] = useState(false); 
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -24,36 +25,24 @@ const NotificationsPage = () => {
     try {
       setLoading(true);
   
-      // Dohvatanje user info iz AsyncStorage
       const value = await AsyncStorage.getItem('userInfo');
       const userInfo = value ? JSON.parse(value) : null;
       const userId = userInfo?.userId;
-      const isLogged = !!userId; // Ako postoji userId, korisnik je ulogovan
+      const isLogged = !!userId; 
   
       setLogged(isLogged);
   
-      console.log("log?" + userId);
-  
-      // Dohvatanje postova
       const response = await axios.get(`http://${ip}:8080/v4/api`);
       const fetchedPosts = response.data;
-      
   
-      console.log(fetchedPosts)
-      let dictionary = {}; // Dictionary za lajkove
+      let dictionary = {};
       if (isLogged) {
         const response2 = await axios.get(`http://${ip}:8080/v4/api/user/${userId}`);
-        console.log("Likes response:", response2.data);
-  
-        // Popunjavanje dictionary-a
         response2.data.forEach(item => {
           if(item.postovis)dictionary[item.postovis.id] = true;
         });
       }
   
-      console.log("Filtered posts:", fetchedPosts);
-  
-      // Dohvatanje informacija o autorima
       const authorsResponses = await Promise.all(
         fetchedPosts.map(post =>
           axios.get(`http://${ip}:8080/v1/api/${post.authorId}`)
@@ -61,19 +50,13 @@ const NotificationsPage = () => {
             .catch(() => ({ ime: "Nepoznato", prezime: "" }))
         )
       );
-
-      console.log(authorsResponses)
   
-      // Spajanje postova sa autorima
       const postsWithAuthors = fetchedPosts.map((post, index) => ({
         ...post,
         author: authorsResponses[index],
-        likes: isLogged ? !!dictionary[post.id] : false, // Ako je prijavljen, koristi dictionary, inače false
+        likes: isLogged ? !!dictionary[post.id] : false,
       }));
   
-      console.log("Posts with authors and likes:", postsWithAuthors);
-  
-      // Postavljanje postova u state
       setPosts(postsWithAuthors.reverse());
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -84,12 +67,22 @@ const NotificationsPage = () => {
   
   useEffect(() => {
     getPosts();
+    getMode();
   }, []);
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") {
+      setDark(true);
+    } else {
+      setDark(false);
+    }
+  };
 
   const likePost = async (item) => {
     if (!logged) {
       router.push('/Login');
-      return; // Prekida izvršavanje funkcije ako nije prijavljen
+      return;
     }
 
     if (!item.likes) {
@@ -98,33 +91,28 @@ const NotificationsPage = () => {
       const userInfo = value ? JSON.parse(value) : null;
       const userId = userInfo?.userId;
 
-      console.log(userId + " " + item.id)
       try {
         const response = await axios.post(`http://${ip}:8080/v4/api/like`, {
           "user_id": userId,
           "post_id": item.id
         });
-      
-        console.log("Like response:", response.data);
+
         getPosts();
       } catch (error) {
         console.log(error);
       }
-    }else{
-      item.likes=false;
-
+    } else {
+      item.likes = false;
       const value = await AsyncStorage.getItem('userInfo');
       const userInfo = value ? JSON.parse(value) : null;
       const userId = userInfo?.userId;
 
-      console.log(userId + " " + item.id)
       try {
         const response = await axios.put(`http://${ip}:8080/v4/api/unlike`, {
           "user_id": userId,
           "post_id": item.id
         });
-      
-        console.log("Like response:", response.data);
+
         getPosts();
       } catch (error) {
         console.log(error);
@@ -136,24 +124,22 @@ const NotificationsPage = () => {
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
       const parsedUserInfo = JSON.parse(userInfo);
-    
+
       const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
-        "context": newPost, 
+        "context": newPost,
         "user_id": parsedUserInfo.userId
       });
-  
+
       const newPostData = response.data;
-    
-      // Pre učitavanja posta, prvo uzmi podatke o autoru
+
       const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.userId}`);
       const authorData = authorResponse.data;
-  
+
       const newPostWithAuthor = {
         ...newPostData,
         author: authorData
       };
-  
-      // Postavljanje novih podataka u state, zajedno sa novim postom
+
       setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
       setNewPost("");
       setIsModalVisible(false);
@@ -161,14 +147,13 @@ const NotificationsPage = () => {
       console.error("Error in API request:", error);
     }
   };
-  
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <View style={styles.headerContainer}>
         <BackNav />
-        <Text style={styles.heading}>Oglasna tabla</Text>
-        <Text style={styles.subheading}>
+        <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Oglasna tabla</Text>
+        <Text style={[styles.subheading, { color: dark ? 'white' : '#124660', borderBottomColor: dark ? '#fff' : '#124460' }]}>
           Ovde možete podeliti obaveštenja o dešavanjima vezanim za životnu
           sredinu za koje smatrate da treba da vidi što veći broj ljudi.
         </Text>
@@ -176,26 +161,26 @@ const NotificationsPage = () => {
 
       {logged && (
         <TouchableOpacity
-          style={styles.addPostButton}
+          style={[styles.addPostButton, { backgroundColor: dark ? '#6ac17f' : '#6ac17f' }]}
           onPress={() => setIsModalVisible(true)}
         >
           <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
         </TouchableOpacity>
       )}
 
-      {loading ? ( 
+      {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007BFF" />
-          <Text style={styles.loadingText}>Učitavanje objava...</Text>
+          <ActivityIndicator size="large" color={dark ? 'white':'#124460'} />
+          <Text style={[styles.loadingText, {color: dark ? 'white':'#124460'}]}>Učitavanje objava...</Text>
         </View>
       ) : (
         <>
-          {posts.length === 0 && <Text style={styles.noPostsText}>Budite prvi da objavite!</Text>}
+          {posts.length === 0 && <Text style={[styles.noPostsText, { color: dark ? 'white' : '#888' }]}>Budite prvi da objavite!</Text>}
           <FlatList
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <Post item={item} likePost={likePost} />}
-            contentContainerStyle={styles.postsList}
+            contentContainerStyle={[styles.postsList, {backgroundColor: dark ? '#1b5975' : '#fff',}]}
           />
         </>
       )}
@@ -206,18 +191,27 @@ const NotificationsPage = () => {
         animationType="slide"
         onRequestClose={() => setIsModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Nova objava</Text>
+        <View style={[styles.modalContainer]}>
+          <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
+            <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
+             }]}>Nova objava</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460' }]}
               placeholder="Unesite tekst objave..."
-              placeholderTextColor="#ccc"
+              placeholderTextColor={dark ? '#124460' : '#124460'}
               value={newPost}
               onChangeText={setNewPost}
             />
-            <Button title="Dodaj" onPress={addPost} />
-            <Button title="Otkaži" color="red" onPress={() => setIsModalVisible(false)} />
+            <View style={styles.modalActions}>
+            <TouchableOpacity onPress={addPost}>
+              <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false)}}>
+              <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+            </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -248,9 +242,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingBottom: 30,
     borderBottomWidth: 2,
+    borderBottomColor:'#124460',
   },
   postsList: {
-    paddingBottom: 20,
+    paddingBottom: 10,
+    borderRadius:5,
   },
   addPostButton: {
     width: '40%',
@@ -274,7 +270,6 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#555',
   },
   modalContainer: {
     flex: 1,
@@ -293,9 +288,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalTitle: {
+    marginRight: 'auto',
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: 'center',
   },
   input: {
@@ -306,12 +302,25 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#fff',
 
-  },noPostsText: {
+  },
+  noPostsText: {
     fontSize: 16,
     color: '#888',
     marginTop: 20,
     marginLeft: 20,
-  },
+  },deleteButtonText2: {
+
+    fontSize: 18,
+    fontWeight: '600',
+  }, cancelButtonText: {
+    fontSize: 18,
+    fontWeight: '600',
+  },modalActions: {
+    marginTop:20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  }
 });
+
 
 export default NotificationsPage;
