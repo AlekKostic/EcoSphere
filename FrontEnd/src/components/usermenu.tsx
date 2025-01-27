@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexGrow: 0,
-    ...(Platform.OS === 'android' && { marginTop: '5%' }),
+    marginTop: Platform.OS === 'android' ? '5%' : '3%',
   },
   containerLight: {
     backgroundColor: 'white',
