@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -8,7 +8,18 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
+
   const router = useRouter();
+  const [dark, setDark] = useState(false);
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") setDark(true);
+  }
+
+  useEffect(() => {
+    getMode();
+  }, []);
 
   const [form, setForm] = useState({
     email: '',
@@ -16,7 +27,7 @@ const Login = () => {
   });
 
   const config = require('../../config.json');
-  const ip = config.ipAddress
+  const ip = config.ipAddress;
 
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("");
@@ -46,8 +57,6 @@ const Login = () => {
         password: password
       });
 
-      console.log(response)
-      
       setError(false);
       setErrorText("");
       setIsLoading(false);
@@ -61,23 +70,18 @@ const Login = () => {
           password: password,
         };
 
-        console.log(transformedData)
-
-
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
         router.push('/Home');
       }
     } catch (error) {
-
-      if(error.status=="500"){
+      if (error.status === "500") {
         setError(true);
         setErrorText("Pogrešan e-mail ili lozinka.");
         setIsLoading(false); 
         return;
       }
-      alert(error)
       setError(true);
-      setErrorText('Greška prilikom logovanja. Molimo pokušajte ponovo.');
+      setErrorText("Pogrešan e-mail ili lozinka.");
       setIsLoading(false); 
     }
   };
@@ -87,17 +91,22 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#124460' }}>
+    <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
       <BackNav />
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.subtitle}>Održivost počinje ovde.</Text>
-          <Text style={styles.title}>
-            Ulogujte se na <Text style={{ color: '#6ac17f' }}>EcoSphere</Text>
+          {/* Add Image here */}
+          <Image 
+            source={require('../img/logo.png')}  // Replace with the correct image path
+            style={styles.headerImage} 
+          />
+          <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>Održivost počinje ovde.</Text>
+          <Text style={[styles.title, dark ? styles.titleDark : styles.titleLight]}>
+            Ulogujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
-        <Text style={styles.inputLabel}>E-mail adresa</Text>
+          <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>E-mail adresa</Text>
           <View style={styles.input}>
             <TextInput
               autoCapitalize="none"
@@ -106,28 +115,28 @@ const Login = () => {
               keyboardType="email-address"
               onChangeText={email => setForm({ ...form, email })}
               placeholder="mail@example.com"
-              placeholderTextColor="#124460"
-              style={styles.inputControl}
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
               value={form.email}
             />
           </View>
           <View style={styles.input}>
-          <Text style={styles.inputLabel}>Lozinka</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Lozinka</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
                 clearButtonMode="while-editing"
                 onChangeText={password => setForm({ ...form, password })}
                 placeholder="********"
-                placeholderTextColor="#124460"
-                style={styles.inputControl}
+                placeholderTextColor={dark ? '#124460' : '#124460'}
+                style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
                 secureTextEntry={!showPassword}
                 value={form.password}
               />
               <MaterialCommunityIcons
                 name={!showPassword ? 'eye-off' : 'eye'}
                 size={24}
-                color="#aaa"
+                color={dark ? '#124460' : '#124460'}
                 onPress={toggleShowPassword}
                 style={styles.icon}
               />
@@ -135,20 +144,20 @@ const Login = () => {
           </View>
           <View style={styles.formAction}>
             <TouchableOpacity onPress={handleLogin}>
-              <View style={styles.btn}>
+              <View style={[styles.btn, isLoading && { backgroundColor: '#ccc' }]}>
                 <Text style={styles.btnText}>Ulogujte se</Text>
               </View>
             </TouchableOpacity>
           </View>
           {error && (
             <View style={styles.errorContainer}>
-              <Text style={styles.error}>{errorText}</Text>
+              <Text style={[styles.error, {color: dark? '#ff999c':'#9a2626'}]}>{errorText}</Text>
             </View>
           )}
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity onPress={handleSignin}>
-        <Text style={styles.formFooter}>
+        <Text style={[styles.formFooter, dark ? styles.formFooterDark : styles.formFooterLight]}>
           Nemate nalog?{' '}
           <Text style={{ textDecorationLine: 'underline' }}>Registrujte se</Text>
         </Text>
@@ -163,10 +172,18 @@ const Login = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  safeAreaDark: {
+    backgroundColor: '#124460',
+  },
+  safeAreaLight: {
+    backgroundColor: '#fff',
+  },
   container: {
-    paddingVertical: '30%',
+    paddingVertical: '15%',
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
@@ -174,19 +191,40 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 31,
     fontWeight: '700',
-    color: 'white',
     marginBottom: 6,
+  },
+  titleLight: {
+    color: '#124460',
+  },
+  titleDark: {
+    color: 'white',
   },
   subtitle: {
     fontSize: 23,
     fontWeight: '700',
-    color: '#6ac17f',
     marginBottom: 10,
+  },
+  subtitleLight: {
+    color: '#6ac17f',
+  },
+  subtitleDark: {
+    color: '#6ac17f',
+  },
+  greenTextLight: {
+    color: '#6ac17f',
+  },
+  greenTextDark: {
+    color: '#6ac17f',
   },
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 36,
+  },
+  headerImage: {
+    width: 80,  
+    height: 80,  
+    marginBottom: 25,  
   },
   form: {
     marginBottom: 24,
@@ -203,9 +241,14 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     fontSize: 15,
     fontWeight: '600',
-    color: 'white',
     textAlign: 'center',
     letterSpacing: 0.15,
+  },
+  formFooterLight: {
+    color: '#124460',
+  },
+  formFooterDark: {
+    color: 'white',
   },
   input: {
     marginBottom: 16,
@@ -213,21 +256,32 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 17,
     fontWeight: '600',
-    color: 'white',
     marginBottom: 8,
+  },
+  inputLabelLight: {
+    color: '#124460',
+  },
+  inputLabelDark: {
+    color: 'white',
   },
   inputControl: {
     flex: 1,
     height: 50,
-    backgroundColor: '#fff',
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,
     fontWeight: '500',
-    color: '#222',
     borderWidth: 1,
-    borderColor: 'white',
-    borderStyle: 'solid',
+  },
+  inputControlLight: {
+    backgroundColor: '#fff',
+    color: '#222',
+    borderColor: '#124460',
+  },
+  inputControlDark: {
+    backgroundColor: 'white',
+    color: '#124460',
+    borderColor: '#E8F5E9',
   },
   passwordContainer: {
     position: 'relative',
@@ -239,7 +293,7 @@ const styles = StyleSheet.create({
     right: 16,
     top: '50%',
     transform: [{ translateY: -12 }],
-    zIndex: 1, 
+    zIndex: 1,
   },
   btn: {
     flexDirection: 'row',
@@ -263,7 +317,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: 18,
-    color: 'red',
+    color: '#9a2626',
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,

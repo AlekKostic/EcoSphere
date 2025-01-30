@@ -1,33 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const Question = ({ quiz, onAnswer, showingFeedback }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackColor, setFeedbackColor] = useState('green');
+  const [dark, setDark] = useState(false); 
+
+  useEffect(() => {
+    getMode(); 
+  }, []);
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") {
+      setDark(true);
+    } else {
+      setDark(false);
+    }
+  };
 
   const handleOptionPress = (option) => {
     if (showingFeedback) return;
     setSelectedOption(option);
     const isCorrect = option === quiz.correctAnswer;
     setFeedbackMessage(isCorrect ? 'Tačno!' : 'Netačno.');
-    setFeedbackColor(isCorrect ? 'green' : 'red');
+    setFeedbackColor(isCorrect ? '#6ac17f' : '#9a2626');
     onAnswer(isCorrect);
   };
 
   return (
-    <View style={styles.quizContainer}>
-      <Text style={styles.question}>{quiz.question}</Text>
+    <View style={[styles.quizContainer, { backgroundColor: dark ? '#124460' : 'white' }]}>
+      <Text style={[styles.question, { color: dark ? 'white' : '#124460' }]}>{quiz.question}</Text>
       {quiz.options.map((option, index) => (
         <TouchableOpacity
           key={index}
-          style={[
-            styles.optionButton,
+          style={[ 
+            styles.optionButton, 
             selectedOption === option && styles.selectedOption,
+            { backgroundColor: dark ? '#6ac17f' : '#e0e0e0' } 
           ]}
           onPress={() => handleOptionPress(option)}
         >
-          <Text style={styles.optionText}>{option}</Text>
+          <Text style={[styles.optionText, { color: dark ? 'white' : '#124460' }]}>{option}</Text>
         </TouchableOpacity>
       ))}
       {showingFeedback && (
@@ -45,7 +61,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   question: {
     fontSize: 24,
@@ -54,7 +69,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   optionButton: {
-    backgroundColor: '#e0e0e0',
     padding: 15,
     alignContent: 'center',
     justifyContent: 'center',

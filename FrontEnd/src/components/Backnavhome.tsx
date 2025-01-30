@@ -7,7 +7,7 @@ const BackNav = () => {
   const router = useRouter();
 
   const handleBack = () => {
-    router.back(); // Go back to the previous screen
+    router.push('/Home')
   };
 
   const [dark, setDark]=useState(false)

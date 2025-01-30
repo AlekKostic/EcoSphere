@@ -2,25 +2,59 @@ import {
   View, Text, Linking, TouchableOpacity, StyleSheet, 
   TextInput, Keyboard, TouchableWithoutFeedback 
 } from 'react-native';
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
 import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef(null);
+  const [dark, setDark] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") setDark(true);
+  };
+
+  useEffect(() => {
+    getMode();
+  }, []);
 
   const videoLinks = [
-    { title: 'Radionica "Reciklaža nije gnjavaža" za decu', link: 'https://www.tiktok.com/@mojsvetns/video/7435042170282806584' },
-    { title: 'Common Waste - Common Libraries - Goethe-Institut Srbija', link: 'https://www.goethe.de/ins/cs/sr/kul/sup/cnw.html' },
-    { title: 'Uvođenje sistema reciklaže i ekološko obrazovanje', link: 'https://openjicareport.jica.go.jp/pdf/1000052997_02.pdf' },
-    { title: 'Eko aktivnosti - Oaza znanja', link: 'https://nvooazaznanja.wordpress.com/wp-content/uploads/2019/05/eko-aktivnosti.pdf' },
+    { title: 'Savetodavni portal za reciklažu - Recycle Now', link: 'https://www.recyclenow.com' },
+    { title: 'Američko udruženje za šume i papirnu industriju', link: 'https://www.afandpa.org' },
+    { title: 'Plastika i reciklaža - Plastics Europe', link: 'https://plasticseurope.org' },
+    { title: 'Reciklaža plastike u praksi', link: 'https://www.reciklaza-plastike.com' },
+    { title: 'Reciklaža plastike - Srpski resursi', link: 'http://reciklazaplastike.rs' },
+    { title: 'Eko Flor - Ekološki proizvodi i reciklaža', link: 'http://www.ekoflor-nordtrade.co.rs' },
+    { title: 'Inicijativa "Ja bolji građanin" - Ekološki saveti', link: 'https://jaboljigradjanin.com' },
+    { title: 'Reciklaža metala - Metal Kat', link: 'https://metalkatrecycle.com' },
+    { title: 'Besplatno recikliranje - Freecycle', link: 'https://www.freecycle.org' },
+    { title: 'Pretraživanje resursa za reciklažu - Zemlja 911', link: 'https://search.earth911.com' },
+    { title: 'Top 50 sajtova za reciklažu - Zelena šibica', link: 'https://www.greenmatch.co.uk/blog/2015/07/top-50-recycling-sites' },
+    { title: 'TerraCycle - Inovativna reciklaža', link: 'https://www.terracycle.com/en-US/?srsltid=AfmBOoq7b01drY3XYYOUdl_rxQfvMUADYD2N4PB3KmXsk4Q0DHf-o804' },
+    { title: 'Upravljanje otpadom - Lokacije za odlaganje', link: 'https://www.wm.com/us/en/drop-off-locations' },
+    { title: 'Reciklaža kartona - Love Junk', link: 'https://www.lovejunk.com/cardboard-recycling' },
+    { title: 'Gde možete reciklirati? - Recycle More', link: 'https://www.recycle-more.co.uk/where-can-i-recycle' },
+    { title: 'Recikliranje u vašem kraju - Recycling Near You', link: 'https://recyclingnearyou.com.au/paper-cardboard/' },
+    { title: 'Globalno zagrevanje i reciklaža - Climate Reality', link: 'https://www.climaterealityproject.org' },
+    { title: 'Reciklaža u gradovima - Sustainable Cities', link: 'https://www.sustainablecities.eu' },
+    { title: 'Važnost reciklaže za budućnost', link: 'https://www.recycleacrossamerica.org/why-recycling-matters' },
+    { title: 'Učinite planetu zdravijom - WWF', link: 'https://www.worldwildlife.org' },
+    { title: 'Ekološki otisak i reciklaža - Global Footprint Network', link: 'https://www.footprintnetwork.org' },
+    { title: 'Zeleni gradovi i održivost - Eco-Cities', link: 'https://www.ecocitybuilders.org' },
+    { title: 'Savetnik za zelenu energiju i reciklažu - Green Energy Solutions', link: 'https://www.greenenergysolutions.org' },
+    { title: 'Uloga reciklaže u smanjenju otpada - Zero Waste Europe', link: 'https://www.zerowasteeurope.eu' },
+    { title: 'Kako smanjiti otpad i povećati reciklažu - Waste Management', link: 'https://www.wm.com' }
   ];
+  
+  
 
   const icons = ['recycling', 'public', 'favorite', 'eco', 'lightbulb', 'language', 'search'];
 
-  // Generišemo nasumične ikone SAMO jednom i čuvamo ih u memoriji
   const assignedIcons = useMemo(() => {
     return videoLinks.map(() => {
       const randomIndex = Math.floor(Math.random() * icons.length);
@@ -33,9 +67,11 @@ const Icon2 = () => {
   };
 
   const toggleKeyboard = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (isKeyboardVisible) {
+          Keyboard.dismiss();
+        } else {
+          inputRef.current?.focus();
+        }
   };
 
   const filteredLinks = videoLinks.filter((video) =>
@@ -44,42 +80,42 @@ const Icon2 = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
+      <View style={[styles.container, dark ? styles.containerDark : styles.containerLight]}>
         <BackNav />
-        <Text style={styles.heading}>Edukacija o Reciklaži i Zaštiti Životne Sredine</Text>
-        <Text style={styles.subheading}>
+        <Text style={[styles.heading, dark ? styles.headingDark : styles.headingLight]}>Edukacija o Reciklaži i Zaštiti Životne Sredine</Text>
+        <Text style={[styles.subheading, dark ? styles.subheadingDark : styles.subheadingLight]}>
           Ovde možete pronaći edukativne materijale u vidu sajtova i snimaka koji podižu svest o važnosti brige o životnoj sredini.
         </Text>
 
-        {/* Pretraga sa ikonicom desno */}
         <View style={styles.searchContainer}>
           <TextInput
             ref={inputRef}
-            style={styles.searchInput}
+            style={[styles.searchInput, dark ? styles.searchInputDark : styles.searchInputLight]}
             placeholder="Pretraži..."
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#888"
+            placeholderTextColor={dark ? '#124460' : '#124460'}
+            onFocus={() => setIsKeyboardVisible(true)}
+            onBlur={() => setIsKeyboardVisible(false)}
           />
           <TouchableOpacity onPress={toggleKeyboard} style={styles.iconWrapper}>
-            <MaterialIcons name="search" size={24} color="#888" />
+            <MaterialIcons name="search" size={24} color={dark ? '#124460' : '#124460'} />
           </TouchableOpacity>
         </View>
 
-        {/* KeyboardAwareScrollView sa persistent scrollbar */}
         <KeyboardAwareScrollView
-          style={styles.postsContainer}
+          style={[styles.postsContainer, dark ? styles.postsContainerDark : styles.postsContainerLight]}
           persistentScrollbar={true}
           keyboardShouldPersistTaps="handled"
         >
           {filteredLinks.length === 0 ? (
-            <Text style={styles.noResults}>Nema rezultata</Text>
+            <Text style={[styles.noResults, dark ? styles.noResultsDark : styles.noResultsLight]}>Nema rezultata</Text>
           ) : (
             filteredLinks.map((video, index) => (
               <TouchableOpacity key={index} onPress={() => handlePress(video.link)} style={styles.videoLink}>
-                <View style={styles.card}>
-                  <MaterialIcons name={assignedIcons[index]} size={24} color="#333" style={styles.icon} />
-                  <Text style={styles.videoTitle}>{video.title}</Text>
+                <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
+                  <MaterialIcons name={assignedIcons[index]} size={24} color={dark ? '#E8F5E9' : '#124460'} style={styles.icon} />
+                  <Text style={[styles.videoTitle, dark ? styles.videoTitleDark : styles.videoTitleLight]}>{video.title}</Text>
                 </View>
               </TouchableOpacity>
             ))
@@ -94,23 +130,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f9f9f9',
+  },
+  containerLight: {
+    backgroundColor: 'white',
+  },
+  containerDark: {
+    backgroundColor: '#124460',
   },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
     marginTop: 30,
     marginBottom: 20,
     textAlign: 'center',
   },
+  headingLight: {
+    color: '#124460',
+  },
+  headingDark: {
+    color: '#E8F5E9',
+  },
   subheading: {
     fontSize: 20,
-    color: '#333',
     paddingBottom: 30,
     marginBottom: 30,
     textAlign: 'center',
-    borderBottomColor: 'black',
+    
+  },
+  subheadingLight: {
+    color: '#124460',
+    borderBottomColor: '#124460',
+    borderBottomWidth: 2,
+  },
+  subheadingDark: {
+    color: '#E8F5E9',
+    borderBottomColor: 'white',
     borderBottomWidth: 2,
   },
   searchContainer: {
@@ -131,26 +185,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 40,
   },
+  searchInputLight: {
+    backgroundColor: '#fff',
+    borderColor:'#124460',
+    borderWidth: 1,
+    color: '#333',
+  },
+  searchInputDark: {
+    backgroundColor: 'white',
+    color: '#124460',
+  },
   iconWrapper: {
     position: 'absolute',
     right: 10,
     padding: 5,
   },
   postsContainer: {
-    backgroundColor: '#fff',
+    borderRadius:5,
+    paddingTop:5,
     paddingHorizontal: 10,
+  },
+  postsContainerLight: {
+    backgroundColor: '#fff',
+  },
+  postsContainerDark: {
+    backgroundColor: '#1b5975',
   },
   videoLink: {
     marginBottom: 10,
   },
   card: {
     padding: 15,
-    backgroundColor: '#fff',
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#ddd',
     width: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -159,20 +228,38 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginTop: 5,
   },
+  cardLight: {
+    backgroundColor: '#fff',
+    borderColor: '#ddd',
+  },
+  cardDark: {
+    backgroundColor: '#2f6d8c',
+    borderColor: '#34495e',
+  },
   icon: {
     marginRight: 15,
   },
   videoTitle: {
     fontSize: 18,
-    color: '#333',
     fontWeight: 'bold',
     flexShrink: 1,
   },
+  videoTitleLight: {
+    color: '#333',
+  },
+  videoTitleDark: {
+    color: '#E8F5E9',
+  },
   noResults: {
     fontSize: 18,
-    color: '#888',
     textAlign: 'center',
     marginTop: 20,
+  },
+  noResultsLight: {
+    color: '#888',
+  },
+  noResultsDark: {
+    color: '#E8F5E9',
   },
 });
 

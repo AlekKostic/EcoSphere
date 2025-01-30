@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import BackNav from '../components/Backnav';
+import BackNav from '../components/Backnavhome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const Signup = () => {
   const router = useRouter();
+  const [dark, setDark] = useState(false);
+
+  const getMode = async () => {
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === "true") setDark(true);
+  }
+
+  useEffect(() => {
+    getMode();
+  }, []);
 
   const [form, setForm] = useState({
     name: '',
@@ -23,8 +33,8 @@ const Signup = () => {
   const [isLoading, setIsLoading] = useState(false); 
   const [showPassword, setShowPassword] = useState(false);
 
-  const config = require('../../config.json')
-  const ip = config.ipAddress
+  const config = require('../../config.json');
+  const ip = config.ipAddress;
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -37,14 +47,14 @@ const Signup = () => {
   const handleSignin = async () => {
     const { name, surname, city, email, password } = form;
 
-    if (!name || !surname || !city || !email || !password) {
+    if (!name || !surname || !email || !password) {
       setError(true);
       setErrorText("Svako polje mora biti popunjeno")
       return;
     }
 
     setError(false);
-    setErrorText("")
+    setErrorText("");
     setIsLoading(true);
 
     try {
@@ -54,7 +64,8 @@ const Signup = () => {
           ime: name,
           prezime: surname,
           email: email,
-          password: password
+          password: password,
+          brojPoena: 0
         },
         {
           headers: {
@@ -77,7 +88,7 @@ const Signup = () => {
 
       router.push('/Home');
     } catch (err) {
-      setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.")
+      setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.");
       setError(true);
     } finally {
       setIsLoading(false); 
@@ -89,81 +100,70 @@ const Signup = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <BackNav />
-
+    <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
+      <BackNav/>
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>
-            Registrujte se na <Text style={{ color: '#075eec' }}>EcoSphere</Text>
+          <Image source={require('../img/logo.png')} style={styles.logo} />
+          <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>Održivost počinje ovde.</Text>
+          <Text style={[styles.title, dark ? styles.titleDark : styles.titleLight]}>
+            Registrujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Ime</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Ime</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               onChangeText={(name) => setForm({ ...form, name })}
               placeholder="Ime..."
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
               value={form.name}
             />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Prezime</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Prezime</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               onChangeText={(surname) => setForm({ ...form, surname })}
               placeholder="Prezime..."
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
               value={form.surname}
             />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Grad</Text>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(city) => setForm({ ...form, city })}
-              placeholder="Grad..."
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
-              value={form.city}
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={styles.inputLabel}>E-mail addresa</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>E-mail addresa</Text>
             <TextInput
               autoCapitalize="none"
               autoCorrect={false}
               onChangeText={(email) => setForm({ ...form, email })}
               placeholder="mail@example.com"
-              placeholderTextColor="#6b7280"
-              style={styles.inputControl}
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
               value={form.email}
             />
           </View>
           <View style={styles.input}>
-            <Text style={styles.inputLabel}>Lozinka</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Lozinka</Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
                 clearButtonMode="while-editing"
                 onChangeText={(password) => setForm({ ...form, password })}
                 placeholder="********"
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
+                placeholderTextColor={dark ? '#124460' : '#124460'}
+                style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
                 secureTextEntry={!showPassword}
                 value={form.password}
               />
               <MaterialCommunityIcons
                 name={!showPassword ? 'eye-off' : 'eye'}
                 size={24}
-                color="#aaa"
+                color={dark ? '#124460' : '#124460'}
                 onPress={toggleShowPassword}
                 style={styles.icon}
               />
@@ -178,13 +178,13 @@ const Signup = () => {
           </View>
           {error && (
             <View style={styles.errorcontainer}>
-              <Text style={styles.error}>{errorText}</Text>
+              <Text style={[styles.error, {color: dark? '#ff999c':'#9a2626'}]}>{errorText}</Text>
             </View>
           )}
         </View>
       </KeyboardAwareScrollView>
       <TouchableOpacity onPress={handleLogin}>
-        <Text style={styles.formFooter}>
+        <Text style={[styles.formFooter, dark ? styles.formFooterDark : styles.formFooterLight]}>
           Već imate nalog? <Text style={{ textDecorationLine: 'underline' }}>Ulogujte se</Text>
         </Text>
       </TouchableOpacity>
@@ -197,35 +197,61 @@ const Signup = () => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  safeAreaLight: {
+    backgroundColor: '#fff',
+  },
+  safeAreaDark: {
+    backgroundColor: '#124460',
+  },
   container: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    paddingVertical: '0%',
   },
-  title: {
-    fontSize: 30,
-    fontWeight: '700',
-    color: '#1D2A32',
-  },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#929292',
-  },
-  /** Header */
   header: {
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: 30,
   },
-  headerImg: {
-    width: 80,
-    height: 80,
-    alignSelf: 'center',
-    marginBottom: 30,
+  logo: {
+    width: 40, 
+    height: 40, 
+    marginBottom: 20, 
   },
-  /** Form */
+  subtitle: {
+    fontSize: 23,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  subtitleLight: {
+    color: '#6ac17f',
+  },
+  subtitleDark: {
+    color: '#6ac17f',
+  },
+  title: {
+    fontSize: 25,
+    fontWeight: '700',
+    color: '#1D2A32',
+  },
+  titleLight: {
+    color: '#124460',
+  },
+  titleDark: {
+    color: 'white',
+  },
+  greenTextLight: {
+    color: '#6ac17f',
+  },
+  greenTextDark: {
+    color: '#6ac17f',
+  },
   form: {
     marginBottom: 24,
     paddingHorizontal: 24,
@@ -237,12 +263,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginBottom: 16,
   },
-  formLink: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#075eec',
-    textAlign: 'center',
-  },
   formFooter: {
     paddingVertical: 24,
     fontSize: 15,
@@ -251,62 +271,45 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 0.15,
   },
-  /** Input */
+  formFooterLight: {
+    color: '#124460',
+  },
+  formFooterDark: {
+    color: 'white',
+  },
   input: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   inputLabel: {
-    fontSize: 17,
+    fontSize: 15,
     fontWeight: '600',
     color: '#222',
     marginBottom: 8,
   },
+  inputLabelLight: {
+    color: '#124460',
+  },
+  inputLabelDark: {
+    color: 'white',
+  },
   inputControl: {
     flex: 1,
     height: 50,
-    backgroundColor: '#fff',
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,
     fontWeight: '500',
-    color: '#222',
     borderWidth: 1,
+  },
+  inputControlLight: {
+    backgroundColor: '#fff',
+    color: '#124460',
     borderColor: '#C9D3DB',
-    borderStyle: 'solid',
   },
-  /** Button */
-  btn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    backgroundColor: '#075eec',
-    borderColor: '#075eec',
-  },
-  btnText: {
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  errorcontainer: {
-    alignItems: 'center',
-  },
-  error: {
-    fontSize: 18,
-    color: 'red',
-  },
-  backbtn: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#222',
-    textAlign: 'right',
-    paddingRight: 24,
-    paddingTop: 24,
-    letterSpacing: 0.15,
+  inputControlDark: {
+    backgroundColor: 'white',
+    color: '#124460',
+    borderColor: '#E8F5E9',
   },
   passwordContainer: {
     position: 'relative',
@@ -318,8 +321,45 @@ const styles = StyleSheet.create({
     right: 16,
     top: '50%',
     transform: [{ translateY: -12 }],
-    zIndex: 1, 
-  },loadingOverlay: {
+    zIndex: 1,
+  },
+  btn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: '#6ac17f',
+    borderColor: '#6ac17f',
+  },
+  btnText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: '600',
+    color: '#124460',
+  },
+  sustainabilityText: {
+    fontSize: 16,
+    fontWeight: '500',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  sustainabilityTextLight: {
+    color: '#124460',
+  },
+  sustainabilityTextDark: {
+    color: 'white',
+  },
+  errorcontainer: {
+    alignItems: 'center',
+  },
+  error: {
+    fontSize: 15,
+    color: '#9a2626',
+  },
+  loadingOverlay: {
     position: 'absolute',
     top: 0,
     left: 0,
