@@ -1,8 +1,11 @@
 package com.example.Backend.Controllers;
 
+import com.example.Backend.DTO.Product.ProductDTO;
+import com.example.Backend.DTO.Product.ProductSaveDTO;
 import com.example.Backend.Models.Product;
 import com.example.Backend.Services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,12 +17,22 @@ public class ProductController {
     private ProductServices productServices;
 
     @PostMapping("/create")
-    public Product create(@RequestBody Product product){
+    public Product create(@RequestBody ProductDTO product){
         return productServices.create(product);
     }
 
     @GetMapping
     public List<Product> getProduct(){
         return productServices.find();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity pregledi(@PathVariable("id") Long id){
+        return productServices.pregledi(id);
+    }
+
+    @PutMapping("/save")
+    public  ResponseEntity save(@RequestBody ProductSaveDTO productSaveDTO){
+        return productServices.save(productSaveDTO);
     }
 }

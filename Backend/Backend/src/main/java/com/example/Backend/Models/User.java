@@ -41,6 +41,17 @@ public class User {
     @Column(name = "kviz_radjen")
     private Date poslednjiKviz;
 
+    @OneToMany(mappedBy = "user")
+    private List<Product> sacuvane;
+
+    public List<Product> getSacuvane() {
+        return sacuvane;
+    }
+
+    public void setSacuvane(List<Product> sacuvane) {
+        this.sacuvane = sacuvane;
+    }
+
     public List<Like> getLajkovaneObjave() {
         return lajkovaneObjave;
     }

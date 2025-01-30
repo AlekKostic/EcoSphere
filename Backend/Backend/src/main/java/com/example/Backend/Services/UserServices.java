@@ -6,6 +6,7 @@ import com.example.Backend.DTO.User.UserDTO;
 import com.example.Backend.DTO.User.UserLoginDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
+import com.example.Backend.Models.Product;
 import com.example.Backend.Models.User;
 import com.example.Backend.Repository.LikeRepository;
 import com.example.Backend.Repository.UserRepository;
@@ -47,7 +48,12 @@ public class UserServices {
         for (Postovi postovi : user.get().getPosts()){
             posts.add(user.get().getId());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz());
+
+        List<Long> product = new ArrayList<>();
+        for (Product product1 : user.get().getSacuvane()){
+            product.add(product1.getProduct_id());
+        }
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product);
     }
 
     public UserDTO find(Long id){
@@ -60,7 +66,12 @@ public class UserServices {
         for (Postovi postovi : user.getPosts()){
             posts.add(postovi.getId());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz());
+
+        List<Long> product = new ArrayList<>();
+        for (Product product1 : user.getSacuvane()){
+            product.add(product1.getProduct_id());
+        }
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product);
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){

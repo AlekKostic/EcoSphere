@@ -21,6 +21,30 @@ public class Product {
 
     private String Path;
 
+    @ManyToOne
+    private User user;
+
+    private Integer broj_pregleda;
+
+    public Product() {
+    }
+
+    public Integer getBroj_pregleda() {
+        return broj_pregleda;
+    }
+
+    public void setBroj_pregleda(Integer broj_pregleda) {
+        this.broj_pregleda = broj_pregleda;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public String getPath() {
         return Path;
     }

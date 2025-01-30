@@ -12,8 +12,9 @@ public class UserDTO {
     private Long user_id;
     private Integer broj_bodova;
     private Date radjen;
+    private List<Long> productids;
 
-    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova, Date radjen) {
+    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova, Date radjen, List<Long> productids) {
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
@@ -22,6 +23,7 @@ public class UserDTO {
         this.user_id = user_id;
         this.broj_bodova = broj_bodova;
         this.radjen = radjen;
+        this.productids = productids;
     }
 
     public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids) {
@@ -30,6 +32,14 @@ public class UserDTO {
         this.email = email;
         this.postsids = postsids;
         this.likesids = likesids;
+    }
+
+    public List<Long> getProductids() {
+        return productids;
+    }
+
+    public void setProductids(List<Long> productids) {
+        this.productids = productids;
     }
 
     public Long getUser_id() {
