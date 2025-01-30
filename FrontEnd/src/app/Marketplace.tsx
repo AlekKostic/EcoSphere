@@ -1,23 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
-const ProductsPage = () => {
+import Product from '../components/Product';
+import { MaterialIcons } from '@expo/vector-icons'; 
 
+const ProductsPage = () => {
   const [dark, setDark] = useState(false); 
 
   useEffect(() => {
     const getMode = async () => {
       const storedMode = await AsyncStorage.getItem('darkMode');
-      if (storedMode === 'true') {
-        setDark(true);
-      } else {
-        setDark(false);
-      }
+      setDark(storedMode === 'true');
     };
 
     getMode();
@@ -31,6 +29,7 @@ const ProductsPage = () => {
   const [path, setPath] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const router = useRouter(); 
 
   const config = require('../../config.json');
@@ -41,13 +40,10 @@ const ProductsPage = () => {
 
   const check = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
-    if (userInfo) {
-      setLogged(true);
-    }
+    setLogged(!!userInfo);
     try {
       const response = await axios.get(`http://${ip}:8080/v5/api`);
-      setProducts(response.data);
-      setProducts((prevPosts) => [...prevPosts].reverse());
+      setProducts(response.data.reverse());
     } catch (error) {
       console.log(error);
     }
@@ -78,11 +74,11 @@ const ProductsPage = () => {
 
     try {
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
-        name: name,
-        description: description,
+        name,
+        description,
         price: 0,
-        phoneNumber: phoneNumber,
-        path: path
+        phoneNumber,
+        path
       });
 
       console.log('Product added successfully:', response.data);
@@ -95,16 +91,7 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <View style={[styles.productContainer, {backgroundColor: dark ? '#2f6d8c' : '#fff'}]}>
-        {item.path && <Image source={{ uri: item.path }} style={styles.productImage} />}
-        <View style={styles.productDetails}>
-          <Text style={[styles.productName, {color: dark?'white':"#124460"}]}>{item.name}</Text>
-          <Text style={[styles.productDescription, {color: dark?'white':"#124460"}]}>{item.description}</Text>
-          <TouchableOpacity onPress={() => router.push({ pathname: '/UserInfo' })}>
-            <Text style={[styles.productPhone, {color: dark?'white':"#124460"}]}>Kontakt telefon: {item.phoneNumber}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Product item={item} dark={dark} />
     );
   };
 
@@ -130,107 +117,117 @@ const ProductsPage = () => {
     }
   };
 
+  const inputRef = useRef(null);  // Define the inputRef
+
+  const handleSearchIconPress = () => {
+    if (isKeyboardVisible) {
+      Keyboard.dismiss();
+    } else {
+      inputRef.current?.focus();  // Focus on the input field
+    }
+    setIsKeyboardVisible(!isKeyboardVisible);
+  };
+
   return (
-    <View style={[styles.container, {backgroundColor: dark? '#124460': 'white'}]}>
-      <View style={styles.headerContainer}>
-        <BackNav />
-        <Text style={[styles.heading,{color: dark? 'white': '#124460'}]}>Prodavnica</Text>
-        <Text style={[styles.subheading, {color: dark? 'white': '#124460', 
-          borderBottomColor: dark?'white':'#124460'
-        }]}>
-          Ovde možete podeliti proizvode koje želite da poklonite drugim korisnicima,
-          kao i da pogledate koje to proizvode drugi korisnici poklanjaju.
-        </Text>
-      </View>
-  
-      <TextInput
-        style={[styles.searchInput, {backgroundColor: dark? 'white': 'white',
-          borderColor: dark? 'white': '#124460'
-        }]}
-        placeholderTextColor= { dark? '#124460': '#124460'}
-        placeholder="Pretraži proizvode..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-  
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
+        <View style={styles.headerContainer}>
+          <BackNav />
+          <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Prodavnica</Text>
+          <Text style={[styles.subheading, { color: dark ? 'white' : '#124460', borderBottomColor: dark ? 'white' : '#124460' }]}>
+            Ovde možete podeliti proizvode koje želite da poklonite drugim korisnicima,
+            kao i da pogledate koje to proizvode drugi korisnici poklanjaju.
+          </Text>
+        </View>
+    
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            ref={inputRef}  // Attach the inputRef to TextInput
+            style={[styles.searchInput, { backgroundColor: dark ? 'white' : 'white', borderColor: dark ? 'white' : '#124460' }]}
+            placeholderTextColor={dark ? '#124460' : '#124460'}
+            placeholder="Pretraži proizvode..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onFocus={() => setIsKeyboardVisible(true)}
+            onBlur={() => setIsKeyboardVisible(false)}
+          />
+          <TouchableOpacity style={styles.searchIcon} onPress={handleSearchIconPress}>
+            <MaterialIcons name="search" size={24} color={dark ? '#124460' : '#124460'} />
+          </TouchableOpacity>
+        </View>
+    
+        {/* Add Product Button */}
         <TouchableOpacity
           style={styles.addProductButton}
-          onPress={() => { if(!logged)router.push('/Login')
-             else setIsModalVisible(true)}}
+          onPress={() => { if (!logged) router.push('/Login'); else setIsModalVisible(true); }}
         >
-          <Text style={[styles.addProductButtonText]}>+ Dodaj proizvod</Text>
+          <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
         </TouchableOpacity>
-  
-      {products.length === 0 ? (
-        <Text style={[styles.noProductsText, {color: dark?'white':'#124460'}]}>Objavite prvi proizvod!</Text>
-      ) : (
-        <FlatList
-          data={filteredProducts}
-          keyExtractor={(item) => item.product_id.toString()}
-          renderItem={renderProduct}
-          contentContainerStyle={styles.productsList}
-        />
-      )}
-  
-      <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={closeModal}
-      >
-        <View style={[styles.modalContainer]}>
-          <View style={[styles.modalContent,{backgroundColor: dark?'#124460':'white'}]}>
-            <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Dodaj novi proizvod</Text>
-            {errorMessage ? (
-              <Text style={styles.errorMessage}>{errorMessage}</Text>
-            ) : null}
-            <TextInput
-              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
-                color: dark ? '#124460' : '#124460',
-                borderColor: '#124460' }]}
-              placeholder="Ime proizvoda"
-              value={name}
-              placeholderTextColor="#124460"
-              onChangeText={setName}
-            />
-            <TextInput
-              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
-                color: dark ? '#124460' : '#124460',
-                borderColor: '#124460' }]}
-              placeholder="Opis proizvoda"
-              placeholderTextColor="#124460"
-              value={description}
-              onChangeText={setDescription}
-            />
-            <TextInput
-              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
-                color: dark ? '#124460' : '#124460',
-                borderColor: '#124460' }]}
-              placeholder="Broj telefona"
-              placeholderTextColor="#124460"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-            />
-            <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-              <Text style={styles.imagePickerButtonText}>Izaberi sliku proizvoda</Text>
-            </TouchableOpacity>
-            {path && <Image source={{ uri: path }} style={styles.previewImage} />}
-            <View style={styles.modalActions}>
-                          <TouchableOpacity
-                            onPress={addProduct}
-                          >
-                            <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            onPress={closeModal}
-                          >
-                            <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
-                          </TouchableOpacity>
+    
+        {/* Product List */}
+        {products.length === 0 ? (
+          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>Objavite prvi proizvod!</Text>
+        ) : filteredProducts.length === 0 ? (
+          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>Nema proizvoda koji odgovaraju pretrazi!</Text>
+        ) : (
+          <FlatList
+            data={filteredProducts}
+            keyExtractor={(item) => item.product_id.toString()}
+            renderItem={renderProduct}
+            contentContainerStyle={styles.productsList}
+          />
+        )}
+    
+        {/* Modal for Adding Product */}
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalContainer}>
+            <View style={[styles.modalContent, { backgroundColor: dark ? '#124460' : 'white' }]}>
+              <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>Dodaj novi proizvod</Text>
+              {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+              <TextInput
+                style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
+                placeholder="Ime proizvoda"
+                value={name}
+                placeholderTextColor="#124460"
+                onChangeText={setName}
+              />
+              <TextInput
+                style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
+                placeholder="Opis proizvoda"
+                placeholderTextColor="#124460"
+                value={description}
+                onChangeText={setDescription}
+              />
+              <TextInput
+                style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
+                placeholder="Broj telefona"
+                placeholderTextColor="#124460"
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+              />
+              <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+                <Text style={styles.imagePickerButtonText}>Izaberi sliku proizvoda</Text>
+              </TouchableOpacity>
+              {path && <Image source={{ uri: path }} style={styles.previewImage} />}
+              <View style={styles.modalActions}>
+                <TouchableOpacity onPress={addProduct}>
+                  <Text style={[styles.deleteButtonText2, { color: dark ? '#6ac17f' : '#6ac17f' }]}>Dodaj</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={closeModal}>
+                  <Text style={[styles.cancelButtonText, { color: dark ? 'white' : '#124460' }]}>Otkaži</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -238,9 +235,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
-  darkBackground: {
-    backgroundColor: '#124460', 
   },
   headerContainer: {
     marginBottom: 20,
@@ -258,158 +252,115 @@ const styles = StyleSheet.create({
     color: '#555',
     marginBottom: 10,
     paddingBottom: 30,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
-  darkText: {
-    color: '#fff',
-  },
-  productsList: {
-    paddingTop:10,
-    paddingBottom: 20,
-    paddingHorizontal:10,
-  },
-  productContainer: {
-    backgroundColor: '#fff',
-    marginBottom: 20,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e6e5e3',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 3,
-  },
-  darkProduct: {
-    backgroundColor: '#1b5975', 
-  },
-  productImage: {
-    marginTop:5,
-    marginLeft:'5%',
-    width: '90%',
-    height: 250,
-    borderRadius: 10,
-  },
-  productDetails: {
-    padding: 15,
-  },
-  productName: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  productPrice: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 5,
-  },
-  productDescription: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 5,
-  },
-  productPhone: {
-    fontSize: 14,
-    color: '#555',
-    textDecorationLine: 'underline',
-    fontWeight: 'bold',
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
     marginBottom: 20,
     width: '70%',
-    marginLeft: '15%',
+    alignSelf: 'center',
+    position: 'relative',
   },
-  darkInput: {
-    backgroundColor: '#333',
-    color: '#fff',
+  searchInput: {
+    flex: 1,
+    height: 45,
+    borderRadius: 10,
+    paddingLeft: 15,
+    fontSize: 16,
+    paddingRight: 40,
+    borderColor: '#124460',
+    borderWidth:1,
+  },
+  searchIcon: {
+    position: 'absolute',
+    right: 10,
+    padding: 5,
   },
   addProductButton: {
-    width: '50%',
-    marginLeft: '25%',
     backgroundColor: '#6ac17f',
+    paddingVertical: 15,
     borderRadius: 10,
-    padding: 15,
-    alignItems: 'center',
     marginBottom: 20,
+    width: '50%',
+    alignSelf: 'center',
   },
   addProductButtonText: {
-    color: '#fff',
+    textAlign: 'center',
     fontSize: 16,
+    color: 'white',
     fontWeight: 'bold',
+  },
+  noProductsText: {
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginVertical: 20,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)'
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalContent: {
     width: '80%',
-    backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
-  },
-  darkModal: {
-    backgroundColor: '#333',
+    alignItems: 'center',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  },
-  imagePickerButton: {
-    backgroundColor: '#6ac17f',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  imagePickerButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  previewImage: {
-    width: '100%',
-    height: 150,
-    borderRadius: 10,
     marginBottom: 10,
   },
   errorMessage: {
-    color: '#ff999c',
-    fontSize: 14,
+    color: 'red',
     marginBottom: 10,
-    textAlign: 'center',
   },
-  noProductsText: {
-    fontSize: 16,
-    color: '#888',
-    marginTop: 20,
-    marginLeft: 20,
+  input: {
+    width: '100%',
+    height: 45,
+    borderWidth: 1,
+    borderRadius: 10,
+    marginBottom: 15,
+    paddingLeft: 10,
+  },
+  imagePickerButton: {
+    backgroundColor: '#124460',
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 15,
+    width: '100%',
+    alignItems: 'center',
+  },
+  imagePickerButtonText: {
+    color: 'white',
+  },
+  previewImage: {
+    width: 100,
+    height: 100,
+    marginBottom: 15,
   },
   modalActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop:20,
+    width: '100%',
+  },
+  deleteButtonText2: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#6ac17f',
   },
   cancelButtonText: {
-    color: 'black',
     fontSize: 16,
-    fontWeight: '600',
-  },deleteButtonText2: {
-
-    fontSize: 18,
-    fontWeight: '600',
-  }
+    fontWeight: 'bold',
+  },
+  productsList: {
+    marginTop: 20,
+  },
 });
 
 export default ProductsPage;

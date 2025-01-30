@@ -12,6 +12,7 @@ const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const inputRef = useRef(null);
   const [dark, setDark] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   const getMode = async () => {
     const storedMode = await AsyncStorage.getItem('darkMode');
@@ -66,9 +67,11 @@ const Icon2 = () => {
   };
 
   const toggleKeyboard = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (isKeyboardVisible) {
+          Keyboard.dismiss();
+        } else {
+          inputRef.current?.focus();
+        }
   };
 
   const filteredLinks = videoLinks.filter((video) =>
@@ -92,6 +95,8 @@ const Icon2 = () => {
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholderTextColor={dark ? '#124460' : '#124460'}
+            onFocus={() => setIsKeyboardVisible(true)}
+            onBlur={() => setIsKeyboardVisible(false)}
           />
           <TouchableOpacity onPress={toggleKeyboard} style={styles.iconWrapper}>
             <MaterialIcons name="search" size={24} color={dark ? '#124460' : '#124460'} />
