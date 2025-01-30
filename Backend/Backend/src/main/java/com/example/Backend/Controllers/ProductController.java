@@ -3,6 +3,7 @@ package com.example.Backend.Controllers;
 import com.example.Backend.DTO.Product.ProductDTO;
 import com.example.Backend.DTO.Product.ProductSaveDTO;
 import com.example.Backend.Models.Product;
+import com.example.Backend.Models.User;
 import com.example.Backend.Services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,10 @@ public class ProductController {
     @PutMapping("/save")
     public  ResponseEntity save(@RequestBody ProductSaveDTO productSaveDTO){
         return productServices.save(productSaveDTO);
+    }
+
+    @PutMapping("/unsave")
+    public ResponseEntity unsave(@RequestBody ProductSaveDTO productSaveDTO){
+        return productServices.unsave(productSaveDTO);
     }
 }

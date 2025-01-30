@@ -6,10 +6,12 @@ import com.example.Backend.Models.Product;
 import com.example.Backend.Models.User;
 import com.example.Backend.Repository.ProductRepository;
 import com.example.Backend.Repository.UserRepository;
+import org.hibernate.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Array;
 import java.util.List;
 
 @Service
@@ -50,6 +52,13 @@ public class ProductServices {
         lista.add(product);
         user.setSacuvane(lista);
         userRepository.save(user);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity unsave(ProductSaveDTO productSaveDTO){
+        Product product = productRepository.findById(productSaveDTO.getProduct_id()).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
+        product.setUser(null);
+        productRepository.save(product);
         return ResponseEntity.ok().build();
     }
 }
