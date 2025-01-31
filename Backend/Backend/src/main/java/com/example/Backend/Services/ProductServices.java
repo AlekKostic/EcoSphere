@@ -6,13 +6,12 @@ import com.example.Backend.Models.Product;
 import com.example.Backend.Models.User;
 import com.example.Backend.Repository.ProductRepository;
 import com.example.Backend.Repository.UserRepository;
-import org.hibernate.Length;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServices {
@@ -35,13 +34,18 @@ public class ProductServices {
         return productRepository.save(product);
     }
 
-    public List<Product> find(){
-        return productRepository.findAll();
+    public List<ProductDTO> find(){
+         List<Product> productList = productRepository.findAll();
+         return productList.stream().map(product -> {
+             ProductDTO productDTO = new ProductDTO(product.getPath(), product.getDescription(), product.getName(), product.getPhoneNumber(), product.getPrice(), product.getBroj_pregleda(),product.getUser().getId(), product.getProduct_id());
+            return productDTO;
+         }).collect(Collectors.toList());
     }
 
     public ResponseEntity pregledi(Long id){
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
         product.setBroj_pregleda(product.getBroj_pregleda() + 1);
+        productRepository.save(product);
         return ResponseEntity.ok().build();
     }
 
@@ -59,6 +63,14 @@ public class ProductServices {
         Product product = productRepository.findById(productSaveDTO.getProduct_id()).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
         product.setUser(null);
         productRepository.save(product);
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity delete(Long id){
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
+        product.setUser(null);
+        productRepository.save(product);
+        productRepository.delete(product);
         return ResponseEntity.ok().build();
     }
 }

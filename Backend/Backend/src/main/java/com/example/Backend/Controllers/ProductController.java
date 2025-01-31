@@ -23,7 +23,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> getProduct(){
+    public List<ProductDTO> getProduct(){
         return productServices.find();
     }
 
@@ -40,5 +40,10 @@ public class ProductController {
     @PutMapping("/unsave")
     public ResponseEntity unsave(@RequestBody ProductSaveDTO productSaveDTO){
         return productServices.unsave(productSaveDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity remove(@PathVariable Long id){
+        return productServices.delete(id);
     }
 }
