@@ -84,69 +84,112 @@ const NotificationsPage = () => {
       router.push('/Login');
       return;
     }
-
-    if (!item.likes) {
-      item.likes = true;
-      const value = await AsyncStorage.getItem('userInfo');
-      const userInfo = value ? JSON.parse(value) : null;
-      const userId = userInfo?.userId;
-
-      try {
-        const response = await axios.post(`http://${ip}:8080/v4/api/like`, {
-          "user_id": userId,
-          "post_id": item.id
+  
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userId = userInfo ? JSON.parse(userInfo).userId : null;
+  
+    // Ako post nema likes ili likedIds, inicijalizujte ih
+    if (!item.likes) item.likes = false;
+    if (!item.likedIds) item.likedIds = [];
+  
+    const newLikeStatus = !item.likes;
+  
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === item.id ? {
+          ...post,
+          likes: newLikeStatus,
+          likedIds: newLikeStatus
+            ? [...post.likedIds, userId]
+            : post.likedIds.filter(id => id !== userId)
+        } : post
+      )
+    );
+  
+    try {
+      if (newLikeStatus) {
+        await axios.post(`http://${ip}:8080/v4/api/like`, {
+          user_id: userId,
+          post_id: item.id,
         });
-
-        getPosts();
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      item.likes = false;
-      const value = await AsyncStorage.getItem('userInfo');
-      const userInfo = value ? JSON.parse(value) : null;
-      const userId = userInfo?.userId;
-
-      try {
-        const response = await axios.put(`http://${ip}:8080/v4/api/unlike`, {
-          "user_id": userId,
-          "post_id": item.id
+      } else {
+        await axios.put(`http://${ip}:8080/v4/api/unlike`, {
+          user_id: userId,
+          post_id: item.id,
         });
-
-        getPosts();
-      } catch (error) {
-        console.log(error);
       }
+    } catch (error) {
+      console.error(error);
+      // Vrati stanje ako je došlo do greške
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === item.id ? {
+            ...post,
+            likes: !newLikeStatus,
+            likedIds: newLikeStatus
+              ? post.likedIds.filter(id => id !== userId)
+              : [...post.likedIds, userId]
+          } : post
+        )
+      );
     }
   };
+  
+  
+
 
   const addPost = async () => {
-    try {
-      const userInfo = await AsyncStorage.getItem('userInfo');
-      const parsedUserInfo = JSON.parse(userInfo);
-
-      const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
-        "context": newPost,
-        "user_id": parsedUserInfo.userId
+  try {
+    // Vratite Promise koji se rešava kada korisnički podaci budu učitani
+    const userInfo = await new Promise((resolve, reject) => {
+      AsyncStorage.getItem('userInfo', (err, result) => {
+        if (err) {
+          reject("Error loading user info");
+        } else {
+          resolve(result ? JSON.parse(result) : null);
+        }
       });
+    });
 
-      const newPostData = response.data;
-
-      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${parsedUserInfo.userId}`);
-      const authorData = authorResponse.data;
-
-      const newPostWithAuthor = {
-        ...newPostData,
-        author: authorData
-      };
-
-      setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
-      setNewPost("");
-      setIsModalVisible(false);
-    } catch (error) {
-      console.error("Error in API request:", error);
+    // Ako korisnički podaci nisu pronađeni ili nema userId, obustavite dalji rad
+    if (!userInfo || !userInfo.userId) {
+      console.log("User ID not found");
+      return; // Prestanite sa izvršavanjem funkcije ako userId nije pronađen
     }
-  };
+
+    // Poziv za kreiranje posta
+    const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
+      "context": newPost,
+      "user_id": userInfo.userId
+    });
+
+    console.log(response.data);
+
+    const newPostData = response.data;
+
+    // Učitajte podatke autora nakon što je post napravljen
+    const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
+    const authorData = authorResponse.data;
+
+    console.log(authorResponse.data);
+
+    const newPostWithAuthor = {
+      ...newPostData,
+      author: authorData
+    };
+
+    console.log("AAA" + newPostWithAuthor.author.user_id);
+
+    // Dodajte novi post u stanje
+    setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+    setNewPost("");
+    setIsModalVisible(false);
+    
+  } catch (error) {
+    console.error("Error in API request:", error);
+  }
+};
+
 
   return (
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>

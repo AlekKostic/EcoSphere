@@ -12,6 +12,22 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
+  const [dark, setDark] = useState(false); // Dark mode state
+
+  useEffect(() => {
+    const getMode = async () => {
+      console.log(item)
+      const storedMode = await AsyncStorage.getItem('darkMode');
+      if (storedMode === 'true') {
+        setDark(true);
+      } else {
+        setDark(false);
+      }
+    };
+
+    getMode();
+  }, []);
+
   const onAuthorPress = () => {
     console.log("Clicked on author:", item);
     router.push({
@@ -53,7 +69,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
     });
   };
 
-  const imageId = item.authorId % 6 + 1;
+  const imageId = item.author.user_id % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
   if (imageId == 1) profileImageSource = require('../img/profilna1.png');
   else if (imageId == 2) profileImageSource = require('../img/profilna2.png');
@@ -61,20 +77,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
   else if (imageId == 4) profileImageSource = require('../img/profilna4.png');
   else if (imageId == 5) profileImageSource = require('../img/profilna5.png');
 
-  const [dark, setDark] = useState(false); // Dark mode state
-
-  useEffect(() => {
-    const getMode = async () => {
-      const storedMode = await AsyncStorage.getItem('darkMode');
-      if (storedMode === 'true') {
-        setDark(true);
-      } else {
-        setDark(false);
-      }
-    };
-
-    getMode();
-  }, []);
+  
 
   return (
   <View style={[styles.postContainer, {backgroundColor: dark ? '#2f6d8c' : '#fff'} ]}>
@@ -120,7 +123,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
               <Text style={[styles.noLikesText, { color: dark ? '#ccc' : '#aaa' }]}>Nema lajkova</Text>
             ) : (
               <FlatList
-                data={likedUsers}
+                data={likedUsers.toReversed()}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <TouchableOpacity onPress={() => onUserPress(item)} style={[styles.modalUserContainer, {backgroundColor: dark? '#124460': '#d3d3d3'}]}>

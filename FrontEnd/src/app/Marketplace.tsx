@@ -41,12 +41,97 @@ const ProductsPage = () => {
   const check = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
     setLogged(!!userInfo);
+  
     try {
       const response = await axios.get(`http://${ip}:8080/v5/api`);
-      setProducts(response.data.reverse());
+      let productsData = response.data.reverse();
+  
+      if (userInfo) {
+        const parsedUserInfo = JSON.parse(userInfo);
+        const userId = parsedUserInfo.userId;
+
+        const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
+
+        console.log(savedResponse.data)
+        const savedProducts = savedResponse.data.sacuvaniProductids;
+        console.log(savedProducts)
+        console.log(productsData)
+  
+        productsData = productsData.map((product) => {
+          const isSaved = savedProducts.includes(product.product_id);
+          
+          console.log(`Product ID: ${product.product_id}, Saved: ${isSaved}`);
+        
+          return {
+            ...product,
+            saved: isSaved, 
+          };
+        });
+
+      } else {
+        productsData = productsData.map((product) => ({
+          ...product,
+          saved: false,
+        }));
+      }
+      console.log(productsData)
+      setProducts(productsData);
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const savePost = async(item) => {
+    console.log(item);
+
+    if (!logged) {
+      router.push('/Login');
+      return;
+    }
+  
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userId = userInfo ? JSON.parse(userInfo).userId : null;
+
+    const newSaveStatus = !item.saved;
+    console.log(newSaveStatus)
+
+    setProducts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.product_id === item.product_id ? {
+          ...post,
+          saved: newSaveStatus
+        } : post
+      )
+    );
+
+    try {
+      if (newSaveStatus) {
+        await axios.put(`http://${ip}:8080/v5/api/save`, {
+          "user_id": userId,
+          "product_id": item.product_id,
+        });
+      } else {
+        await axios.put(`http://${ip}:8080/v5/api/unsave`, {
+          "user_id": userId,
+          "product_id": item.product_id,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      setProducts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.product_id === item.product_id ? {
+            ...post,
+            saved: post.saved ? false : newSaveStatus 
+          } : post
+        )
+      );
+      
+    }
+    
+
+    return;
+    
   };
 
   useEffect(() => {
@@ -67,23 +152,45 @@ const ProductsPage = () => {
   };
 
   const addProduct = async () => {
-    if (!name || !description || !phoneNumber || !path) {
+    if (!name || !description || !phoneNumber) {
       setErrorMessage('Molimo vas da popunite sva polja'); 
       return;
     }
 
     try {
+
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      const parsedUserInfo = JSON.parse(userInfo);
+
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
-        name,
-        description,
-        price: 0,
-        phoneNumber,
-        path
+        "name": name,
+        "description": description,
+        "price": 0,
+        "phone_number": phoneNumber,
+        "path": null,
+        "user_id": parsedUserInfo.userId,
+        "broj_pregleda": 0
       });
 
       console.log('Product added successfully:', response.data);
       setIsModalVisible(false);
-      check();
+      console.log(response.broj_pregleda)
+
+      const newPost = {
+        "product_id": response.data.product_id,
+        "name": name,
+        "description": description,
+        "price": 0,
+        "phone_number": phoneNumber,
+        "path": null,
+        "user_id": parsedUserInfo.userId,
+        "broj_pregleda": 0,
+        "saved":false
+      }
+
+      console.log(products)
+
+      setProducts([newPost, ...products])
     } catch (error) {
       console.log('Error adding product:', error);
     }
@@ -91,7 +198,9 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <Product item={item} dark={dark} />
+      <TouchableOpacity>
+      <Product item={item} dark={dark} savePost={savePost}/>
+      </TouchableOpacity>
     );
   };
 
