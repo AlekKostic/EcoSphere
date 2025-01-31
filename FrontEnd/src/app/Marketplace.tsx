@@ -468,6 +468,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productsList: {
+    marginLeft:5,
+    marginRight:5,
     marginTop: 20,
   },
 });

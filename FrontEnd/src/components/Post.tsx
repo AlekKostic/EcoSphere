@@ -16,7 +16,6 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
 
   useEffect(() => {
     const getMode = async () => {
-      console.log(item)
       const storedMode = await AsyncStorage.getItem('darkMode');
       if (storedMode === 'true') {
         setDark(true);

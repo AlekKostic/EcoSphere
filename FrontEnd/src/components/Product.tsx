@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
 const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
 
-const Product = ({ item, dark, savePost }) => {
+const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => {
   const router = useRouter();
   
   const [showModal, setShowModal] = useState(false);
@@ -34,7 +34,6 @@ const Product = ({ item, dark, savePost }) => {
 
   const handlePressDetails = async () => {
     await axios.put(`http://${ip}:8080/v5/api/${item.product_id}`);
-    console.log(ime);
     setCnt(cnt + 1);
     setShowModal(true); 
     Animated.spring(modalAnim, { toValue: 1, useNativeDriver: true }).start(); // Animiraj modal
@@ -54,6 +53,7 @@ const Product = ({ item, dark, savePost }) => {
     });
   }
 
+
   const imageId = id % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
   if (imageId == 1) profileImageSource = require('../img/profilna1.png');
@@ -64,13 +64,20 @@ const Product = ({ item, dark, savePost }) => {
 
   return (
     <View style={[styles.productContainer, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
-      <TouchableOpacity onPress={() => { savePost(item) }} style={styles.saveIconContainer}>
-        <MaterialIcons
-          name={item.saved ? "bookmark" : "bookmark-border"} 
-          size={24}
-          color={dark ? 'white' : '#124460'}
-        />
-      </TouchableOpacity>
+      <View style={styles.iconContainer}>
+        {personal && (
+          <TouchableOpacity onPress={() => deleteProd(item.product_id)}>
+            <Ionicons name="trash-outline" size={22} color={dark ? 'white' : '#124460'} />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity onPress={() => { savePost(item) }} style={styles.saveIconContainer}>
+          <MaterialIcons
+            name={item.saved ? "bookmark" : "bookmark-border"} 
+            size={24}
+            color={dark ? 'white' : '#124460'}
+          />
+        </TouchableOpacity>
+      </View>
 
       <Image 
         source={item.path ? { uri: item.path } : require('../img/pathnull.png')} 
@@ -132,8 +139,9 @@ const Product = ({ item, dark, savePost }) => {
 
 const styles = StyleSheet.create({
   productContainer: {
+    marginTop:10,
     backgroundColor: '#fff',
-    marginBottom: 20,
+    marginBottom: 10,
     borderRadius: 10,
     shadowColor: '#000',
     shadowOpacity: 0.3,
@@ -144,10 +152,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   saveIconContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
+    left: 5,
   },
   productImage: {
     width: 100,
@@ -239,6 +244,14 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+  },iconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    flexDirection: 'row',  // Aligns icons horizontally
+    alignItems: 'center',  // Aligns icons vertically
+    zIndex: 1,
+    paddingHorizontal: 10, // Adds horizontal space for the icons
   },
 });
 

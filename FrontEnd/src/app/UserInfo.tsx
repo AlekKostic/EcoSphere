@@ -9,6 +9,7 @@ import Post from '../components/Post';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Product from '../components/Product';
 
 const UserInfo = () => {
   const route = useRoute();
@@ -45,13 +46,20 @@ const UserInfo = () => {
   const [changing, setChanging] = useState(false);
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [deleteModalVisiblePost, setDeleteModalVisiblePost] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('objave'); 
+  const [productToDelete, setProductToDelete] = useState(null);
+
+  const [logId, setLogId]=useState(0)
 
   const router = useRouter();
   const config = require('../../config.json');
   const ip = config.ipAddress;
   
+  const [products, setProducts] = useState([]);
+
   const imageId = iduser % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
 
@@ -71,6 +79,8 @@ const UserInfo = () => {
         if (userId.toString() === iduser.toString()) {
           setPersonal(true);
         }
+
+        setLogId(userId)
         
         setLogged(true);
       }
@@ -79,8 +89,70 @@ const UserInfo = () => {
     }
   };
 
+  const handleDeleteProduct = async () => {
+    try {
+      await deleteProd(productToDelete)
+      setDeleteModalVisible(false);
+      setProducts(prevProducts => {
+        console.log("Previous products:", prevProducts);
+        const filteredProducts = prevProducts.filter(product => product.product_id !== productToDelete);
+        console.log("Filtered products:", filteredProducts);
+        return filteredProducts;
+      });
+
+    } catch (err) {
+      console.error('Error deleting product:', err);
+    }
+  };
+
+  
+  const deleteProd = async(id)=>{
+    console.log(id)
+
+    await axios.delete(`http://${ip}:8080/v5/api/delete/${id}`);
+    
+  }
+
+  const fetchProduct = async()=>{
+    const response = await axios.get(`http://${ip}:8080/v5/api`);
+    let productsData = response.data.reverse();
+
+    productsData = productsData.filter(product => {
+      return product.user_id == iduser; 
+    });
+    if(logged)
+    {
+      const parsedUserInfo = JSON.parse(userInfo);
+        const userId = parsedUserInfo.userId;
+
+        const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${logId}`);
+
+        const savedProducts = savedResponse.data.sacuvaniProductids;
+  
+        productsData = productsData.map((product) => {
+          const isSaved = savedProducts.includes(product.product_id);
+          
+        
+          return {
+            ...product,
+            saved: isSaved, 
+          };
+        });
+    }else{
+      productsData = productsData.map((product) => ({
+        ...product,
+        saved: false,
+      }));
+    }
+    setProducts(productsData)
+    console.log(productsData)
+  }
+
   useEffect(() => {
-    fetchUserInfo();
+    {
+      fetchProduct();
+      fetchUserInfo();
+    }
   }, []);
 
   const fetchPostsData = async () => {
@@ -170,8 +242,9 @@ const UserInfo = () => {
 
   const handleDeletePost = async () => {
     try {
+      console.log("aaa"+postToDelete)
       await axios.delete(`http://${ip}:8080/v4/api/delete/${postToDelete}`);
-      setDeleteModalVisible(false);
+      setDeleteModalVisiblePost(false);
       fetchPostsData();
     } catch (err) {
       console.error('Error deleting post:', err);
@@ -197,7 +270,6 @@ const UserInfo = () => {
           "post_id": item.id
         });
       
-        console.log("Like response:", response.data);
       
         fetchPostsData();
       } catch (error) {
@@ -210,14 +282,12 @@ const UserInfo = () => {
       const userInfo = value ? JSON.parse(value) : null;
       const userId = userInfo?.userId;
 
-      console.log(userId + " " + item.id)
       try {
         const response = await axios.put(`http://${ip}:8080/v4/api/unlike`, {
           "user_id": userId,
           "post_id": item.id
         });
       
-        console.log("Like response:", response.data);
         fetchPostsData();
       } catch (error) {
         console.log(error);
@@ -248,6 +318,57 @@ const UserInfo = () => {
       ]
     );
   };
+
+  const savePost = async(item) =>{
+    console.log(item)
+    if (!logged) {
+      router.push('/Login');
+      return;
+    }
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const userId = userInfo ? JSON.parse(userInfo).userId : null;
+
+    const newSaveStatus = !item.saved;
+    console.log(newSaveStatus)
+
+    setProducts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.product_id === item.product_id ? {
+          ...post,
+          saved: newSaveStatus
+        } : post
+      )
+    );
+
+    try {
+      if (newSaveStatus) {
+        await axios.put(`http://${ip}:8080/v5/api/save`, {
+          "user_id": userId,
+          "product_id": item.product_id,
+        });
+      } else {
+        await axios.put(`http://${ip}:8080/v5/api/unsave`, {
+          "user_id": userId,
+          "product_id": item.product_id,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      setProducts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.product_id === item.product_id ? {
+            ...post,
+            saved: post.saved ? false : newSaveStatus 
+          } : post
+        )
+      );
+      
+    }
+    
+
+    return;
+  }
 
   return (
     <KeyboardAwareScrollView style={[styles.container, {
@@ -325,23 +446,99 @@ const UserInfo = () => {
         </>
       )}
 
-      <Text style={[styles.postsHeader, {color:dark?'white':'#124460'}]}>Objave korisnika</Text>
+<View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+      <TouchableOpacity 
+        style={{ flex: 1, alignItems: 'center', borderBottomWidth: selectedTab === 'objave' ? 2 : 0, borderBottomColor: dark ? 'white' : '#124460' }} 
+        onPress={() => setSelectedTab('objave')}
+      >
+        <Text style={[styles.postsHeader, { color: dark ? 'white' : '#124460',
+          fontWeight: selectedTab === 'objave' ? '700' : '500' }]}>
+          Objave korisnika
+        </Text>
+      </TouchableOpacity>
 
-      {loadingPosts ? (
-        <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
-      ) : posts.length > 0 ? (
-        posts.map((post) => (
-          <Post key={post.id} item={post} likePost={likePost} personal={personal}
-          handleDelete={() => { setPostToDelete(post.id); setDeleteModalVisible(true); }} />
-        ))
-      ) : (
-        <Text style={[styles.noPostsText,{color:dark?'white':'#124460'}]}>Nema postova za prikazivanje.</Text>
+      <TouchableOpacity 
+        style={{ flex: 1, alignItems: 'center', 
+          borderBottomWidth: selectedTab === 'proizvodi' ? 2 : 0, 
+          borderBottomColor: dark ? 'white' : '#124460'
+         }} 
+        onPress={() => setSelectedTab('proizvodi')}
+      >
+        <Text style={[styles.postsHeader, { color: dark ? 'white' : '#124460',
+          fontWeight: selectedTab === 'proizvodi' ? '700' : '500'
+         }]}>
+          Proizvodi korisnika
+        </Text>
+      </TouchableOpacity>
+    </View>
+
+
+    {selectedTab === 'objave' && (
+        loadingPosts ? (
+          <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
+        ) : posts.length > 0 ? (
+          posts.map((post) => (
+            <Post key={post.id} item={post} likePost={likePost} personal={personal}
+              handleDelete={() => { setPostToDelete(post.id); setDeleteModalVisiblePost(true); }} />
+          ))
+        ) : (
+          <Text style={[styles.noPostsText, { color: dark ? 'white' : '#124460' }]}>
+            Nema postova za prikazivanje.
+          </Text>
+        )
       )}
+
+{selectedTab === 'proizvodi' && (
+  loadingPosts ? (
+    <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
+  ) : products.length > 0 ? (
+    products.map((product) => (
+      <TouchableOpacity key={product.product_id} onPress={() => {
+        setProductToDelete(product.product_id); 
+        setDeleteModalVisible(true); 
+      }}>
+        <Product personal={personal} item={product} dark={dark} savePost={savePost}
+        deleteProd={() => { setProductToDelete(product.product_id); setDeleteModalVisible(true); }}
+         />
+      </TouchableOpacity>
+    ))
+  ) : (
+    <Text style={[styles.noPostsText, { color: dark ? 'white' : '#124460' }]}>
+      Nema proizvoda za prikazivanje.
+    </Text>
+  )
+)}
+
+{/* Delete Confirmation Modal */}
+<Modal
+  transparent={true}
+  visible={deleteModalVisible}
+  onRequestClose={() => setDeleteModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
+      <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
+        <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
+      </View>
+      <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>
+        Da li ste sigurni da želite da obrišete ovaj proizvod?
+      </Text>
+      <View style={styles.modalActions}>
+        <TouchableOpacity onPress={handleDeleteProduct}>
+          <Text style={[styles.deleteButtonText2, {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setDeleteModalVisible(false)}>
+          <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
 
       <Modal
         transparent={true}
-        visible={deleteModalVisible}
-        onRequestClose={() => setDeleteModalVisible(false)}
+        visible={deleteModalVisiblePost}
+        onRequestClose={() => setDeleteModalVisiblePost(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
@@ -356,7 +553,7 @@ const UserInfo = () => {
                 <Text style={[styles.deleteButtonText2, , {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => setDeleteModalVisible(false)}
+                onPress={() => setDeleteModalVisiblePost(false)}
               >
                 <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
               </TouchableOpacity>
@@ -376,11 +573,10 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   postsHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '500',
     marginTop: 20,
     marginBottom: 20,
-    marginLeft: 20,
     color: '#333',
   },
   loadingIndicator: {
