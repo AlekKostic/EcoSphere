@@ -21,12 +21,14 @@ C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\exam
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Pitanja.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Postovi.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Product.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\Sacuvane.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Models\User.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\LikeRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\OdgovoriRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\PitanjaRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\PostoviRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\ProductRepository.java
+C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\SacuvaneRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Repository\UserRepository.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Services\OdgovoriServices.java
 C:\Users\kosti\OneDrive\Dokumenti\mts_app\Backend\Backend\src\main\java\com\example\Backend\Services\PitanjaServices.java

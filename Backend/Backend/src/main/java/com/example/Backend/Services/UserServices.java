@@ -4,10 +4,7 @@ import com.example.Backend.DTO.User.UserPoeniDTO;
 import com.example.Backend.DTO.User.UserResetDTO;
 import com.example.Backend.DTO.User.UserDTO;
 import com.example.Backend.DTO.User.UserLoginDTO;
-import com.example.Backend.Models.Like;
-import com.example.Backend.Models.Postovi;
-import com.example.Backend.Models.Product;
-import com.example.Backend.Models.User;
+import com.example.Backend.Models.*;
 import com.example.Backend.Repository.LikeRepository;
 import com.example.Backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +47,14 @@ public class UserServices {
         }
 
         List<Long> product = new ArrayList<>();
-        for (Product product1 : user.get().getSacuvane()){
+        for (Product product1 : user.get().getProductList()){
             product.add(product1.getProduct_id());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product);
+        List<Long> sacuvane = new ArrayList<>();
+        for (Sacuvane sacuvane1 : user.get().getSacuvane()){
+            sacuvane.add(sacuvane1.getProduct().getProduct_id());
+        }
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product, sacuvane);
     }
 
     public UserDTO find(Long id){
@@ -68,10 +69,15 @@ public class UserServices {
         }
 
         List<Long> product = new ArrayList<>();
-        for (Product product1 : user.getSacuvane()){
+        for (Product product1 : user.getProductList()){
             product.add(product1.getProduct_id());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product);
+
+        List<Long> sacuvane = new ArrayList<>();
+        for (Sacuvane sacuvane1 : user.getSacuvane()){
+            sacuvane.add(sacuvane1.getProduct().getProduct_id());
+        }
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane);
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){

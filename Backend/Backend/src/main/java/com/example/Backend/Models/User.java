@@ -42,13 +42,24 @@ public class User {
     private Date poslednjiKviz;
 
     @OneToMany(mappedBy = "user")
-    private List<Product> sacuvane;
+    private List<Product> productList;
 
-    public List<Product> getSacuvane() {
+    @OneToMany(mappedBy = "user")
+    private List<Sacuvane> sacuvane;
+
+    public List<Product> getProductList() {
+        return productList;
+    }
+
+    public void setProductList(List<Product> productList) {
+        this.productList = productList;
+    }
+
+    public List<Sacuvane> getSacuvane() {
         return sacuvane;
     }
 
-    public void setSacuvane(List<Product> sacuvane) {
+    public void setSacuvane(List<Sacuvane> sacuvane) {
         this.sacuvane = sacuvane;
     }
 

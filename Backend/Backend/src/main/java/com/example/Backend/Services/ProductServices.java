@@ -3,8 +3,10 @@ package com.example.Backend.Services;
 import com.example.Backend.DTO.Product.ProductDTO;
 import com.example.Backend.DTO.Product.ProductSaveDTO;
 import com.example.Backend.Models.Product;
+import com.example.Backend.Models.Sacuvane;
 import com.example.Backend.Models.User;
 import com.example.Backend.Repository.ProductRepository;
+import com.example.Backend.Repository.SacuvaneRepository;
 import com.example.Backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class ProductServices {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private SacuvaneRepository sacuvaneRepository;
 
     public Product create(ProductDTO productDTO){
         User user = userRepository.findById(productDTO.getUser_id()).orElseThrow(()-> new RuntimeException("User ne postoji"));
@@ -52,17 +57,21 @@ public class ProductServices {
     public ResponseEntity save(ProductSaveDTO productSaveDTO){
         User user = userRepository.findById(productSaveDTO.getUser_id()).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         Product product = productRepository.findById(productSaveDTO.getProduct_id()).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
-        List<Product> lista = user.getSacuvane();
-        lista.add(product);
-        user.setSacuvane(lista);
-        userRepository.save(user);
+        Sacuvane sacuvane = new Sacuvane();
+        sacuvane.setProduct(product);
+        sacuvane.setUser(user);
+        sacuvaneRepository.save(sacuvane);
         return ResponseEntity.ok().build();
     }
 
     public ResponseEntity unsave(ProductSaveDTO productSaveDTO){
         Product product = productRepository.findById(productSaveDTO.getProduct_id()).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
-        product.setUser(null);
-        productRepository.save(product);
+        User user = userRepository.findById(productSaveDTO.getUser_id()).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        Sacuvane sacuvane = sacuvaneRepository.findByUserAndProduct(user, product);
+        sacuvane.setUser(null);
+        sacuvane.setProduct(null);
+        sacuvaneRepository.save(sacuvane);
+        sacuvaneRepository.delete(sacuvane);
         return ResponseEntity.ok().build();
     }
 
