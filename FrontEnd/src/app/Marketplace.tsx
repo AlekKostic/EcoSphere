@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
@@ -31,6 +31,7 @@ const ProductsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const router = useRouter(); 
+  const [loading, setLoading] = useState(true);
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -43,6 +44,7 @@ const ProductsPage = () => {
     setLogged(!!userInfo);
   
     try {
+      setLoading(true);
       const response = await axios.get(`http://${ip}:8080/v5/api`);
       let productsData = response.data.reverse();
   
@@ -78,6 +80,8 @@ const ProductsPage = () => {
       setProducts(productsData);
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -174,7 +178,7 @@ const ProductsPage = () => {
 
       console.log('Product added successfully:', response.data);
       setIsModalVisible(false);
-      console.log(response.broj_pregleda)
+      console.log(response.data.product_id)
 
       const newPost = {
         "product_id": response.data.product_id,
@@ -274,11 +278,21 @@ const ProductsPage = () => {
           <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
         </TouchableOpacity>
     
-        {/* Product List */}
-        {products.length === 0 ? (
-          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>Objavite prvi proizvod!</Text>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={dark ? 'white' : '#124460'} />
+            <Text style={[styles.loadingText, { color: dark ? 'white' : '#124460' }]}>
+              Učitavanje objava...
+            </Text>
+          </View>
+        ) : products.length === 0 ? (
+          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>
+            Objavite prvi proizvod!
+          </Text>
         ) : filteredProducts.length === 0 ? (
-          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>Nema proizvoda koji odgovaraju pretrazi!</Text>
+          <Text style={[styles.noProductsText, { color: dark ? 'white' : '#124460' }]}>
+            Nema proizvoda koji odgovaraju pretrazi!
+          </Text>
         ) : (
           <FlatList
             data={filteredProducts}
@@ -287,6 +301,7 @@ const ProductsPage = () => {
             contentContainerStyle={styles.productsList}
           />
         )}
+
     
         {/* Modal for Adding Product */}
         <Modal
@@ -325,11 +340,12 @@ const ProductsPage = () => {
               </TouchableOpacity>
               {path && <Image source={{ uri: path }} style={styles.previewImage} />}
               <View style={styles.modalActions}>
+                
+              <TouchableOpacity onPress={closeModal}>
+                  <Text style={[styles.cancelButtonText, { color: dark ? 'white' : '#124460' }]}>Otkaži</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={addProduct}>
                   <Text style={[styles.deleteButtonText2, { color: dark ? '#6ac17f' : '#6ac17f' }]}>Dodaj</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={closeModal}>
-                  <Text style={[styles.cancelButtonText, { color: dark ? 'white' : '#124460' }]}>Otkaži</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -471,7 +487,15 @@ const styles = StyleSheet.create({
     marginLeft:5,
     marginRight:5,
     marginTop: 20,
+  },loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+  }
 });
 
 export default ProductsPage;

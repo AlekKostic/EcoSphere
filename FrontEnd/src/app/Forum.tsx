@@ -248,11 +248,12 @@ const NotificationsPage = () => {
               onChangeText={setNewPost}
             />
             <View style={styles.modalActions}>
-            <TouchableOpacity onPress={addPost}>
-              <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
-            </TouchableOpacity>
+              
             <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false)}}>
               <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={addPost}>
+              <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
             </TouchableOpacity>
             </View>
           </View>

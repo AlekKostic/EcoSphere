@@ -98,7 +98,7 @@ const Icon4 = () => {
         </TouchableOpacity>
 
         {error && (
-          <Text style={styles.errorMessage}>Već ste radili današnji kviz!</Text>
+          <Text style={[styles.errorMessage, {color: dark? '#ff999c':'#9a2626'}]}>Već ste radili današnji kviz!</Text>
         )}
       </View>
     </View>

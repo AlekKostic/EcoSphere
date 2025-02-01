@@ -7,7 +7,7 @@ import { useRouter } from 'expo-router';
 import axios from 'axios';
 import Post from '../components/Post';
 import { useRoute } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Product from '../components/Product';
 
@@ -48,9 +48,11 @@ const UserInfo = () => {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [deleteModalVisiblePost, setDeleteModalVisiblePost] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [seeSaved, setSeeSaved] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
   const [selectedTab, setSelectedTab] = useState('objave'); 
   const [productToDelete, setProductToDelete] = useState(null);
+  const [saves, setSaved] = useState(0);
 
   const [logId, setLogId]=useState(0)
 
@@ -59,6 +61,7 @@ const UserInfo = () => {
   const ip = config.ipAddress;
   
   const [products, setProducts] = useState([]);
+  const [savedProducts, setSavedProducts] = useState([]);
 
   const imageId = iduser % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
@@ -114,12 +117,8 @@ const UserInfo = () => {
   }
 
   const fetchProduct = async()=>{
-    const response = await axios.get(`http://${ip}:8080/v5/api`);
+    const response = await axios.get(`http://${ip}:8080/v5/api/user/${iduser}`);
     let productsData = response.data.reverse();
-
-    productsData = productsData.filter(product => {
-      return product.user_id == iduser; 
-    });
     if(logged)
     {
       const parsedUserInfo = JSON.parse(userInfo);
@@ -319,55 +318,99 @@ const UserInfo = () => {
     );
   };
 
-  const savePost = async(item) =>{
-    console.log(item)
+  const savePost = async (item) => {
+    console.log(item);
     if (!logged) {
       router.push('/Login');
       return;
     }
-
+  
     const userInfo = await AsyncStorage.getItem('userInfo');
     const userId = userInfo ? JSON.parse(userInfo).userId : null;
-
+  
     const newSaveStatus = !item.saved;
-    console.log(newSaveStatus)
-
-    setProducts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.product_id === item.product_id ? {
-          ...post,
-          saved: newSaveStatus
-        } : post
-      )
-    );
-
+    console.log(newSaveStatus);
+  
+    setSavedProducts((prevPosts) => {
+      return prevPosts.map((post) => {
+        if (post.product_id === item.product_id) {
+          console.log("Updating post:", post);  // Proveri koji post se ažurira
+          return {
+            ...post,
+            saved: newSaveStatus
+          };
+        } else {
+          return post;
+        }
+      });
+    });
+  
     try {
       if (newSaveStatus) {
         await axios.put(`http://${ip}:8080/v5/api/save`, {
-          "user_id": userId,
-          "product_id": item.product_id,
+          user_id: userId,
+          product_id: item.product_id,
         });
+
+        setUser((prevUser) => {
+          const updatedProductIds = [...prevUser.sacuvaniProductids, item.product_id]; // Dodajemo broj 1
+          return {
+            ...prevUser,
+            sacuvaniProductids: updatedProductIds // Ažuriraj sacuvaniProductIds
+          };
+        });
+
+        setSaved(saves+1)
+
+        
+  
       } else {
         await axios.put(`http://${ip}:8080/v5/api/unsave`, {
-          "user_id": userId,
-          "product_id": item.product_id,
+          user_id: userId,
+          product_id: item.product_id,
         });
+
+        setUser((prevUser) => {
+          console.log(prevUser)
+          const updatedProductIds = (prevUser.sacuvaniProductids || []).filter(id => id !== item.product_id);
+          console.log("AAAAA"+updatedProductIds)
+          return {
+            ...prevUser,
+            sacuvaniProductids: updatedProductIds
+          };
+        });
+        setSaved(saves-1)
+
+        console.log(user.sacuvaniProductids);
+
       }
     } catch (error) {
       console.error(error);
-      setProducts((prevPosts) =>
+      setSavedProducts((prevPosts) =>
         prevPosts.map((post) =>
-          post.product_id === item.product_id ? {
-            ...post,
-            saved: post.saved ? false : newSaveStatus 
-          } : post
+          post.product_id === item.product_id
+            ? { ...post, saved: post.saved ? false : newSaveStatus }
+            : post
         )
       );
-      
     }
-    
-
+  
     return;
+  };
+  
+
+  const seeFolders = async() =>{
+    setSeeSaved(true)
+    const response = await axios.get(`http://${ip}:8080/v5/api`)
+    console.log(user)
+
+    const data = response.data.filter(product => user.sacuvaniProductids.includes(product.product_id));
+    setSaved(data.length)
+    const updatedData = data.map(product => ({ ...product, saved: true }));
+    setSavedProducts(updatedData);
+
+    console.log(data)
+
   }
 
   return (
@@ -387,6 +430,14 @@ const UserInfo = () => {
             {'E-mail: ' + (user.email || 'E-mail nije naveden')}
           </Text>
         </View>
+        {personal && 
+        <TouchableOpacity onPress={()=>{seeFolders()}}>
+        <MaterialIcons
+            name={"folder-open"} 
+            size={24}
+            color={dark ? 'white' : '#124460'}
+          />
+          </TouchableOpacity>}
       </View>
 
       <View style={[styles.bodovicontainer, , {borderColor: dark?'white':'#124460'}]}>
@@ -562,6 +613,39 @@ const UserInfo = () => {
         </View>
       </Modal>
 
+      <Modal transparent={true}
+        visible={seeSaved}
+        onRequestClose={() => setSeeSaved(false)}>
+        <View style={styles.modalOverlay2}>
+            
+          <View style={[styles.modalContainer2, { backgroundColor: dark ? '#2c3e50' : '#fff' }]}>
+          <View style={styles.modalHeader2}>
+            <TouchableOpacity onPress={() => setSeeSaved(false)} style={styles.closeButton2}>
+              <MaterialCommunityIcons name="close" size={24} color={dark ? 'white' : '#333'} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle2, { color: dark ? '#fff' : '#124460' }]}>
+              Ukupno sačuvanih proizvoda: {saves}
+            </Text>
+          </View>
+          {saves === 0 ? (
+            <Text style={[styles.noSavesText, { color: dark ? '#ccc' : '#aaa' }]}>Nema lajkova</Text>
+          ) : (
+            
+            <FlatList
+            data={savedProducts}
+            keyExtractor={(item) => item.product_id.toString()}
+            renderItem={({ item }) => (
+              <Product item={item} dark={dark} savePost={savePost} />
+            )}
+            contentContainerStyle={{ paddingBottom: 20, marginTop:15 }} // Ostavlja mesta za skrol
+          />
+
+          )}
+
+          </View>
+        </View>
+        </Modal>
+
     </KeyboardAwareScrollView>
   );
 };
@@ -732,7 +816,36 @@ const styles = StyleSheet.create({
 
     fontSize: 18,
     fontWeight: '600',
+  },modalOverlay2: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer2: {
+    padding: 30,
+    borderRadius: 10,
+    width: '100%',
+    height: '70%',
+  }, 
+  modalHeader2: {
+    alignItems: "flex-start",
+    paddingVertical: 10,
+  },
+  
+  closeButton2: {
+    alignSelf: "flex-end",
+    marginBottom: 15, 
+  },
+  
+  modalTitle2: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },noSavesText: {
+    fontSize: 16,
+    textAlign: 'center',
   }
+  
 });
 
 export default UserInfo;
