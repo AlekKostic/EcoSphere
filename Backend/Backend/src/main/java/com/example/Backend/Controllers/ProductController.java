@@ -18,7 +18,7 @@ public class ProductController {
     private ProductServices productServices;
 
     @PostMapping("/create")
-    public Product create(@RequestBody ProductDTO product){
+    public ProductDTO create(@RequestBody ProductDTO product){
         return productServices.create(product);
     }
 
@@ -45,5 +45,10 @@ public class ProductController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity remove(@PathVariable Long id){
         return productServices.delete(id);
+    }
+
+    @GetMapping("/user/{id}")
+    public List<ProductDTO> find(@PathVariable("id") Long id){
+        return productServices.search(id);
     }
 }

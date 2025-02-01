@@ -26,7 +26,7 @@ public class ProductServices {
     @Autowired
     private SacuvaneRepository sacuvaneRepository;
 
-    public Product create(ProductDTO productDTO){
+    public ProductDTO create(ProductDTO productDTO){
         User user = userRepository.findById(productDTO.getUser_id()).orElseThrow(()-> new RuntimeException("User ne postoji"));
         Product product = new Product();
         product.setBroj_pregleda(productDTO.getBroj_pregleda());
@@ -35,8 +35,9 @@ public class ProductServices {
         product.setName(productDTO.getName());
         product.setPhoneNumber(productDTO.getPhone_number());
         product.setPath(productDTO.getPath());
-        product.setPrice(product.getPrice());
-        return productRepository.save(product);
+        product.setPrice(productDTO.getPrice());
+        productRepository.save(product);
+        return new ProductDTO(productDTO.getPath(), productDTO.getDescription(), productDTO.getName(), productDTO.getPhone_number(), product.getPrice(), productDTO.getBroj_pregleda(), user.getId(), product.getProduct_id());
     }
 
     public List<ProductDTO> find(){
@@ -81,5 +82,14 @@ public class ProductServices {
         productRepository.save(product);
         productRepository.delete(product);
         return ResponseEntity.ok().build();
+    }
+
+    public List<ProductDTO> search(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        List<Product> productList = productRepository.findByUser(user);
+        return productList.stream().map(product -> {
+            ProductDTO productDTO = new ProductDTO(product.getPath(), product.getDescription(), product.getName(), product.getPhoneNumber(), product.getPrice(), product.getBroj_pregleda(), product.getUser().getId(), product.getProduct_id());
+            return productDTO;
+        }).collect(Collectors.toList());
     }
 }

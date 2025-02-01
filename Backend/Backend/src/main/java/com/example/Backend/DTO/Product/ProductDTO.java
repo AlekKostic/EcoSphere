@@ -10,6 +10,17 @@ public class ProductDTO {
     private Long user_id;
     private Long product_id;
 
+
+    public ProductDTO(String path, String description, String name, String phone_number, Float price, Integer broj_pregleda, Long user_id) {
+        this.path = path;
+        this.description = description;
+        this.name = name;
+        this.phone_number = phone_number;
+        this.price = price;
+        this.broj_pregleda = broj_pregleda;
+        this.user_id = user_id;
+    }
+
     public ProductDTO(String path, String description, String name, String phone_number, Float price, Integer broj_pregleda, Long user_id, Long product_id) {
         this.path = path;
         this.description = description;
@@ -19,6 +30,9 @@ public class ProductDTO {
         this.broj_pregleda = broj_pregleda;
         this.user_id = user_id;
         this.product_id = product_id;
+    }
+
+    public ProductDTO() {
     }
 
     public Long getProduct_id() {
