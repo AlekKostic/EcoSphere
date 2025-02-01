@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface SacuvaneRepository extends JpaRepository<Sacuvane, Long> {
     Sacuvane findByUserAndProduct(User user, Product product);
+
+    List<Sacuvane> findByProduct(Product product);
 }

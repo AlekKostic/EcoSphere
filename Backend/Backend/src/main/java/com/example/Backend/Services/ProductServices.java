@@ -78,6 +78,13 @@ public class ProductServices {
 
     public ResponseEntity delete(Long id){
         Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product nije pronadjen"));
+        List<Sacuvane> sacuvane = sacuvaneRepository.findByProduct(product);
+        for (Sacuvane sacuvane1 : sacuvane){
+            sacuvane1.setUser(null);
+            sacuvane1.setProduct(null);
+            sacuvaneRepository.save(sacuvane1);
+            sacuvaneRepository.delete(sacuvane1);
+        }
         product.setUser(null);
         productRepository.save(product);
         productRepository.delete(product);
