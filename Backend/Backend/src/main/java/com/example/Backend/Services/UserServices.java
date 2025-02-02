@@ -6,6 +6,8 @@ import com.example.Backend.DTO.User.UserDTO;
 import com.example.Backend.DTO.User.UserLoginDTO;
 import com.example.Backend.Models.*;
 import com.example.Backend.Repository.LikeRepository;
+import com.example.Backend.Repository.ProductRepository;
+import com.example.Backend.Repository.SacuvaneRepository;
 import com.example.Backend.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +27,12 @@ public class UserServices {
 
     @Autowired
     private LikeRepository likeRepository;
+
+    @Autowired
+    private SacuvaneRepository sacuvaneRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
 
     public User saveUser(User user) {
@@ -89,6 +97,19 @@ public class UserServices {
 
     public ResponseEntity delete(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        List<Sacuvane> sacuvanes = sacuvaneRepository.findByUser(user);
+        List<Product> productList = productRepository.findByUser(user);
+        for (Sacuvane sacuvane : sacuvanes){
+            sacuvane.setUser(null);
+            sacuvane.setProduct(null);
+            sacuvaneRepository.save(sacuvane);
+            sacuvaneRepository.delete(sacuvane);
+        }
+        for (Product product : productList){
+            product.setUser(null);
+            productRepository.save(product);
+            productRepository.delete(product);
+        }
         likeRepository.setLikesToNullForUser(id);
         userRepository.delete(user);
         return ResponseEntity.ok().build();
