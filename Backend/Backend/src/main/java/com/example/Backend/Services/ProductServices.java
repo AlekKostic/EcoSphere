@@ -99,4 +99,9 @@ public class ProductServices {
             return productDTO;
         }).collect(Collectors.toList());
     }
+
+    public ProductDTO findProduct(Long id){
+        Product product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("Product nije pronadjen"));
+        return new ProductDTO(product.getPath(), product.getDescription(), product.getName(), product.getPhoneNumber(), product.getPrice(), product.getBroj_pregleda(), product.getUser().getId(), product.getProduct_id());
+    }
 }

@@ -51,4 +51,9 @@ public class ProductController {
     public List<ProductDTO> find(@PathVariable("id") Long id){
         return productServices.search(id);
     }
+
+    @GetMapping("/product/{id}")
+    public ProductDTO findProduct(@PathVariable("id") Long id){
+        return productServices.findProduct(id);
+    }
 }
