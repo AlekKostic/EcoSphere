@@ -62,6 +62,7 @@ const UserInfo = () => {
   
   const [products, setProducts] = useState([]);
   const [savedProducts, setSavedProducts] = useState([]);
+  const [errorEdit, setErrorEdit]=useState("")
 
   const imageId = iduser % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
@@ -448,9 +449,20 @@ const UserInfo = () => {
 
   };
 
-  const submitEdit = ()=>{
+  const submitEdit = async()=>{
     console.log(editing)
     console.log(editedContent)
+    if(editedContent=="")
+      {
+        setErrorEdit("Molimo unesite tekst objave.")
+        return;
+      }
+    setErrorEdit("")
+
+    const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
+      "post_id": editing.id,
+      "new_content": editedContent
+  })
 
     posts.map((post, index) => {
       console.log(post);
@@ -732,15 +744,26 @@ const UserInfo = () => {
                       style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
                         color: dark ? '#124460' : '#124460',
                         borderColor: '#124460',
-                      marginBottom:30 }]}
+                      marginBottom:10 }]}
                       placeholder="Unesite izmenjenu objavu"
                       placeholderTextColor={dark ? '#124460' : '#124460'}
                       value={editedContent}
                       onChangeText={setEditedContent}
                     />
+                    {errorEdit && (
+              <Text 
+                style={[
+                  { color: 'red' },
+                  { alignSelf: 'center' },
+                  {marginBottom: 10}  // This will center the text horizontally
+                ]}
+              >
+                {errorEdit}
+              </Text>
+            )}
                     <View style={styles.modalActions}>
                       
-                    <TouchableOpacity onPress={() => {setIsModalVisibleEdit(false)}}>
+                    <TouchableOpacity onPress={() => {setErrorEdit(""), setIsModalVisibleEdit(false)}}>
                       <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>submitEdit()}>
@@ -911,6 +934,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   modalActions: {
+    marginTop:20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

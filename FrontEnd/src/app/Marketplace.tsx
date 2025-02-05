@@ -172,7 +172,7 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": "https://eco-sphere.s3.eu-north-1.amazonaws.com/Screenshot+2025-01-18+181719.png",
+        "path": null,
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0
       });
@@ -187,7 +187,7 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": "https://eco-sphere.s3.eu-north-1.amazonaws.com/Screenshot+2025-01-18+181719.png",
+        "path": null,
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0,
         "saved":false
@@ -200,8 +200,10 @@ const ProductsPage = () => {
       setPath("");
       setPhoneNumber("");
       setIsKeyboardVisible(false)
+      setErrorMessage("")
 
       setProducts([newPost, ...products])
+      
     } catch (error) {
       console.log('Error adding product:', error);
     }
@@ -222,6 +224,7 @@ const ProductsPage = () => {
     setPrice(0);
     setPhoneNumber('');
     setPath('');
+    setErrorMessage("")
   };
 
   const filteredProducts = products.filter((product) =>

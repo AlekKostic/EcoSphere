@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, Animated, Dimensions, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -63,7 +63,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
   else if (imageId == 4) profileImageSource = require('../img/profilna4.png');
   else if (imageId == 5) profileImageSource = require('../img/profilna5.png');
 
-  return (
+  return (<>
     <View style={[styles.productContainer, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
       <View style={styles.iconContainer}>
         {personal && (
@@ -87,7 +87,9 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
       
       <View style={styles.productDetails}>
         <Text style={[styles.productName, { color: dark ? 'white' : "#124460" }]}>{item.name}</Text>
-        <Text style={[styles.productDescription, { color: dark ? 'white' : "#124460" }]}>{item.description}</Text>
+        <Text style={[styles.productDescription, { color: dark ? 'white' : "#124460" }]}>
+          {item.description.length > 25 ? item.description.slice(0, 25) + '...' : item.description}
+        </Text>
         
         <View style={styles.viewSection}>
           <Icon name="visibility" size={20} color={dark ? 'white' : "#124460"} />
@@ -99,7 +101,10 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
         <Text style={[styles.viewDetailsText, { color: dark ? 'white' : "#124460" }]}>Pogledajte detaljnije</Text>
       </TouchableOpacity>
       
-      <Modal
+      
+    </View>
+
+    <Modal
         visible={showModal}
         animationType="none"
         transparent={true}
@@ -109,40 +114,54 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
           <View style={styles.modalBackground}>
             <Animated.View
               style={[styles.modalContainer, { transform: [{ translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }]}>
-              <View style={[styles.modalContent, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
-                <TouchableOpacity onPress={() => handleUser()} style={styles.userSection}>
-                  <View style={styles.info}>
-                  <Image 
-                    source={profileImageSource} // Default image if no profile picture
-                    style={styles.profilePic} 
-                  />
-                  <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
-                    {ime} {prezime}
-                  </Text>
-                  </View>
-                </TouchableOpacity>
-                <Text style={[styles.modalDescription, { color: dark ? 'white' : '#124460' }]}>{"Broj telefona:" + item.phone_number}</Text>
-                <Image 
-                  source={item.path ? { uri: item.path } : require('../img/pathnull.png')}
-                  style={styles.modalImage}
-                />
-                <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>{item.name}</Text>
-                <Text style={[styles.modalDescription, { color: dark ? 'white' : '#124460' }]}>{item.description}</Text>
-                <TouchableOpacity onPress={closeModal} style={styles.closeModalButton}>
+              <View style={[styles.modalContainer, {
+                backgroundColor: dark?'#124460':'white'
+              }]}>
+
+              <View style={styles.closeModalButton}>
+                <TouchableOpacity onPress={closeModal} >
                   <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
                 </TouchableOpacity>
+              </View>
+
+              
+            <TouchableOpacity onPress={() => handleUser()}>
+              <View style={styles.userSection}>
+                <Image 
+                      source={profileImageSource} 
+                      style={styles.profilePic} 
+                    />
+                    <Text style={[styles.userName,{ color: dark ? 'white' : '#124460' }]}>
+                      {ime} {prezime}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+            <Text style={[styles.contact, { color: dark ? 'white' : '#124460' }]}>
+              {"Kontakt telefon: " + item.phone_number}
+            </Text>
+
+            <View contentContainerStyle={styles.modalImageWrapper}>
+              <Image 
+                source={item.path ? { uri: item.path } : require('../img/pathnull.png')}
+                style={styles.modalImage}
+              />
+              
+            </View>
+
+
+
               </View>
             </Animated.View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   productContainer: {
-    marginTop:10,
+    marginTop: 10,
     backgroundColor: '#fff',
     marginBottom: 10,
     borderRadius: 10,
@@ -197,7 +216,6 @@ const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
-    alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)', 
   },
   modalContainer: {
@@ -205,58 +223,56 @@ const styles = StyleSheet.create({
     height: height * 0.7,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    alignItems: 'center',
   },
-  modalContent: {
-    paddingTop: '15%',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    position: 'relative', 
-  },
-  modalImage: {
-    width: '70%', 
-    height: undefined,
-    aspectRatio: 1,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalDescription: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  closeModalButton: {
-    position: 'absolute',
-    top: 15,
-    right: 10,
-    zIndex: 1, 
-  },
-  userSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  profilePic: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
-  },iconContainer: {
+  iconContainer: {
     position: 'absolute',
     top: 10,
     right: 10,
-    flexDirection: 'row',  // Aligns icons horizontally
-    alignItems: 'center',  // Aligns icons vertically
+    flexDirection: 'row',
+    alignItems: 'center', 
     zIndex: 1,
-    paddingHorizontal: 10, // Adds horizontal space for the icons
-  }, info: {
+    paddingHorizontal: 10,
+  }, closeModalButton:{
+    marginTop:20,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight:20,
+  },userSection: {
+    flexDirection: 'row', 
+    alignItems: 'center',  
+    marginTop: 10,         
+    marginLeft: 30, 
+  },
+  profilePic: {
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    borderWidth:1,
+    borderColor:'#124460'
+  },
+  userName: {
+    marginLeft:10,
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  }, contact:{
+    marginTop:15,
+    fontSize:18,
+    marginLeft:30,
+    fontWeight: '400',
+    marginBottom:20,
+  },modalImageWrapper: {
+    flex: 1,
+    justifyContent: 'flex-end', 
+    alignItems: 'center', 
+  },modalImage: {
+    width: '80%',       
+    resizeMode: 'contain',
   }
+  
+  
 });
+
 
 export default Product;

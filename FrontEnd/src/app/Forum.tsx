@@ -12,6 +12,7 @@ import Post from '../components/Post';
 const NotificationsPage = () => {
   const router = useRouter();
   const [posts, setPosts] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
@@ -143,13 +144,17 @@ const NotificationsPage = () => {
     setIsModalVisibleEdit(true)
     setEditing(item)
     setEditedContent(item.content)
-    console.log(item)
 
   };
 
   
   const addPost = async () => {
-  try {
+
+    if(!newPost){
+      setErrorMessage("Molimo unesite tekst.")
+      return
+    }
+    try {
     // Vratite Promise koji se rešava kada korisnički podaci budu učitani
     const userInfo = await new Promise((resolve, reject) => {
       AsyncStorage.getItem('userInfo', (err, result) => {
@@ -173,7 +178,6 @@ const NotificationsPage = () => {
       "user_id": userInfo.userId
     });
 
-    console.log(response.data);
 
     const newPostData = response.data;
 
@@ -181,32 +185,39 @@ const NotificationsPage = () => {
     const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
     const authorData = authorResponse.data;
 
-    console.log(authorResponse.data);
 
     const newPostWithAuthor = {
       ...newPostData,
       author: authorData
     };
 
-    console.log("AAA" + newPostWithAuthor.author.user_id);
 
     // Dodajte novi post u stanje
     setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
     setNewPost("");
+    setErrorMessage("")
     setIsModalVisible(false);
     
   } catch (error) {
     console.error("Error in API request:", error);
   }
 };
-
-  const submitEdit = ()=>{
-    console.log(editing)
+  const [errorEdit, setErrorEdit]=useState("")
+  const submitEdit = async()=>{
     console.log(editedContent)
+    if(editedContent=="")
+    {
+      setErrorEdit("Molimo unesite tekst objave.")
+      return;
+    }
+
+    const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
+        "post_id": editing.id,
+        "new_content": editedContent
+    })
+
 
     posts.map((post, index) => {
-      console.log(post);
-    
       if(post.id === editing.id) {
         return {
           ...post,
@@ -227,7 +238,7 @@ const NotificationsPage = () => {
     );
     
 
-
+    setErrorEdit("")
     setIsModalVisibleEdit(false)
 
   }
@@ -275,7 +286,7 @@ const NotificationsPage = () => {
         visible={isModalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
+        onRequestClose={() => {setIsModalVisible(false);setErrorMessage("")}}
       >
         <View style={[styles.modalContainer]}>
           <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
@@ -290,9 +301,26 @@ const NotificationsPage = () => {
               value={newPost}
               onChangeText={setNewPost}
             />
+            
+            {errorMessage ? (
+            <Text
+              style={[
+                {
+                  color: dark ? 'red' : 'red',
+                  textAlign: 'center', 
+                  fontSize: 15,
+                  fontWeight: '600'
+                },
+              ]}
+            >
+              {errorMessage}
+            </Text>
+          ) : null}
+
+
             <View style={styles.modalActions}>
               
-            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false)}}>
+            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false),setErrorMessage("")}}>
               <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={addPost}>
@@ -322,9 +350,19 @@ const NotificationsPage = () => {
               value={editedContent}
               onChangeText={setEditedContent}
             />
+            {errorEdit && (
+              <Text 
+                style={[
+                  { color: 'red' },
+                  { alignSelf: 'center' }  // This will center the text horizontally
+                ]}
+              >
+                {errorEdit}
+              </Text>
+            )}
             <View style={styles.modalActions}>
               
-            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisibleEdit(false)}}>
+            <TouchableOpacity onPress={() => {setErrorEdit(""),setIsModalVisibleEdit(false)}}>
               <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>submitEdit()}>
