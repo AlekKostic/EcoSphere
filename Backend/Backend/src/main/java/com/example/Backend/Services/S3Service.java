@@ -24,7 +24,7 @@ public class S3Service {
     public String uploadFile(MultipartFile file) throws IOException{
         String fileName = file.getOriginalFilename();
 
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucketName).key(fileName).build();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder().bucket(bucketName).key(fileName).acl("public-read").build();
 
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file.getBytes()));
 

@@ -1,6 +1,8 @@
 package com.example.Backend.Services;
 
 import com.example.Backend.DTO.Post.PostCreateDTO;
+import com.example.Backend.DTO.Post.PostDTO;
+import com.example.Backend.DTO.Post.PostEditDTO;
 import com.example.Backend.DTO.Post.PostLikeDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
@@ -90,6 +92,13 @@ public class PostoviServices {
 
         postoviRepository.deleteById(id);
 
+        return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity edit(PostEditDTO postEditDTO){
+        Postovi post = postoviRepository.findById(postEditDTO.getPost_id()).orElseThrow(()-> new RuntimeException("post nije pronadjen"));
+        post.setContent(postEditDTO.getNew_content());
+        postoviRepository.save(post);
         return ResponseEntity.ok().build();
     }
 }

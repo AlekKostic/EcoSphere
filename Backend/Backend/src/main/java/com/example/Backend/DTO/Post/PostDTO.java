@@ -15,6 +15,11 @@ public class PostDTO {
         this.likedIds = likedIds;
     }
 
+    public PostDTO(Long id, String content) {
+        this.id = id;
+        this.content = content;
+    }
+
     public Long getId() {
         return id;
     }

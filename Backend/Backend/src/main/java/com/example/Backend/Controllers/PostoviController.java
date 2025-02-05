@@ -3,6 +3,7 @@ package com.example.Backend.Controllers;
 import com.example.Backend.DTO.LikesDTO;
 import com.example.Backend.DTO.Post.PostCreateDTO;
 import com.example.Backend.DTO.Post.PostDTO;
+import com.example.Backend.DTO.Post.PostEditDTO;
 import com.example.Backend.DTO.Post.PostLikeDTO;
 import com.example.Backend.Models.Like;
 import com.example.Backend.Models.Postovi;
@@ -87,6 +88,11 @@ public class PostoviController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable("id") Long id){
         return postoviServices.delete(id);
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity edit(@RequestBody PostEditDTO postEditDTO){
+        return postoviServices.edit(postEditDTO);
     }
 }
 
