@@ -23,6 +23,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
   const ip = config.ipAddress;
 
   const getUser = async () => {
+    console.log(item.path)
     const res = await axios.get(`http://${ip}:8080/v1/api/${item.user_id}`);
     setIme(res.data.ime);
     setPrezime(res.data.prezime);
@@ -110,6 +111,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
               style={[styles.modalContainer, { transform: [{ translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }]}>
               <View style={[styles.modalContent, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
                 <TouchableOpacity onPress={() => handleUser()} style={styles.userSection}>
+                  <View style={styles.info}>
                   <Image 
                     source={profileImageSource} // Default image if no profile picture
                     style={styles.profilePic} 
@@ -117,6 +119,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
                   <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
                     {ime} {prezime}
                   </Text>
+                  </View>
                 </TouchableOpacity>
                 <Text style={[styles.modalDescription, { color: dark ? 'white' : '#124460' }]}>{"Broj telefona:" + item.phone_number}</Text>
                 <Image 
@@ -252,7 +255,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',  // Aligns icons vertically
     zIndex: 1,
     paddingHorizontal: 10, // Adds horizontal space for the icons
-  },
+  }, info: {
+  }
 });
 
 export default Product;

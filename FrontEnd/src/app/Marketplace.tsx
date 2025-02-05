@@ -47,13 +47,14 @@ const ProductsPage = () => {
       setLoading(true);
       const response = await axios.get(`http://${ip}:8080/v5/api`);
       let productsData = response.data.reverse();
+      console.log(productsData)
   
       if (userInfo) {
         const parsedUserInfo = JSON.parse(userInfo);
         const userId = parsedUserInfo.userId;
 
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
-
+        
         console.log(savedResponse.data)
         const savedProducts = savedResponse.data.sacuvaniProductids;
         console.log(savedProducts)
@@ -79,7 +80,7 @@ const ProductsPage = () => {
       console.log(productsData)
       setProducts(productsData);
     } catch (error) {
-      console.log(error);
+      console.log("a" + error);
     } finally {
       setLoading(false);
     }
@@ -171,7 +172,7 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": null,
+        "path": "https://eco-sphere.s3.eu-north-1.amazonaws.com/Screenshot+2025-01-18+181719.png",
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0
       });
@@ -186,13 +187,19 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": null,
+        "path": "https://eco-sphere.s3.eu-north-1.amazonaws.com/Screenshot+2025-01-18+181719.png",
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0,
         "saved":false
       }
 
       console.log(products)
+
+      setName("");
+      setDescription("");
+      setPath("");
+      setPhoneNumber("");
+      setIsKeyboardVisible(false)
 
       setProducts([newPost, ...products])
     } catch (error) {
@@ -282,7 +289,7 @@ const ProductsPage = () => {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={dark ? 'white' : '#124460'} />
             <Text style={[styles.loadingText, { color: dark ? 'white' : '#124460' }]}>
-              Učitavanje objava...
+              Učitavanje proizvoda...
             </Text>
           </View>
         ) : products.length === 0 ? (

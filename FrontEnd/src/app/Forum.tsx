@@ -14,6 +14,7 @@ const NotificationsPage = () => {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dark, setDark] = useState(false); 
@@ -134,10 +135,19 @@ const NotificationsPage = () => {
       );
     }
   };
-  
-  
 
+  const [editing, setEditing] = useState(null);
+  const [editedContent, setEditedContent] = useState(null);
 
+  const handleEdit = async (item) => {
+    setIsModalVisibleEdit(true)
+    setEditing(item)
+    setEditedContent(item.content)
+    console.log(item)
+
+  };
+
+  
   const addPost = async () => {
   try {
     // Vratite Promise koji se rešava kada korisnički podaci budu učitani
@@ -190,6 +200,38 @@ const NotificationsPage = () => {
   }
 };
 
+  const submitEdit = ()=>{
+    console.log(editing)
+    console.log(editedContent)
+
+    posts.map((post, index) => {
+      console.log(post);
+    
+      if(post.id === editing.id) {
+        return {
+          ...post,
+          content: editedContent
+        };
+      }
+    
+      return post;
+    });
+    
+    setPosts(prevPosts => 
+      prevPosts.map((post) => {
+        if(post.id === editing.id) {
+          return { ...post, content: editedContent };
+        }
+        return post; 
+      })
+    );
+    
+
+
+    setIsModalVisibleEdit(false)
+
+  }
+
 
   return (
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
@@ -219,12 +261,13 @@ const NotificationsPage = () => {
       ) : (
         <>
           {posts.length === 0 && <Text style={[styles.noPostsText, { color: dark ? 'white' : '#888' }]}>Budite prvi da objavite!</Text>}
-          <FlatList
+          {posts.length !== 0 &&<FlatList
             data={posts}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <Post item={item} likePost={likePost} />}
+            renderItem={({ item }) => <Post item={item} likePost={likePost} 
+            handleEdit={handleEdit} setEditing={setEditing} editing={editing}/>}
             contentContainerStyle={[styles.postsList, {backgroundColor: dark ? '#1b5975' : '#fff',}]}
-          />
+          />}
         </>
       )}
 
@@ -259,6 +302,40 @@ const NotificationsPage = () => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={isModalVisibleEdit}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisibleEdit(false)}
+      >
+        <View style={[styles.modalContainer]}>
+          <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
+            <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
+             }]}>Izmena objave</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460', fontSize:16, paddingVertical:15, borderRadius:15 }]}
+              placeholder="Unesite izmenjenu objavu"
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              value={editedContent}
+              onChangeText={setEditedContent}
+            />
+            <View style={styles.modalActions}>
+              
+            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisibleEdit(false)}}>
+              <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>submitEdit()}>
+              <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Izmeni</Text>
+            </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
     </View>
   );
 };
