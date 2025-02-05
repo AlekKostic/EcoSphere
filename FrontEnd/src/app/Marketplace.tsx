@@ -47,13 +47,14 @@ const ProductsPage = () => {
       setLoading(true);
       const response = await axios.get(`http://${ip}:8080/v5/api`);
       let productsData = response.data.reverse();
+      console.log(productsData)
   
       if (userInfo) {
         const parsedUserInfo = JSON.parse(userInfo);
         const userId = parsedUserInfo.userId;
 
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
-
+        
         console.log(savedResponse.data)
         const savedProducts = savedResponse.data.sacuvaniProductids;
         console.log(savedProducts)
@@ -79,7 +80,7 @@ const ProductsPage = () => {
       console.log(productsData)
       setProducts(productsData);
     } catch (error) {
-      console.log(error);
+      console.log("a" + error);
     } finally {
       setLoading(false);
     }
@@ -161,6 +162,11 @@ const ProductsPage = () => {
       return;
     }
 
+    if(description.length>250){
+      setErrorMessage('Opis može imati do 250 karaktera'); 
+      return;
+    }
+
     try {
 
       const userInfo = await AsyncStorage.getItem('userInfo');
@@ -194,7 +200,15 @@ const ProductsPage = () => {
 
       console.log(products)
 
+      setName("");
+      setDescription("");
+      setPath("");
+      setPhoneNumber("");
+      setIsKeyboardVisible(false)
+      setErrorMessage("")
+
       setProducts([newPost, ...products])
+      
     } catch (error) {
       console.log('Error adding product:', error);
     }
@@ -202,7 +216,7 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>{console.log(item)}}>
       <Product item={item} dark={dark} savePost={savePost}/>
       </TouchableOpacity>
     );
@@ -215,6 +229,7 @@ const ProductsPage = () => {
     setPrice(0);
     setPhoneNumber('');
     setPath('');
+    setErrorMessage("")
   };
 
   const filteredProducts = products.filter((product) =>
@@ -282,7 +297,7 @@ const ProductsPage = () => {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={dark ? 'white' : '#124460'} />
             <Text style={[styles.loadingText, { color: dark ? 'white' : '#124460' }]}>
-              Učitavanje objava...
+              Učitavanje proizvoda...
             </Text>
           </View>
         ) : products.length === 0 ? (
@@ -323,7 +338,7 @@ const ProductsPage = () => {
               />
               <TextInput
                 style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
-                placeholder="Opis proizvoda"
+                placeholder="Opis proizvoda(do 250 karaktera)"
                 placeholderTextColor="#124460"
                 value={description}
                 onChangeText={setDescription}

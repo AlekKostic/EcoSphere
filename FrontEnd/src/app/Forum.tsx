@@ -12,8 +12,10 @@ import Post from '../components/Post';
 const NotificationsPage = () => {
   const router = useRouter();
   const [posts, setPosts] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dark, setDark] = useState(false); 
@@ -134,12 +136,25 @@ const NotificationsPage = () => {
       );
     }
   };
-  
-  
 
+  const [editing, setEditing] = useState(null);
+  const [editedContent, setEditedContent] = useState(null);
 
+  const handleEdit = async (item) => {
+    setIsModalVisibleEdit(true)
+    setEditing(item)
+    setEditedContent(item.content)
+
+  };
+
+  
   const addPost = async () => {
-  try {
+
+    if(!newPost){
+      setErrorMessage("Molimo unesite tekst.")
+      return
+    }
+    try {
     // Vratite Promise koji se rešava kada korisnički podaci budu učitani
     const userInfo = await new Promise((resolve, reject) => {
       AsyncStorage.getItem('userInfo', (err, result) => {
@@ -163,7 +178,6 @@ const NotificationsPage = () => {
       "user_id": userInfo.userId
     });
 
-    console.log(response.data);
 
     const newPostData = response.data;
 
@@ -171,24 +185,63 @@ const NotificationsPage = () => {
     const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
     const authorData = authorResponse.data;
 
-    console.log(authorResponse.data);
 
     const newPostWithAuthor = {
       ...newPostData,
       author: authorData
     };
 
-    console.log("AAA" + newPostWithAuthor.author.user_id);
 
     // Dodajte novi post u stanje
     setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
     setNewPost("");
+    setErrorMessage("")
     setIsModalVisible(false);
     
   } catch (error) {
     console.error("Error in API request:", error);
   }
 };
+  const [errorEdit, setErrorEdit]=useState("")
+  const submitEdit = async()=>{
+    console.log(editedContent)
+    if(editedContent=="")
+    {
+      setErrorEdit("Molimo unesite tekst objave.")
+      return;
+    }
+
+    const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
+        "post_id": editing.id,
+        "new_content": editedContent
+    })
+
+
+    posts.map((post, index) => {
+      if(post.id === editing.id) {
+        return {
+          ...post,
+          content: editedContent
+        };
+      }
+    
+      return post;
+    });
+    
+    setPosts(prevPosts => 
+      prevPosts.map((post) => {
+        if(post.id === editing.id) {
+          return { ...post, content: editedContent };
+        }
+        return post; 
+      })
+    );
+    
+
+    setErrorEdit("")
+    setIsModalVisibleEdit(false)
+
+  }
 
 
   return (
@@ -219,12 +272,13 @@ const NotificationsPage = () => {
       ) : (
         <>
           {posts.length === 0 && <Text style={[styles.noPostsText, { color: dark ? 'white' : '#888' }]}>Budite prvi da objavite!</Text>}
-          <FlatList
+          {posts.length !== 0 &&<FlatList
             data={posts}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <Post item={item} likePost={likePost} />}
+            renderItem={({ item }) => <Post item={item} likePost={likePost} 
+            handleEdit={handleEdit} setEditing={setEditing} editing={editing}/>}
             contentContainerStyle={[styles.postsList, {backgroundColor: dark ? '#1b5975' : '#fff',}]}
-          />
+          />}
         </>
       )}
 
@@ -232,7 +286,7 @@ const NotificationsPage = () => {
         visible={isModalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
+        onRequestClose={() => {setIsModalVisible(false);setErrorMessage("")}}
       >
         <View style={[styles.modalContainer]}>
           <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
@@ -247,9 +301,26 @@ const NotificationsPage = () => {
               value={newPost}
               onChangeText={setNewPost}
             />
+            
+            {errorMessage ? (
+            <Text
+              style={[
+                {
+                  color: dark ? 'red' : 'red',
+                  textAlign: 'center', 
+                  fontSize: 15,
+                  fontWeight: '600'
+                },
+              ]}
+            >
+              {errorMessage}
+            </Text>
+          ) : null}
+
+
             <View style={styles.modalActions}>
               
-            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false)}}>
+            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false),setErrorMessage("")}}>
               <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={addPost}>
@@ -259,6 +330,50 @@ const NotificationsPage = () => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={isModalVisibleEdit}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisibleEdit(false)}
+      >
+        <View style={[styles.modalContainer]}>
+          <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
+            <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
+             }]}>Izmena objave</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                color: dark ? '#124460' : '#124460',
+                borderColor: '#124460', fontSize:16, paddingVertical:15, borderRadius:15 }]}
+              placeholder="Unesite izmenjenu objavu"
+              placeholderTextColor={dark ? '#124460' : '#124460'}
+              value={editedContent}
+              onChangeText={setEditedContent}
+            />
+            {errorEdit && (
+              <Text 
+                style={[
+                  { color: 'red' },
+                  { alignSelf: 'center' }  // This will center the text horizontally
+                ]}
+              >
+                {errorEdit}
+              </Text>
+            )}
+            <View style={styles.modalActions}>
+              
+            <TouchableOpacity onPress={() => {setErrorEdit(""),setIsModalVisibleEdit(false)}}>
+              <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>submitEdit()}>
+              <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Izmeni</Text>
+            </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+
     </View>
   );
 };
@@ -293,8 +408,8 @@ const styles = StyleSheet.create({
     borderRadius:5,
   },
   addPostButton: {
-    width: '40%',
-    marginLeft: '30%',
+    width: '50%',
+    marginLeft: '25%',
     backgroundColor: '#007BFF',
     borderRadius: 10,
     padding: 15,

@@ -1,34 +1,58 @@
-import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList, Image, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
+const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdit }) => {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const [likedUsers, setLikedUsers] = useState([]);
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  const [dark, setDark] = useState(false); // Dark mode state
+  const [dark, setDark] = useState(false); 
+  const [logId, setLogId] = useState(-1); 
+  const [editable, setEditable] = useState(false)
+  const [editingPost, setEditingPost] = useState(false)
+
+  const getEdit = async()=>{
+
+    const userInfo = await AsyncStorage.getItem('userInfo');
+    const parsedUserInfo = JSON.parse(userInfo);
+
+    if (parsedUserInfo.userId===item.author.user_id)
+    {
+      setEditable(true);
+    }
+
+  }
+
+  const getMode = async () => {
+
+
+    const storedMode = await AsyncStorage.getItem('darkMode');
+    if (storedMode === 'true') {
+      setDark(true);
+    } else {
+      setDark(false);
+    }
+
+  };
+
+
+    useEffect(() => {
+        getEdit()
+   }, []);
+
 
   useEffect(() => {
-    const getMode = async () => {
-      const storedMode = await AsyncStorage.getItem('darkMode');
-      if (storedMode === 'true') {
-        setDark(true);
-      } else {
-        setDark(false);
-      }
-    };
-
     getMode();
   }, []);
 
+
   const onAuthorPress = () => {
-    console.log("Clicked on author:", item);
     router.push({
       pathname: '/UserInfo',
       params: { id: item.author.user_id },
@@ -68,6 +92,10 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
     });
   };
 
+  const edit = async()=> {
+    handleEdit(item)
+  }
+
   const imageId = item.author.user_id % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
   if (imageId == 1) profileImageSource = require('../img/profilna1.png');
@@ -85,15 +113,31 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
           <Image source={profileImageSource} style={styles.profileImage} />
           <Text style={[styles.profileText, { color: dark ? 'white' : '#124460' }]}>{item.author.ime + " " + item.author.prezime}</Text>
         </TouchableOpacity>
+
+        <View style={styles.iconContainer}>
+
+        {editable && (
+          <View style={styles.iconButton}>
+            <TouchableOpacity onPress={() => { edit(); }}>
+              <FontAwesome6 name="pencil" size={20} color={dark ? 'white' : '#124460'} />
+            </TouchableOpacity>
+
+          </View>
+        )}
         {personal && (
-          <View style={styles.trashc}>
+          <View style={styles.iconButton}>
             <TouchableOpacity onPress={() => handleDelete(item.id)}>
               <Ionicons name="trash-outline" size={24} color={dark ? 'white' : 'gray'} />
             </TouchableOpacity>
           </View>
         )}
+        </View>
+
       </View>
-      <Text style={[styles.postText, { color: dark ? 'white' : '#124460' }]}>{item.content}</Text>
+    
+          <Text style={[styles.postText, { color: dark ? 'white' : '#124460' }]}>
+            {item.content}
+          </Text>
 
       <View style={styles.likeContainer}>
         <TouchableOpacity onPress={() => likePost(item)} style={styles.likeButton}>
@@ -105,7 +149,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete }) => {
         </TouchableOpacity>
         <Text style={[styles.likesCount, { color: dark ? '#ccc' : '#124460' }]}>{new Set(item.likedIds).size}</Text>
         <TouchableOpacity onPress={onSeeLikesPress} style={styles.seeLikesContainer}>
-          <Text style={[styles.seeLikesText, { color: dark ? '#ccc' : '#124460' }]}>Pogledaj svidjanja</Text>
+          <Text style={[styles.seeLikesText, { color: dark ? '#ccc' : '#124460', textDecorationLine: 'underline' }]}>Pogledaj svidjanja</Text>
         </TouchableOpacity>
       </View>
 
@@ -147,7 +191,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 3,
+    elevation: 3,backgroundColor: 'red',
   },
   authorContainer: {
     flexDirection: 'row',
@@ -166,7 +210,8 @@ const styles = StyleSheet.create({
   },
   postText: {
     fontSize: 16,
-    marginBottom: 5,
+    marginTop:5,
+    marginBottom: 10,
     marginLeft: 5,
   },
   likeContainer: {
@@ -239,9 +284,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  trashc: {
-    marginLeft: 'auto',
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto', // Push to the right
   },
+  iconButton: {
+    marginLeft: 10, // Spacing between icons
+  },
+  
 });
 
 export default Post;

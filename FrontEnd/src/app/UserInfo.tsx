@@ -62,6 +62,7 @@ const UserInfo = () => {
   
   const [products, setProducts] = useState([]);
   const [savedProducts, setSavedProducts] = useState([]);
+  const [errorEdit, setErrorEdit]=useState("")
 
   const imageId = iduser % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
@@ -110,7 +111,6 @@ const UserInfo = () => {
 
   
   const deleteProd = async(id)=>{
-    console.log(id)
 
     await axios.delete(`http://${ip}:8080/v5/api/delete/${id}`);
     
@@ -119,15 +119,15 @@ const UserInfo = () => {
   const fetchProduct = async()=>{
     const response = await axios.get(`http://${ip}:8080/v5/api/user/${iduser}`);
     let productsData = response.data.reverse();
+    console.log("bbb"+logged)
     if(logged)
     {
-      const parsedUserInfo = JSON.parse(userInfo);
-        const userId = parsedUserInfo.userId;
+      console.log("alo")
 
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${logId}`);
 
         const savedProducts = savedResponse.data.sacuvaniProductids;
-  
+        console.log(savedProducts)
         productsData = productsData.map((product) => {
           const isSaved = savedProducts.includes(product.product_id);
           
@@ -149,10 +149,15 @@ const UserInfo = () => {
 
   useEffect(() => {
     {
-      fetchProduct();
       fetchUserInfo();
     }
   }, []);
+
+  useEffect(() => {
+    if (logged) {
+      fetchProduct();
+    }
+  }, [logged]); 
 
   const fetchPostsData = async () => {
     try {
@@ -329,10 +334,12 @@ const UserInfo = () => {
     const userId = userInfo ? JSON.parse(userInfo).userId : null;
   
     const newSaveStatus = !item.saved;
-    console.log(newSaveStatus);
+    console.log("stat"+newSaveStatus);
+    console.log(products)
   
     setSavedProducts((prevPosts) => {
       return prevPosts.map((post) => {
+        console.log(post.product_id + " sssss " + item.product_id)
         if (post.product_id === item.product_id) {
           console.log("Updating post:", post);  // Proveri koji post se ažurira
           return {
@@ -344,6 +351,23 @@ const UserInfo = () => {
         }
       });
     });
+
+    setProducts((prevPosts) => {
+      return prevPosts.map((post) => {
+        console.log(post.product_id + " sssss " + item.product_id)
+        if (post.product_id === item.product_id) {
+          console.log("Updating post:", post);  // Proveri koji post se ažurira
+          return {
+            ...post,
+            saved: newSaveStatus
+          };
+        } else {
+          return post;
+        }
+      });
+    });
+
+    console.log(savedProducts)
   
     try {
       if (newSaveStatus) {
@@ -410,6 +434,61 @@ const UserInfo = () => {
     setSavedProducts(updatedData);
 
     console.log(data)
+
+  }
+
+  const [editing, setEditing] = useState(null);
+  const [editedContent, setEditedContent] = useState(null);
+  const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
+
+  const handleEdit = async (item) => {
+    setIsModalVisibleEdit(true)
+    setEditing(item)
+    setEditedContent(item.content)
+    console.log(item)
+
+  };
+
+  const submitEdit = async()=>{
+    console.log(editing)
+    console.log(editedContent)
+    if(editedContent=="")
+      {
+        setErrorEdit("Molimo unesite tekst objave.")
+        return;
+      }
+    setErrorEdit("")
+
+    const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
+      "post_id": editing.id,
+      "new_content": editedContent
+  })
+
+    posts.map((post, index) => {
+      console.log(post);
+    
+      if(post.id === editing.id) {
+        return {
+          ...post,
+          content: editedContent
+        };
+      }
+    
+      return post;
+    });
+    
+    setPosts(prevPosts => 
+      prevPosts.map((post) => {
+        if(post.id === editing.id) {
+          return { ...post, content: editedContent };
+        }
+        return post; 
+      })
+    );
+    
+
+
+    setIsModalVisibleEdit(false)
 
   }
 
@@ -530,8 +609,10 @@ const UserInfo = () => {
         ) : posts.length > 0 ? (
           posts.map((post) => (
             <Post key={post.id} item={post} likePost={likePost} personal={personal}
-              handleDelete={() => { setPostToDelete(post.id); setDeleteModalVisiblePost(true); }} />
-          ))
+              handleDelete={() => { setPostToDelete(post.id); setDeleteModalVisiblePost(true);
+               }} 
+              handleEdit={handleEdit}/>
+            ))
         ) : (
           <Text style={[styles.noPostsText, { color: dark ? 'white' : '#124460' }]}>
             Nema postova za prikazivanje.
@@ -575,11 +656,12 @@ const UserInfo = () => {
         Da li ste sigurni da želite da obrišete ovaj proizvod?
       </Text>
       <View style={styles.modalActions}>
-        <TouchableOpacity onPress={handleDeleteProduct}>
-          <Text style={[styles.deleteButtonText2, {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
-        </TouchableOpacity>
+
         <TouchableOpacity onPress={() => setDeleteModalVisible(false)}>
           <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+        </TouchableOpacity>   
+         <TouchableOpacity onPress={handleDeleteProduct}>
+          <Text style={[styles.deleteButtonText2, {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -598,15 +680,16 @@ const UserInfo = () => {
             </View>
             <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>Da li ste sigurni da želite da obrišete ovaj post?</Text>
             <View style={styles.modalActions}>
-              <TouchableOpacity
-                onPress={handleDeletePost}
-              >
-                <Text style={[styles.deleteButtonText2, , {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
-              </TouchableOpacity>
+              
               <TouchableOpacity
                 onPress={() => setDeleteModalVisiblePost(false)}
               >
                 <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleDeletePost}
+              >
+                <Text style={[styles.deleteButtonText2, , {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -637,7 +720,7 @@ const UserInfo = () => {
             renderItem={({ item }) => (
               <Product item={item} dark={dark} savePost={savePost} />
             )}
-            contentContainerStyle={{ paddingBottom: 20, marginTop:15 }} // Ostavlja mesta za skrol
+            contentContainerStyle={{ paddingBottom: 20, marginTop:15, marginHorizontal:5 }} // Ostavlja mesta za skrol
           />
 
           )}
@@ -645,6 +728,52 @@ const UserInfo = () => {
           </View>
         </View>
         </Modal>
+        <Modal
+                visible={isModalVisibleEdit}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setIsModalVisibleEdit(false)}
+              >
+          <View style={styles.modalOverlay}>
+                <View style={[styles.modalContainer, {backgroundColor: dark?'#124460':'white'}]}>
+                  
+                    <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
+                    , marginBottom: 20
+                     }]}>Izmena objave</Text>
+                    <TextInput
+                      style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
+                        color: dark ? '#124460' : '#124460',
+                        borderColor: '#124460',
+                      marginBottom:10 }]}
+                      placeholder="Unesite izmenjenu objavu"
+                      placeholderTextColor={dark ? '#124460' : '#124460'}
+                      value={editedContent}
+                      onChangeText={setEditedContent}
+                    />
+                    {errorEdit && (
+              <Text 
+                style={[
+                  { color: 'red' },
+                  { alignSelf: 'center' },
+                  {marginBottom: 10}  // This will center the text horizontally
+                ]}
+              >
+                {errorEdit}
+              </Text>
+            )}
+                    <View style={styles.modalActions}>
+                      
+                    <TouchableOpacity onPress={() => {setErrorEdit(""), setIsModalVisibleEdit(false)}}>
+                      <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={()=>submitEdit()}>
+                      <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Izmeni</Text>
+                    </TouchableOpacity>
+                    </View>
+                </View>
+           </View>
+        </Modal>
+        
 
     </KeyboardAwareScrollView>
   );
@@ -805,6 +934,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   modalActions: {
+    marginTop:20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
