@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Acti
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import BackNav from '../components/Backnav';
+import BackNav from '../components/Backnavhome';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -93,20 +93,25 @@ const Login = () => {
   return (
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
       <BackNav />
-      <KeyboardAwareScrollView style={styles.container}>
+      <KeyboardAwareScrollView 
+        style={styles.container} 
+        contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.header}>
-          {/* Add Image here */}
           <Image 
-            source={require('../img/logo.png')}  // Replace with the correct image path
+            source={require('../img/logo.png')}
             style={styles.headerImage} 
           />
-          <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>Održivost počinje ovde.</Text>
+          <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>
+            Održivost počinje ovde.
+          </Text>
           <Text style={[styles.title, dark ? styles.titleDark : styles.titleLight]}>
             Ulogujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
         </View>
         <View style={styles.form}>
-          <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>E-mail adresa</Text>
+          <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>
+            E-mail adresa
+          </Text>
           <View style={styles.input}>
             <TextInput
               autoCapitalize="none"
@@ -121,7 +126,9 @@ const Login = () => {
             />
           </View>
           <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Lozinka</Text>
+            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>
+              Lozinka
+            </Text>
             <View style={styles.passwordContainer}>
               <TextInput
                 autoCorrect={false}
@@ -151,7 +158,9 @@ const Login = () => {
           </View>
           {error && (
             <View style={styles.errorContainer}>
-              <Text style={[styles.error, {color: dark? '#ff999c':'#9a2626'}]}>{errorText}</Text>
+              <Text style={[styles.error, {color: dark ? '#ff999c' : '#9a2626'}]}>
+                {errorText}
+              </Text>
             </View>
           )}
         </View>
@@ -170,7 +179,10 @@ const Login = () => {
       )}
     </SafeAreaView>
   );
-};
+}
+  
+
+
 
 const styles = StyleSheet.create({
   safeArea: {

@@ -408,8 +408,8 @@ const styles = StyleSheet.create({
     borderRadius:5,
   },
   addPostButton: {
-    width: '40%',
-    marginLeft: '30%',
+    width: '50%',
+    marginLeft: '25%',
     backgroundColor: '#007BFF',
     borderRadius: 10,
     padding: 15,

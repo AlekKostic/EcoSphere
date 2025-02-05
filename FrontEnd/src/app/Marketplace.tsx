@@ -162,6 +162,11 @@ const ProductsPage = () => {
       return;
     }
 
+    if(description.length>250){
+      setErrorMessage('Opis može imati do 250 karaktera'); 
+      return;
+    }
+
     try {
 
       const userInfo = await AsyncStorage.getItem('userInfo');
@@ -211,7 +216,7 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={()=>{console.log(item)}}>
       <Product item={item} dark={dark} savePost={savePost}/>
       </TouchableOpacity>
     );
@@ -333,7 +338,7 @@ const ProductsPage = () => {
               />
               <TextInput
                 style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
-                placeholder="Opis proizvoda"
+                placeholder="Opis proizvoda(do 250 karaktera)"
                 placeholderTextColor="#124460"
                 value={description}
                 onChangeText={setDescription}

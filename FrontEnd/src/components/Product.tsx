@@ -63,6 +63,8 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
   else if (imageId == 4) profileImageSource = require('../img/profilna4.png');
   else if (imageId == 5) profileImageSource = require('../img/profilna5.png');
 
+  const prod = [item]
+
   return (<>
     <View style={[styles.productContainer, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
       <View style={styles.iconContainer}>
@@ -105,56 +107,31 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
     </View>
 
     <Modal
-        visible={showModal}
-        animationType="none"
-        transparent={true}
-        onRequestClose={closeModal}
-      >
-        <TouchableWithoutFeedback onPress={closeModal}>
-          <View style={styles.modalBackground}>
-            <Animated.View
-              style={[styles.modalContainer, { transform: [{ translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }]}>
-              <View style={[styles.modalContainer, {
-                backgroundColor: dark?'#124460':'white'
-              }]}>
+  visible={showModal}
+  animationType="none"
+  transparent={true}
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalBackground}>
+    <Animated.View
+      style={[
+        styles.modalContainer,
+        { transform: [{ translateY: modalAnim.interpolate({ inputRange: [0, 1], outputRange: [500, 0] }) }] }
+      ]}
+    >
+      <View style={[styles.modalContainer, { backgroundColor: dark ? '#124460' : 'white' }]}>
+        
+        <View style={styles.closeModalButton}>
+          <TouchableOpacity onPress={closeModal}>
+            <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
+          </TouchableOpacity>
+        </View>
+      </View>
+        
+    </Animated.View>
+  </View>
+</Modal>
 
-              <View style={styles.closeModalButton}>
-                <TouchableOpacity onPress={closeModal} >
-                  <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
-                </TouchableOpacity>
-              </View>
-
-              
-            <TouchableOpacity onPress={() => handleUser()}>
-              <View style={styles.userSection}>
-                <Image 
-                      source={profileImageSource} 
-                      style={styles.profilePic} 
-                    />
-                    <Text style={[styles.userName,{ color: dark ? 'white' : '#124460' }]}>
-                      {ime} {prezime}
-                    </Text>
-                </View>
-            </TouchableOpacity>
-            <Text style={[styles.contact, { color: dark ? 'white' : '#124460' }]}>
-              {"Kontakt telefon: " + item.phone_number}
-            </Text>
-
-            <View contentContainerStyle={styles.modalImageWrapper}>
-              <Image 
-                source={item.path ? { uri: item.path } : require('../img/pathnull.png')}
-                style={styles.modalImage}
-              />
-              
-            </View>
-
-
-
-              </View>
-            </Animated.View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
     </>
   );
 };
@@ -173,6 +150,7 @@ const styles = StyleSheet.create({
     padding: 15,
     position: 'relative',
   },
+
   saveIconContainer: {
     left: 5,
   },
@@ -180,12 +158,14 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 10,
+    marginVertical:8,
     marginRight: 20,
   },
   productDetails: {
     flex: 1,
   },
   productName: {
+    marginTop:5,
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 5,
@@ -210,7 +190,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 15,
+    marginTop:20,
+    bottom: 10,
     right: 15,
   },
   modalBackground: {
@@ -262,14 +243,22 @@ const styles = StyleSheet.create({
     marginLeft:30,
     fontWeight: '400',
     marginBottom:20,
-  },modalImageWrapper: {
-    flex: 1,
-    justifyContent: 'flex-end', 
-    alignItems: 'center', 
   },modalImage: {
-    width: '80%',       
-    resizeMode: 'contain',
-  }
+    width:'80%',
+    height:'80%',
+    alignSelf:'center'
+  },modalTitle: {
+    alignSelf:'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop:20,
+    marginBottom: 20,
+  },
+  modalDescription: {
+    paddingHorizontal:30,
+    fontSize: 16,
+    marginBottom: 20,
+  },
   
   
 });
