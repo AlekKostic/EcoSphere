@@ -609,8 +609,6 @@ const UserInfo = () => {
   ) : products.length > 0 ? (
     products.map((product) => (
       <TouchableOpacity key={product.product_id} onPress={() => {
-        setProductToDelete(product.product_id); 
-        setDeleteModalVisible(true); 
       }}>
         <Product personal={personal} item={product} dark={dark} savePost={savePost}
         deleteProd={() => { setProductToDelete(product.product_id); setDeleteModalVisible(true); }}

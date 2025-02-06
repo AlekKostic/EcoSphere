@@ -127,7 +127,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
         {personal && (
           <View style={styles.iconButton}>
             <TouchableOpacity onPress={() => handleDelete(item.id)}>
-              <Ionicons name="trash-outline" size={24} color={dark ? 'white' : 'gray'} />
+              <Ionicons name="trash-outline" size={24} color={dark ? 'white' : '#124460'} />
             </TouchableOpacity>
           </View>
         )}
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 'auto', // Push to the right
+    marginLeft: 'auto', 
   },
   iconButton: {
     marginLeft: 10, // Spacing between icons
