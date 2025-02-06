@@ -100,7 +100,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
       </View>
       
       <TouchableOpacity onPress={handlePressDetails} style={styles.footer}>
-        <Text style={[styles.viewDetailsText, { color: dark ? 'white' : "#124460" }]}>Pogledajte detaljnije</Text>
+        <Text style={[styles.viewDetailsText, { color: dark ? 'white' : "#124460" }]}>Pogledajte više</Text>
       </TouchableOpacity>
       
       

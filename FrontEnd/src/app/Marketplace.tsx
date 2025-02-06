@@ -257,10 +257,11 @@ const ProductsPage = () => {
   };
 
   return (
+    <>
+    <BackNav />
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
         <View style={styles.headerContainer}>
-          <BackNav />
           <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Prodavnica</Text>
           <Text style={[styles.subheading, { color: dark ? 'white' : '#124460', borderBottomColor: dark ? 'white' : '#124460' }]}>
             Ovde možete podeliti proizvode koje želite da poklonite drugim korisnicima,
@@ -368,6 +369,7 @@ const ProductsPage = () => {
         </Modal>
       </View>
     </TouchableWithoutFeedback>
+    </>
   );
 };
 
@@ -423,7 +425,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#6ac17f',
     paddingVertical: 15,
     borderRadius: 10,
-    marginBottom: 20,
     width: '50%',
     alignSelf: 'center',
   },

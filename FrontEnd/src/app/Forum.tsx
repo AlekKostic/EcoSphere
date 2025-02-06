@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
   View, Text, TextInput, FlatList, TouchableOpacity, 
   StyleSheet, Modal, Button, ActivityIndicator 
@@ -10,6 +10,10 @@ import { useRouter } from 'expo-router';
 import Post from '../components/Post';
 
 const NotificationsPage = () => {
+
+  const flatListRef = useRef(null);
+
+
   const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -194,6 +198,11 @@ const NotificationsPage = () => {
 
     // Dodajte novi post u stanje
     setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+
+    setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+      }, 300);
+
     setNewPost("");
     setErrorMessage("")
     setIsModalVisible(false);
@@ -228,14 +237,12 @@ const NotificationsPage = () => {
       return post;
     });
     
-    setPosts(prevPosts => 
-      prevPosts.map((post) => {
-        if(post.id === editing.id) {
-          return { ...post, content: editedContent };
-        }
-        return post; 
-      })
-    );
+    setPosts(prevPosts => {
+      const updatedPosts = [newPostWithAuthor, ...prevPosts];
+      return updatedPosts;
+    });
+
+    
     
 
     setErrorEdit("")
@@ -245,9 +252,10 @@ const NotificationsPage = () => {
 
 
   return (
+    <>
+    <BackNav />
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <View style={styles.headerContainer}>
-        <BackNav />
         <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Oglasna tabla</Text>
         <Text style={[styles.subheading, { color: dark ? 'white' : '#124660', borderBottomColor: dark ? '#fff' : '#124460' }]}>
           Ovde možete pročitati i podeliti obaveštenja o dešavanjima vezanim za životnu
@@ -273,6 +281,7 @@ const NotificationsPage = () => {
         <>
           {posts.length === 0 && <Text style={[styles.noPostsText, { color: dark ? 'white' : '#888' }]}>Budite prvi da objavite!</Text>}
           {posts.length !== 0 &&<FlatList
+            ref={flatListRef}
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <Post item={item} likePost={likePost} 
@@ -375,6 +384,7 @@ const NotificationsPage = () => {
 
 
     </View>
+    </>
   );
 };
 

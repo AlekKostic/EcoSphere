@@ -75,7 +75,6 @@ const UserInfo = () => {
 
   const fetchUserInfo = async () => {
     try {
-      console.log("ovde" +iduser)
       const userInfo = await AsyncStorage.getItem('userInfo');
       if (userInfo) {
         const parsedUserInfo = JSON.parse(userInfo);
@@ -98,7 +97,6 @@ const UserInfo = () => {
       await deleteProd(productToDelete)
       setDeleteModalVisible(false);
       setProducts(prevProducts => {
-        console.log("Previous products:", prevProducts);
         const filteredProducts = prevProducts.filter(product => product.product_id !== productToDelete);
         console.log("Filtered products:", filteredProducts);
         return filteredProducts;
@@ -119,7 +117,6 @@ const UserInfo = () => {
   const fetchProduct = async()=>{
     const response = await axios.get(`http://${ip}:8080/v5/api/user/${iduser}`);
     let productsData = response.data.reverse();
-    console.log("bbb"+logged)
     if(logged)
     {
       console.log("alo")
@@ -127,7 +124,6 @@ const UserInfo = () => {
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${logId}`);
 
         const savedProducts = savedResponse.data.sacuvaniProductids;
-        console.log(savedProducts)
         productsData = productsData.map((product) => {
           const isSaved = savedProducts.includes(product.product_id);
           
@@ -144,7 +140,6 @@ const UserInfo = () => {
       }));
     }
     setProducts(productsData)
-    console.log(productsData)
   }
 
   useEffect(() => {
@@ -246,7 +241,6 @@ const UserInfo = () => {
 
   const handleDeletePost = async () => {
     try {
-      console.log("aaa"+postToDelete)
       await axios.delete(`http://${ip}:8080/v4/api/delete/${postToDelete}`);
       setDeleteModalVisiblePost(false);
       fetchPostsData();
@@ -267,7 +261,6 @@ const UserInfo = () => {
       const userInfo = value ? JSON.parse(value) : null;
       const userId = userInfo?.userId;
 
-      console.log(userId + " " + item.id)
       try {
         const response = await axios.post(`http://${ip}:8080/v4/api/like`, {
           "user_id": userId,
@@ -324,7 +317,6 @@ const UserInfo = () => {
   };
 
   const savePost = async (item) => {
-    console.log(item);
     if (!logged) {
       router.push('/Login');
       return;
@@ -334,12 +326,9 @@ const UserInfo = () => {
     const userId = userInfo ? JSON.parse(userInfo).userId : null;
   
     const newSaveStatus = !item.saved;
-    console.log("stat"+newSaveStatus);
-    console.log(products)
   
     setSavedProducts((prevPosts) => {
       return prevPosts.map((post) => {
-        console.log(post.product_id + " sssss " + item.product_id)
         if (post.product_id === item.product_id) {
           console.log("Updating post:", post);  // Proveri koji post se ažurira
           return {
@@ -356,7 +345,6 @@ const UserInfo = () => {
       return prevPosts.map((post) => {
         console.log(post.product_id + " sssss " + item.product_id)
         if (post.product_id === item.product_id) {
-          console.log("Updating post:", post);  // Proveri koji post se ažurira
           return {
             ...post,
             saved: newSaveStatus
@@ -367,7 +355,6 @@ const UserInfo = () => {
       });
     });
 
-    console.log(savedProducts)
   
     try {
       if (newSaveStatus) {
@@ -395,9 +382,8 @@ const UserInfo = () => {
         });
 
         setUser((prevUser) => {
-          console.log(prevUser)
           const updatedProductIds = (prevUser.sacuvaniProductids || []).filter(id => id !== item.product_id);
-          console.log("AAAAA"+updatedProductIds)
+
           return {
             ...prevUser,
             sacuvaniProductids: updatedProductIds
@@ -405,7 +391,6 @@ const UserInfo = () => {
         });
         setSaved(saves-1)
 
-        console.log(user.sacuvaniProductids);
 
       }
     } catch (error) {
@@ -445,13 +430,10 @@ const UserInfo = () => {
     setIsModalVisibleEdit(true)
     setEditing(item)
     setEditedContent(item.content)
-    console.log(item)
 
   };
 
   const submitEdit = async()=>{
-    console.log(editing)
-    console.log(editedContent)
     if(editedContent=="")
       {
         setErrorEdit("Molimo unesite tekst objave.")
@@ -465,7 +447,6 @@ const UserInfo = () => {
   })
 
     posts.map((post, index) => {
-      console.log(post);
     
       if(post.id === editing.id) {
         return {
@@ -493,10 +474,12 @@ const UserInfo = () => {
   }
 
   return (
+    <>
+    
+    <BackNav />
     <KeyboardAwareScrollView style={[styles.container, {
       backgroundColor: dark?'#124460':'white'
     }]} keyboardShouldPersistTaps="handled">
-      <BackNav />
       <View style={[styles.profileContainer,{
       backgroundColor: dark?'#1b5975':'#dfeaf0'
     }]}>
@@ -711,7 +694,7 @@ const UserInfo = () => {
             </Text>
           </View>
           {saves === 0 ? (
-            <Text style={[styles.noSavesText, { color: dark ? '#ccc' : '#aaa' }]}>Nema lajkova</Text>
+            <Text style={[styles.noSavesText, { color: dark ? '#ccc' : '#aaa' }]}>Nema sačuvanih proizvoda</Text>
           ) : (
             
             <FlatList
@@ -776,6 +759,7 @@ const UserInfo = () => {
         
 
     </KeyboardAwareScrollView>
+    </>
   );
 };
 
@@ -783,7 +767,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
+    paddingHorizontal: 20,
   },
   postsHeader: {
     fontSize: 15,

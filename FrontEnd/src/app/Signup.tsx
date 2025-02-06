@@ -84,6 +84,8 @@ const Signup = () => {
         password,
       };
 
+      console.log(response.data)
+
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 
       router.push('/Home');

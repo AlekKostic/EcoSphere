@@ -60,6 +60,7 @@ const Login = () => {
       setError(false);
       setErrorText("");
       setIsLoading(false);
+      console.log(response.data)
 
       if (response.data) {
         const transformedData = {
@@ -108,7 +109,7 @@ const Login = () => {
             Ulogujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
         </View>
-        <View style={styles.form}>
+        <View style={[styles.form, { paddingBottom: 30 }]}>
           <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>
             E-mail adresa
           </Text>
@@ -179,6 +180,7 @@ const Login = () => {
       )}
     </SafeAreaView>
   );
+  
 }
   
 

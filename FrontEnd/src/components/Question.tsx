@@ -28,6 +28,7 @@ export const Question = ({ quiz, onAnswer, showingFeedback }) => {
     setFeedbackMessage(isCorrect ? 'Tačno!' : 'Netačno.');
     setFeedbackColor(isCorrect ? '#6ac17f' : '#9a2626');
     onAnswer(isCorrect);
+    console.log(selectedOption)
   };
 
   return (
@@ -39,18 +40,19 @@ export const Question = ({ quiz, onAnswer, showingFeedback }) => {
           style={[ 
             styles.optionButton, 
             selectedOption === option && styles.selectedOption,
-            { backgroundColor: dark ? '#6ac17f' : '#e0e0e0' } 
+            { backgroundColor: dark ? (selectedOption === option ? '#23556e': '#2f6d8c') : (selectedOption === option ? '#cccccc': '#e0e0e0'), 
+              borderColor: (selectedOption === option &&  option === quiz.correctAnswer
+                || (option === quiz.correctAnswer))?'#6ac17f':'#ff999c',
+                
+              borderWidth: (selectedOption === option 
+              || (option === quiz.correctAnswer && quiz.options.includes(selectedOption))) ? 3:0
+            } 
           ]}
           onPress={() => handleOptionPress(option)}
         >
           <Text style={[styles.optionText, { color: dark ? 'white' : '#124460' }]}>{option}</Text>
         </TouchableOpacity>
       ))}
-      {showingFeedback && (
-        <Text style={[styles.feedback, { color: feedbackColor }]}>
-          {feedbackMessage}
-        </Text>
-      )}
     </View>
   );
 };
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedOption: {
-    backgroundColor: '#cde4ff',
+    backgroundColor: 'blue',
   },
   optionText: {
     fontSize: 18,
