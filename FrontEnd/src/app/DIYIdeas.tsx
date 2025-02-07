@@ -271,8 +271,10 @@ const Icon2 = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <>
+      
+      <BackNav />
       <View style={styles.container}>
-        <BackNav />
         <Text style={styles.heading}>Ideje za ponovnu upotrebu materijala</Text>
         <Text style={styles.subheading}>
           Ovde možete pronaći kreativne ideje za ponovnu upotrebu materijala u svakodnevnom životu.
@@ -314,6 +316,7 @@ const Icon2 = () => {
           )}
         </KeyboardAwareScrollView>
       </View>
+      </>
     </TouchableWithoutFeedback>
   );
 };

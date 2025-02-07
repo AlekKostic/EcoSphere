@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import BackNav from '../components/Backnavhome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import AnimatedInputField from '../components/AnimatedInput';
 
 const Signup = () => {
   const router = useRouter();
@@ -84,6 +85,8 @@ const Signup = () => {
         password,
       };
 
+      console.log(response.data)
+
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 
       router.push('/Home');
@@ -111,64 +114,30 @@ const Signup = () => {
           </Text>
         </View>
         <View style={styles.form}>
-          <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Ime</Text>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(name) => setForm({ ...form, name })}
-              placeholder="Ime..."
-              placeholderTextColor={dark ? '#124460' : '#124460'}
-              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-              value={form.name}
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Prezime</Text>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(surname) => setForm({ ...form, surname })}
-              placeholder="Prezime..."
-              placeholderTextColor={dark ? '#124460' : '#124460'}
-              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-              value={form.surname}
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>E-mail addresa</Text>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              onChangeText={(email) => setForm({ ...form, email })}
-              placeholder="mail@example.com"
-              placeholderTextColor={dark ? '#124460' : '#124460'}
-              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-              value={form.email}
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>Lozinka</Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                autoCorrect={false}
-                clearButtonMode="while-editing"
-                onChangeText={(password) => setForm({ ...form, password })}
-                placeholder="********"
-                placeholderTextColor={dark ? '#124460' : '#124460'}
-                style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-                secureTextEntry={!showPassword}
-                value={form.password}
-              />
-              <MaterialCommunityIcons
-                name={!showPassword ? 'eye-off' : 'eye'}
-                size={24}
-                color={dark ? '#124460' : '#124460'}
-                onPress={toggleShowPassword}
-                style={styles.icon}
-              />
-            </View>
-          </View>
+          <AnimatedInputField
+            label="Ime"
+            value={form.name}
+            onChangeText={(name) => setForm({ ...form, name })}
+            dark={dark}
+          />
+          <AnimatedInputField
+            label="Prezime"
+            value={form.surname}
+            onChangeText={(surname) => setForm({ ...form, surname })}
+            dark={dark}
+          />
+          <AnimatedInputField
+            label="Email"
+            value={form.email}
+            onChangeText={(email) => setForm({ ...form, email })}
+            dark={dark}
+          />
+          <AnimatedInputField
+            label="Lozinka"
+            value={form.password}
+            onChangeText={(password) => setForm({ ...form, password })}
+            dark={dark}
+          />
           <View style={styles.formAction}>
             <TouchableOpacity onPress={handleSignin} disabled={isLoading}>
               <View style={[styles.btn, isLoading && { backgroundColor: '#ccc' }]}>
@@ -212,7 +181,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingVertical: '0%',
+    paddingVertical: '5%',
   },
   header: {
     alignItems: 'center',

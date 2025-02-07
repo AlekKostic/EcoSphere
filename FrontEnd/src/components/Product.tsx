@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
+import ExtendedProduct from './ExtendedProduct';
 
 const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
 
@@ -100,7 +101,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
       </View>
       
       <TouchableOpacity onPress={handlePressDetails} style={styles.footer}>
-        <Text style={[styles.viewDetailsText, { color: dark ? 'white' : "#124460" }]}>Pogledajte detaljnije</Text>
+        <Text style={[styles.viewDetailsText, { color: dark ? 'white' : "#124460" }]}>Pogledajte više</Text>
       </TouchableOpacity>
       
       
@@ -126,6 +127,26 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
             <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
           </TouchableOpacity>
         </View>
+
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View>
+          {prod.map((product, index) => {
+            return (
+              <ExtendedProduct 
+                  key={product.id ? product.id.toString() : `fallback-${index}`}
+                  item={product} 
+                  dark={dark}
+                  ime={ime} 
+                  prezime={prezime} 
+                  profileImageSource={profileImageSource}
+                  handleUser={handleUser} 
+                />
+
+            );
+          })}
+          </View>
+        </ScrollView>
+
       </View>
         
     </Animated.View>
@@ -207,7 +228,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     position: 'absolute',
-    top: 10,
+    top: 15,
     right: 10,
     flexDirection: 'row',
     alignItems: 'center', 

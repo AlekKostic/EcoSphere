@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
   View, Text, TextInput, FlatList, TouchableOpacity, 
-  StyleSheet, Modal, Button, ActivityIndicator 
+  StyleSheet, Modal, Button, ActivityIndicator, Animated,
+  Dimensions,
+  ScrollView
 } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 import Post from '../components/Post';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import getWorkingHeight from '../components/ScreenHeight';
+const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
 
 const NotificationsPage = () => {
+
+  const flatListRef = useRef(null);
+
+
   const router = useRouter();
   const [posts, setPosts] = useState([]);
+  const [total, setTotal]=useState(0);
+  const [likedPosts, setLikedPosts] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -19,9 +30,17 @@ const NotificationsPage = () => {
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dark, setDark] = useState(false); 
+  const [modalAnim] = useState(new Animated.Value(0)); 
+
+  const [showModal, setShowModal]=useState(false)
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
+
+  const closeModal = () =>
+  {
+    setShowModal(false);
+  }
 
   const getPosts = async () => {
     try {
@@ -60,12 +79,20 @@ const NotificationsPage = () => {
       }));
   
       setPosts(postsWithAuthors.reverse());
+      setLikedPosts(postsWithAuthors.filter(post=>post.likes).reverse())
+
+
+      console.log(likedPosts)
+      console.log("ff"+total)
+
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect (()=> setTotal(likedPosts.length), [likedPosts.length])
   
   useEffect(() => {
     getPosts();
@@ -114,12 +141,43 @@ const NotificationsPage = () => {
           user_id: userId,
           post_id: item.id,
         });
+
+        if(!showModal){
+          setLikedPosts(prevPosts => [item, ...prevPosts]);
+          setTotal(total+1)
+        }
       } else {
         await axios.put(`http://${ip}:8080/v4/api/unlike`, {
           user_id: userId,
           post_id: item.id,
         });
+
+        if(!showModal){
+          setLikedPosts(prevPosts => prevPosts.filter(post => post.id !== item.id));
+          setTotal(total-1)
+        }
       }
+
+      if (newLikeStatus) {
+        setLikedPosts(prevPosts =>
+          prevPosts.map(post =>
+            post.id === item.id ? { ...post, likes: true, 
+              likedIds: [userId, ...post.likedIds]
+             } : post
+          )
+        );
+        setTotal(total+1)
+      } else {
+        setLikedPosts(prevPosts =>
+          prevPosts.map(post =>
+            post.id === item.id ? { ...post, likes: false,
+              likedIds: post.likedIds.filter(a=>a!==userId)
+             } : post
+          )
+        );
+        setTotal(total-1)
+      }
+      
     } catch (error) {
       console.error(error);
       // Vrati stanje ako je došlo do greške
@@ -141,10 +199,10 @@ const NotificationsPage = () => {
   const [editedContent, setEditedContent] = useState(null);
 
   const handleEdit = async (item) => {
+    if(showModal)setShowModal(false)
     setIsModalVisibleEdit(true)
     setEditing(item)
     setEditedContent(item.content)
-
   };
 
   
@@ -194,6 +252,11 @@ const NotificationsPage = () => {
 
     // Dodajte novi post u stanje
     setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+
+    setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+      }, 300);
+
     setNewPost("");
     setErrorMessage("")
     setIsModalVisible(false);
@@ -228,14 +291,12 @@ const NotificationsPage = () => {
       return post;
     });
     
-    setPosts(prevPosts => 
-      prevPosts.map((post) => {
-        if(post.id === editing.id) {
-          return { ...post, content: editedContent };
-        }
-        return post; 
-      })
-    );
+    setPosts(prevPosts => {
+      const updatedPosts = [newPostWithAuthor, ...prevPosts];
+      return updatedPosts;
+    });
+
+    
     
 
     setErrorEdit("")
@@ -245,9 +306,10 @@ const NotificationsPage = () => {
 
 
   return (
+    <>
+    <BackNav />
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <View style={styles.headerContainer}>
-        <BackNav />
         <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Oglasna tabla</Text>
         <Text style={[styles.subheading, { color: dark ? 'white' : '#124660', borderBottomColor: dark ? '#fff' : '#124460' }]}>
           Ovde možete pročitati i podeliti obaveštenja o dešavanjima vezanim za životnu
@@ -255,14 +317,21 @@ const NotificationsPage = () => {
 
         </Text>
       </View>
-
-        <TouchableOpacity
+      <View style={styles.actions}>
+      <TouchableOpacity
           style={[styles.addPostButton, { backgroundColor: dark ? '#6ac17f' : '#6ac17f' }]}
           onPress={() =>{ if(!logged)router.push('/Login')
-            else setIsModalVisible(true)}}
-        >
-          <Text style={styles.addPostButtonText}>+ Dodaj objavu</Text>
+            else setIsModalVisible(true)}}>
+              <MaterialCommunityIcons name="plus" size={24} color={dark ? 'white' : 'white'}
+              style={[{marginRight:5}]} />
+          <Text style={styles.addPostButtonText}>Dodaj objavu</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.iconButton,{
+          borderColor: dark? '#6ac17f':'#124460'
+        }]} onPress={()=>{setShowModal(true);}}>
+          <MaterialCommunityIcons name="account-heart-outline" size={25} color={dark ? 'white' : '#124460'} />
+        </TouchableOpacity>
+      </View>
 
       {loading ? (
         <View style={styles.loadingContainer}>
@@ -273,6 +342,7 @@ const NotificationsPage = () => {
         <>
           {posts.length === 0 && <Text style={[styles.noPostsText, { color: dark ? 'white' : '#888' }]}>Budite prvi da objavite!</Text>}
           {posts.length !== 0 &&<FlatList
+            ref={flatListRef}
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <Post item={item} likePost={likePost} 
@@ -373,8 +443,55 @@ const NotificationsPage = () => {
         </View>
       </Modal>
 
-
     </View>
+
+    
+
+    <Modal
+        visible={showModal}
+        animationType="none"
+        transparent={true}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalBackground}>
+
+        <View style={[styles.modalContainer2, { backgroundColor: dark ? '#124460' : 'white' }]}>
+              
+        <View style={styles.closeModalButton}>
+                <TouchableOpacity onPress={closeModal}>
+                  <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
+                </TouchableOpacity>
+        </View>
+
+        <View style={[{marginLeft:30}]}>
+          <Text style={[{color: dark?'white':'#124460',
+            fontSize:20, fontWeight:'bold'}]}>
+              Vaše omiljene objave
+          </Text>
+
+          <Text style={[{color: dark?'white':'#124460',
+            fontSize:17, marginTop:15}]}>Ukupno omiljenih objava: {total}
+          </Text>
+        </View>
+        
+        <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+        <View style={[{marginTop:10, marginHorizontal:20, marginBottom:20}]}>
+          {likedPosts.map((item) => (
+              <Post
+                key={item.id.toString()}
+                item={item}
+                likePost={likePost}
+                handleEdit={handleEdit}
+                setEditing={setEditing}
+                editing={editing}
+              />
+            ))}
+          </View>
+          </ScrollView>
+        </View>
+      </View>
+      </Modal>
+    </>
   );
 };
 
@@ -406,20 +523,33 @@ const styles = StyleSheet.create({
   postsList: {
     paddingBottom: 10,
     borderRadius:5,
+  }, 
+  actions: {
+    flexDirection: 'row',
+    justifyContent:'center',
+    alignItems:'center',
+    marginBottom:20,
   },
   addPostButton: {
-    width: '50%',
-    marginLeft: '25%',
-    backgroundColor: '#007BFF',
+    width: '50%', 
+    backgroundColor: '#6ac17f',
     borderRadius: 10,
-    padding: 15,
+    paddingVertical:12,
+    flexDirection:'row',
     alignItems: 'center',
-    marginBottom: 20,
+    justifyContent: 'center',
+  },iconButton: {
+    padding:7,
+    borderWidth:2,
+    borderRadius:'100%',
+    marginLeft:15,
+    justifyContent: 'center', 
+    alignItems: 'center', 
   },
   addPostButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight:600,
   },
   loadingContainer: {
     flex: 1,
@@ -478,6 +608,22 @@ const styles = StyleSheet.create({
     marginTop:20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+  },
+  modalContainer2: {
+    width: '100%',
+    height: getWorkingHeight() * 0.7,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  }, closeModalButton:{
+    marginTop:20,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    marginRight:20,
   }
 });
 

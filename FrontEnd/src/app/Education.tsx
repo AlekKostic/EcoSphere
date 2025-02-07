@@ -80,8 +80,10 @@ const Icon2 = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <>
+      <BackNav />
       <View style={[styles.container, dark ? styles.containerDark : styles.containerLight]}>
-        <BackNav />
+
         <Text style={[styles.heading, dark ? styles.headingDark : styles.headingLight]}>Edukacija o Reciklaži i Zaštiti Životne Sredine</Text>
         <Text style={[styles.subheading, dark ? styles.subheadingDark : styles.subheadingLight]}>
           Ovde možete pronaći edukativne materijale u vidu sajtova i snimaka koji podižu svest o važnosti brige o životnoj sredini.
@@ -122,6 +124,7 @@ const Icon2 = () => {
           )}
         </KeyboardAwareScrollView>
       </View>
+      </>
     </TouchableWithoutFeedback>
   );
 };
@@ -129,7 +132,7 @@ const Icon2 = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 20
   },
   containerLight: {
     backgroundColor: 'white',

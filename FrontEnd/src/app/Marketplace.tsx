@@ -7,10 +7,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
 import Product from '../components/Product';
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'; 
 
 const ProductsPage = () => {
   const [dark, setDark] = useState(false); 
+
+  const productRef = useRef(null);
 
   useEffect(() => {
     const getMode = async () => {
@@ -199,6 +201,9 @@ const ProductsPage = () => {
       }
 
       console.log(products)
+      setTimeout(() => {
+        productRef.current?.scrollToOffset({ animated: true, offset: 0 });
+      }, 300);
 
       setName("");
       setDescription("");
@@ -257,17 +262,18 @@ const ProductsPage = () => {
   };
 
   return (
+    <>
+    <BackNav />
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
         <View style={styles.headerContainer}>
-          <BackNav />
           <Text style={[styles.heading, { color: dark ? 'white' : '#124460' }]}>Prodavnica</Text>
           <Text style={[styles.subheading, { color: dark ? 'white' : '#124460', borderBottomColor: dark ? 'white' : '#124460' }]}>
             Ovde možete podeliti proizvode koje želite da poklonite drugim korisnicima,
             kao i da pogledate koje to proizvode drugi korisnici poklanjaju.
           </Text>
         </View>
-    
+        <View style={styles.actions}>
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <TextInput
@@ -290,8 +296,11 @@ const ProductsPage = () => {
           style={styles.addProductButton}
           onPress={() => { if (!logged) router.push('/Login'); else setIsModalVisible(true); }}
         >
-          <Text style={styles.addProductButtonText}>+ Dodaj proizvod</Text>
+          <Text style={styles.addProductButtonText}>
+            <MaterialCommunityIcons name="plus" size={30} color={dark ? 'white' : 'white'} />
+          </Text>
         </TouchableOpacity>
+        </View>
     
         {loading ? (
           <View style={styles.loadingContainer}>
@@ -310,6 +319,7 @@ const ProductsPage = () => {
           </Text>
         ) : (
           <FlatList
+            ref={productRef}
             data={filteredProducts}
             keyExtractor={(item) => item.product_id.toString()}
             renderItem={renderProduct}
@@ -368,6 +378,7 @@ const ProductsPage = () => {
         </Modal>
       </View>
     </TouchableWithoutFeedback>
+    </>
   );
 };
 
@@ -399,7 +410,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#e6e5e3',
     borderRadius: 10,
-    marginBottom: 20,
     width: '70%',
     alignSelf: 'center',
     position: 'relative',
@@ -421,11 +431,10 @@ const styles = StyleSheet.create({
   },
   addProductButton: {
     backgroundColor: '#6ac17f',
-    paddingVertical: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '50%',
-    alignSelf: 'center',
+    paddingVertical: 5,
+    borderRadius: '100%',
+    paddingHorizontal:5,
+    marginLeft:10,
   },
   addProductButtonText: {
     textAlign: 'center',
@@ -510,6 +519,10 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
+  }, actions:{
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
   }
 });
 
