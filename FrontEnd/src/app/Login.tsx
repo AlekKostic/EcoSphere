@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import BackNav from '../components/Backnavhome';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AnimatedInputField from '../components/AnimatedInput';
 
 const Login = () => {
 
@@ -60,7 +61,7 @@ const Login = () => {
       setError(false);
       setErrorText("");
       setIsLoading(false);
-      console.log(response.data)
+      console.log(response)
 
       if (response.data) {
         const transformedData = {
@@ -110,46 +111,18 @@ const Login = () => {
           </Text>
         </View>
         <View style={[styles.form, { paddingBottom: 30 }]}>
-          <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>
-            E-mail adresa
-          </Text>
-          <View style={styles.input}>
-            <TextInput
-              autoCapitalize="none"
-              autoCorrect={false}
-              clearButtonMode="while-editing"
-              keyboardType="email-address"
-              onChangeText={email => setForm({ ...form, email })}
-              placeholder="mail@example.com"
-              placeholderTextColor={dark ? '#124460' : '#124460'}
-              style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-              value={form.email}
-            />
-          </View>
-          <View style={styles.input}>
-            <Text style={[styles.inputLabel, dark ? styles.inputLabelDark : styles.inputLabelLight]}>
-              Lozinka
-            </Text>
-            <View style={styles.passwordContainer}>
-              <TextInput
-                autoCorrect={false}
-                clearButtonMode="while-editing"
-                onChangeText={password => setForm({ ...form, password })}
-                placeholder="********"
-                placeholderTextColor={dark ? '#124460' : '#124460'}
-                style={[styles.inputControl, dark ? styles.inputControlDark : styles.inputControlLight]}
-                secureTextEntry={!showPassword}
-                value={form.password}
-              />
-              <MaterialCommunityIcons
-                name={!showPassword ? 'eye-off' : 'eye'}
-                size={24}
-                color={dark ? '#124460' : '#124460'}
-                onPress={toggleShowPassword}
-                style={styles.icon}
-              />
-            </View>
-          </View>
+          <AnimatedInputField
+            label="Email"
+            value={form.email}
+            onChangeText={(email) => setForm({ ...form, email })}
+            dark={dark}
+          />
+          <AnimatedInputField
+            label="Lozinka"
+            value={form.password}
+            onChangeText={(password) => setForm({ ...form, password })}
+            dark={dark}
+          />
           <View style={styles.formAction}>
             <TouchableOpacity onPress={handleLogin}>
               <View style={[styles.btn, isLoading && { backgroundColor: '#ccc' }]}>

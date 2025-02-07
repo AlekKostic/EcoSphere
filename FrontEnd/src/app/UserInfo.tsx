@@ -124,15 +124,14 @@ const UserInfo = () => {
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${logId}`);
 
         const savedProducts = savedResponse.data.sacuvaniProductids;
-        productsData = productsData.map((product) => {
-          const isSaved = savedProducts.includes(product.product_id);
-          
-        
-          return {
+        console.log(savedProducts)
+        productsData = productsData
+          .map((product) => ({
             ...product,
-            saved: isSaved, 
-          };
-        });
+            saved: savedProducts.includes(product.product_id),
+          }))
+          .sort((a, b) => 
+            savedProducts.indexOf(a.product_id) - savedProducts.indexOf(b.product_id));
     }else{
       productsData = productsData.map((product) => ({
         ...product,
