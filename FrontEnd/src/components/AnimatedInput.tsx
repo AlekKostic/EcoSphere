@@ -6,7 +6,7 @@ const AnimatedInputField = ({ label, value, onChangeText, isPassword = false, da
   const [isFocused, setIsFocused] = useState(false);
   const labelAnim = useRef(new Animated.Value(0)).current;
   const inputWidth = useRef(new Animated.Value(0)).current;
-  const inputRef = useRef(null); // Reference to the TextInput
+  const inputRef = useRef(null); 
 
   useEffect(() => {
     Animated.timing(labelAnim, {
@@ -56,7 +56,6 @@ const AnimatedInputField = ({ label, value, onChangeText, isPassword = false, da
     <View style={[styles.inputContainer, {borderBottomColor: dark?'white':'#124460', borderBottomWidth: isFocused ? 0 : 1 }]}>
       <Animated.Text style={[styles.label, labelStyle, {color: dark?'white':'#124460',}]}>{label}</Animated.Text>
       
-      {/* TouchableWithoutFeedback obavija samo TextInput */}
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} accessible={false}>
         <TextInput
           ref={inputRef}
@@ -71,14 +70,13 @@ const AnimatedInputField = ({ label, value, onChangeText, isPassword = false, da
         />
       </TouchableWithoutFeedback>
 
-      {/* Ikona za šifru sa TouchableOpacity */}
       {((label === "Lozinka") || (value!=="" && label === "Lozinka")) && (
         <TouchableOpacity onPress={toggleShowPassword}>
           <MaterialCommunityIcons
             name={showPassword ? 'eye' : 'eye-off'}
             size={24}
             color={dark?'white':'#124460'}
-            style={[styles.eyeIcon, {top:-8}]}
+            style={[styles.eyeIcon, {top:-7}]}
           />
         </TouchableOpacity>
       )}
@@ -121,7 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '500',
     borderWidth: 1,
-    marginTop:10,
+    marginTop:5,
   },
   loginButton: {
     backgroundColor: '#6ac17f',

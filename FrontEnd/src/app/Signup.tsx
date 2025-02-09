@@ -91,6 +91,7 @@ const Signup = () => {
 
       router.push('/Home');
     } catch (err) {
+      console.log(error)
       setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.");
       setError(true);
     } finally {

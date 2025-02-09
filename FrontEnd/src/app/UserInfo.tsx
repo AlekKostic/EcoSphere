@@ -472,6 +472,13 @@ const UserInfo = () => {
 
   }
 
+  const handleTree = ()=>{
+    router.push({
+      pathname: '/Tree',
+      params: { poeni: user.broj_bodova},
+    });
+  }
+
   return (
     <>
     
@@ -479,6 +486,7 @@ const UserInfo = () => {
     <KeyboardAwareScrollView style={[styles.container, {
       backgroundColor: dark?'#124460':'white'
     }]} keyboardShouldPersistTaps="handled">
+      <View>
       <View style={[styles.profileContainer,{
       backgroundColor: dark?'#1b5975':'#dfeaf0'
     }]}>
@@ -491,8 +499,14 @@ const UserInfo = () => {
             {'E-mail: ' + (user.email || 'E-mail nije naveden')}
           </Text>
         </View>
-        {personal && 
-        <TouchableOpacity onPress={()=>{seeFolders()}}>
+        
+      </View>
+      {personal && 
+        <TouchableOpacity onPress={()=>{seeFolders()}} style={[{ 
+          position:'absolute',
+          bottom:30,
+          right:10
+        }]}>
         <MaterialIcons
             name={"folder-open"} 
             size={24}
@@ -501,9 +515,32 @@ const UserInfo = () => {
           </TouchableOpacity>}
       </View>
 
-      <View style={[styles.bodovicontainer, , {borderColor: dark?'white':'#124460'}]}>
-        <Text style={[styles.bodovi , {color: dark?'white':'#124460'}]}>Broj ostavrenih kviz bodova: {user.broj_bodova}</Text>
+      {personal && 
+
+      <View style={[{marginBottom:10, }]}>
+        <TouchableOpacity onPress={handleTree} style={[{borderTopWidth:1,
+        borderBottomWidth:1,
+        marginHorizontal:5,
+        borderColor: dark?'white':'#124460',
+        flexDirection:'row',
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        
+        }]}>
+          <Text style={[{fontSize: 18,
+           fontWeight: '500',
+           color: dark?'white':'#124460',
+           padding:12}]}>Vaše drvo</Text>
+
+          <MaterialIcons
+            name={"arrow-forward-ios"} 
+            size={20}
+            color={dark ? 'white' : '#124460'}
+            style={[{paddingRight:10}]}
+          />
+        </TouchableOpacity>
       </View>
+      }
 
       {personal && (
         <>
@@ -784,7 +821,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 20,
+    marginBottom: 25,
     padding: 20,
   },
   profileImage: {
