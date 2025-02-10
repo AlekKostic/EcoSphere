@@ -43,8 +43,14 @@ const Tree = () => {
 
   useEffect(() => {
     if (!treeRef.current || !barRef.current) return;
-  
+
     if (prevVisitsRef.current === visits) return;
+
+    if(visits===0){
+      barRef.current.play(0,0);
+    }
+
+    console.log(visits)
     prevVisitsRef.current = visits;
     setToShow(visits % 100 + (poeni - visits));
     setToShow2(Math.floor(visits/100));
@@ -57,33 +63,29 @@ const Tree = () => {
     if (visits % 100 + (poeni - visits) >= 100) {
       console.log("🎬 Prva animacija start");
       treeRef.current.play(0.88 * (visits % 100), 88);
-      barRef.current.play(0.6 * (visits % 100), 60);
+      barRef.current.play(0.5 * (visits % 100), 60);
   
       setTimeout(() => {
         console.log("🎬 Druga animacija start");
         console.log(toShow)
+
+        const f = toShow%100;
         setToShow(prev=>prev%100)
         setToShow2(Math.floor(poeni/100));
-        
-        treeRef.current.play(0.88 * poeni, 0);
-        barRef.current.play(0.5 * poeni2, 0);
+        console.log(poeni + " " + poeni2)
+        treeRef.current.play(88, f*0.88);
+        barRef.current.play(60,0.5*f+1);
   
-        setTimeout(() => {
-          console.log("🎬 Treća animacija start");
-          treeRef.current.play(0, 0.88 * poeni2);
-          barRef.current.play(0, 0.5 * poeni2);
-        }, 3000); 
       }, 2500); 
     } else {
       console.log("🎬 Neposredno pokretanje treće animacije");
+      console.log(visits%100 + " " + poeni2)
       treeRef.current.play(0.88 * (visits % 100), 0.88 * poeni2);
-      barRef.current.play(0.5 * (visits % 100), 0.5 * poeni2);
+      barRef.current.play(0.5 * (visits % 100), 0.5 * poeni2 + 1);
     }
   }, [visits]);
   
   
-  
-
   useEffect(() => {
     const getMode = async () => {
       const storedMode = await AsyncStorage.getItem('darkMode');
@@ -108,6 +110,7 @@ const Tree = () => {
               autoPlay={false}  
               loop={false}    
             />
+            
           </View>
         </View>
         <View style={{ flexDirection: 'row' }}>

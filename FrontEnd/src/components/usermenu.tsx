@@ -47,6 +47,7 @@ const UserMenu = ({ setDarkMode2 }) => {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('userInfo');
+      await AsyncStorage.removeItem('treeVisits');
       setUser(null);
     } catch (err) {
       alert('Error logging out.');

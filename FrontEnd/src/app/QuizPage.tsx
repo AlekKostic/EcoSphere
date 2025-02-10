@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BackNav from '../components/Backnavhome';
 import Question from '../components/Question';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router, useRouter } from 'expo-router';
 
 const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -21,6 +23,7 @@ const QuizPage = () => {
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
+  const router = useRouter();
 
   const getMode = async () => {
     const storedMode = await AsyncStorage.getItem('darkMode');
@@ -30,6 +33,23 @@ const QuizPage = () => {
       setDark(false);
     }
   };
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem('userInfo');
+        if (userData) {
+          setUser(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const getQuestions = async () => {
     try {
@@ -115,7 +135,11 @@ const QuizPage = () => {
           <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>
             Tačno ste odgovorili na {correctAnswers} od {questions.length} pitanja.
           </Text>
-          <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>Vratite se ponovo da radite sutrašnji kviz!</Text>
+          <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>
+            Vratite se ponovo da radite sutrašnji kviz i ne zaboravite da posetite stablo!
+          </Text>
+        </View>
+        <View>
         </View>
       </View>
     );

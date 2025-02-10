@@ -303,6 +303,7 @@ const UserInfo = () => {
           onPress: async () => {
             try {
               await AsyncStorage.removeItem('userInfo');
+              await AsyncStorage.removeItem('treeVisits');
               await axios.delete(`http://${ip}:8080/v1/api/delete/${iduser}`);
               router.push('/Home');
             } catch (err) {
