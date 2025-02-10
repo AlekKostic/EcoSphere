@@ -515,6 +515,11 @@ const UserInfo = () => {
           </TouchableOpacity>}
       </View>
 
+      {!personal && 
+      <View style={[styles.bodovicontainer, , {borderColor: dark?'white':'#124460'}]}>
+      <Text style={[styles.bodovi , {color: dark?'white':'#124460'}]}>Broj stabala korisnika: {Math.floor(user.broj_bodova/100)}
+        </Text>
+      </View>}
       {personal && 
 
       <View style={[{marginBottom:10, }]}>
@@ -530,7 +535,7 @@ const UserInfo = () => {
           <Text style={[{fontSize: 18,
            fontWeight: '500',
            color: dark?'white':'#124460',
-           padding:12}]}>Vaše drvo</Text>
+           padding:12}]}>Vaše stablo</Text>
 
           <MaterialIcons
             name={"arrow-forward-ios"} 
