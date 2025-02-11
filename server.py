@@ -19,7 +19,7 @@ def run_mysql():
     )
 
     def run_flask_app():
-        app.run(host='0.0.0.0', port=1000)
+        app.run(host='0.0.0.0', port=8080)
 
     def main():
         threading.Thread(target = run_mysql).start()
