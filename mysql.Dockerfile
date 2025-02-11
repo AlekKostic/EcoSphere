@@ -1,5 +1,11 @@
-FROM mysql:8.0
-HEALTHCHECK NONE
-ENV MYSQL_ROOT_PASSWORD = root
-ENV MYSQL_DATABASE = mts_app_konkurs
-EXPOSE 3306
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install --no-cache-dir flask docker
+
+EXPOSE 10000
+
+CMD [ "python", "server.py" ]
