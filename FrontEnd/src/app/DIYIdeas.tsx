@@ -1,19 +1,28 @@
 import { 
   View, Text, Linking, TouchableOpacity, StyleSheet, ScrollView, 
   TextInput, Image, Keyboard, TouchableWithoutFeedback, 
-  Platform 
+  Platform, 
+  ActivityIndicator,
+  Modal,
+  Dimensions
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
 import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import WebView from 'react-native-webview';
+
+const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
 
 const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [dark, setDark] = useState(false); 
   const inputRef = useRef(null);
+  const [currentUrl, setCurrentUrl] = useState("");
+  const [modalVisible,setModalVisible]=useState(false)
+  const [loading,setLoading]=useState(false)
 
   const videoLinks = [
     { 
@@ -129,7 +138,10 @@ const Icon2 = () => {
   }, []);
 
   const handlePress = (url) => {
-    Linking.openURL(url);
+    setCurrentUrl(url);
+    console.log(url)
+    setLoading(true);
+    setModalVisible(true);
   };
 
   const toggleKeyboard = () => {
@@ -270,6 +282,7 @@ const Icon2 = () => {
   });
 
   return (
+    <>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <>
       
@@ -318,6 +331,47 @@ const Icon2 = () => {
       </View>
       </>
     </TouchableWithoutFeedback>
+
+    <Modal visible={modalVisible} animationType="slide" transparent={true} >
+      <View style={[{flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)'}]}>
+
+        <View style={[{width: '100%',
+          height: height * 0.8,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20, 
+          backgroundColor: dark ? '#124460' : 'white' }]}>
+
+          <View style={[{marginTop:20,
+            alignItems: 'flex-end',
+            justifyContent: 'flex-end',
+            marginRight:20, marginBottom:20}]}>
+            <TouchableOpacity onPress={()=>{setModalVisible(false);setCurrentUrl("")}}>
+                <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
+            </TouchableOpacity>
+          </View>
+
+          {loading && (
+            <View style={[{position: 'absolute', top: '50%', left: '50%', 
+            transform: [{ translateX: -50 }, 
+            { translateY: -50 }], 
+            alignItems: 'center'}]}>
+              <ActivityIndicator size="large" color={dark?'white':'#124460'} />
+              <Text style={[{color: dark?'white':'#124460', fontSize: 18, marginTop: 10}]}>Učitavanje...</Text>
+            </View>
+          )}
+            <WebView
+            source={{ uri: currentUrl }} 
+            style={{ flex: 1, opacity: loading?0:1 }} 
+            onLoad={() => setLoading(false)}
+            onLoadStart={() => setLoading(true)}
+            allowsFullscreenVideo={true}
+          />
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 };
 

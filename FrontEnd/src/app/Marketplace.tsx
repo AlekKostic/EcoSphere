@@ -179,7 +179,7 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": null,
+        "path": `https://ca131d35c9e4a57d41a0c5bebb2fe227.r2.cloudflarestorage.com/ecosphere/uploads/Screenshot%20(57).png`,
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0
       });
@@ -194,7 +194,7 @@ const ProductsPage = () => {
         "description": description,
         "price": 0,
         "phone_number": phoneNumber,
-        "path": null,
+        "path": `https://ca131d35c9e4a57d41a0c5bebb2fe227.r2.cloudflarestorage.com/ecosphere/uploads/Screenshot%20(57).png`,
         "user_id": parsedUserInfo.userId,
         "broj_pregleda": 0,
         "saved":false
@@ -413,6 +413,7 @@ const styles = StyleSheet.create({
     width: '70%',
     alignSelf: 'center',
     position: 'relative',
+    marginBottom:10,
   },
   searchInput: {
     flex: 1,

@@ -58,7 +58,7 @@ const QuizPage = () => {
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
       const questionsWithAnswers = await Promise.all(
         shuffledQuestions.map(async (question) => {
-          const answersResponse = await axios.get(`http://192.168.100.18:8080/v3/api/${question.id_Pitanja}`);
+          const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
           const answers = answersResponse.data;
 
           const correctAnswer = answers.find(ans => ans.tacno)?.odgovor;
