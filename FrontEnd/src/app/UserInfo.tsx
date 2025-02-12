@@ -474,9 +474,11 @@ const UserInfo = () => {
   }
 
   const handleTree = ()=>{
+
+    console.log(user)
     router.push({
       pathname: '/Tree',
-      params: { poeni: user.broj_bodova},
+      params: { poeni: user.broj_bodova, userId: user.user_id},
     });
   }
 

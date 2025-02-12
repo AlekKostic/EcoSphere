@@ -7,8 +7,10 @@ const Icon1 = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <View style={styles.container}>
+    <>
+    
       <BackNav />
+    <View style={styles.container}>
       {isLoading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
@@ -22,6 +24,7 @@ const Icon1 = () => {
         onLoadEnd={() => setIsLoading(false)}
       />
     </View>
+    </>
   );
 };
 

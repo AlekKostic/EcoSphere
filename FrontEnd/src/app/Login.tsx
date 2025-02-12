@@ -61,7 +61,7 @@ const Login = () => {
       setError(false);
       setErrorText("");
       setIsLoading(false);
-      console.log(response)
+      console.log(response.data)
 
       if (response.data) {
         const transformedData = {
@@ -70,6 +70,8 @@ const Login = () => {
           surname: response.data.prezime,
           email: response.data.email,
           password: password,
+          kviz: response.data.radjen,
+          streak: response.data.streak
         };
 
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));

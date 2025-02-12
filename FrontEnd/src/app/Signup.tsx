@@ -66,7 +66,8 @@ const Signup = () => {
           prezime: surname,
           email: email,
           password: password,
-          brojPoena: 0
+          brojPoena: 0,
+          streak:0
         },
         {
           headers: {
@@ -75,6 +76,12 @@ const Signup = () => {
           timeout: 3000,
         }
       );
+      console.log("data "+response.data)
+      if(response.data===""){
+        setErrorText("Postoji nalog sa datom email adresom")
+        setError(true)
+        return;
+      }
 
       const userId = response.data.id;
       const userInfo = {
@@ -83,9 +90,12 @@ const Signup = () => {
         surname,
         email,
         password,
+        kviz: null,
+        streak:0,
       };
 
       console.log(response.data)
+
 
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 

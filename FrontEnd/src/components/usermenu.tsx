@@ -48,6 +48,7 @@ const UserMenu = ({ setDarkMode2 }) => {
     try {
       await AsyncStorage.removeItem('userInfo');
       await AsyncStorage.removeItem('treeVisits');
+      await AsyncStorage.removeItem('streak');
       setUser(null);
     } catch (err) {
       alert('Error logging out.');
