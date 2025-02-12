@@ -12,16 +12,16 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 import java.net.URI;
 
 @Configuration
-public class CloudflareR2Config {
+public class S3Config {
+
+    private String accessKey = "AKIAW5WU5ALCUUDOJXMN";
+
+    private String secretKey = "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";
+
+    private String region = "eu-north-1";
 
     @Bean
     public S3Client s3Client(){
-        return S3Client.builder()
-                .region(Region.of("eeur"))
-                .endpointOverride(URI.create("https://ca131d35c9e4a57d41a0c5bebb2fe227.r2.cloudflarestorage.com/ecosphere"))
-                .serviceConfiguration(S3Configuration.builder().pathStyleAccessEnabled(true).build())
-                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("313973784a707d2cf4892384d52eaf35","400fa44e50364eb318b7ac69731401e432e2f27c3bc217d27b56fa5d5be16785")))
-                .build();
+        return S3Client.builder().region(Region.of(region)).credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey))).build();
     }
-
 }
