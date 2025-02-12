@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/api")
 public class UserController {
@@ -21,6 +23,21 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user){
         User savedUser = userServices.saveUser(user);
         return ResponseEntity.ok(savedUser);
+    }
+
+    @GetMapping("/getAll")
+    public List<UserDTO> findAll(){
+        return userServices.findAll();
+    }
+
+    @PutMapping("/streak/{id}")
+    public ResponseEntity streak(@PathVariable("id") Long id){
+        return userServices.streak(id);
+    }
+
+    @PutMapping("/unstreak/{id}")
+    public Boolean unstreak(@PathVariable("id") Long id){
+        return userServices.unstreak(id);
     }
 
     @PostMapping(value = "/login")

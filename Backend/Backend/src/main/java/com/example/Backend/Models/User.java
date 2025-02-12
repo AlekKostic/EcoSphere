@@ -35,7 +35,7 @@ public class User {
     @JsonManagedReference
     private List<Postovi> posts;
 
-    @Column(name = "brojPoena", nullable = false)
+    @Column(name = "brojPoena", nullable = true)
     private Integer brojPoena;
 
     @Column(name = "kviz_radjen")
@@ -46,6 +46,17 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Sacuvane> sacuvane;
+
+    @Column(name = "streak")
+    private Integer streak;
+
+    public Integer getStreak() {
+        return streak;
+    }
+
+    public void setStreak(Integer streak) {
+        this.streak = streak;
+    }
 
     public List<Product> getProductList() {
         return productList;
