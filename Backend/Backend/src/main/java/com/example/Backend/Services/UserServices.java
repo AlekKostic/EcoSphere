@@ -14,10 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -43,6 +43,30 @@ public class UserServices {
         }
     }
 
+    public List<UserDTO> findAll(){
+        List<User> users = userRepository.findAll();
+        return users.stream().map(user -> {
+            List<Long> likes = new ArrayList<>();
+            for(Like like : user.getLajkovaneObjave()){
+                likes.add(like.getUser().getId());
+            }
+            List<Long> posts = new ArrayList<>();
+            for (Postovi postovi : user.getPosts()){
+                posts.add(user.getId());
+            }
+
+            List<Long> product = new ArrayList<>();
+            for (Product product1 : user.getProductList()){
+                product.add(product1.getProduct_id());
+            }
+            List<Long> sacuvane = new ArrayList<>();
+            for (Sacuvane sacuvane1 : user.getSacuvane()){
+                sacuvane.add(sacuvane1.getProduct().getProduct_id());
+            }
+            return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(),user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak());
+        }).collect(Collectors.toList());
+    }
+
     public UserDTO findUser(UserLoginDTO userLoginDTO) {
         Optional<User> user = userRepository.findByEmailAndPassword(userLoginDTO.getEmail(), userLoginDTO.getPassword());
         List<Long> likes = new ArrayList<>();
@@ -62,7 +86,7 @@ public class UserServices {
         for (Sacuvane sacuvane1 : user.get().getSacuvane()){
             sacuvane.add(sacuvane1.getProduct().getProduct_id());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product, sacuvane);
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product, sacuvane, user.get().getStreak());
     }
 
     public UserDTO find(Long id){
@@ -85,7 +109,7 @@ public class UserServices {
         for (Sacuvane sacuvane1 : user.getSacuvane()){
             sacuvane.add(sacuvane1.getProduct().getProduct_id());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane);
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak());
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){
@@ -138,5 +162,26 @@ public class UserServices {
         user.setPoslednjiKviz(date);
         userRepository.save(user);
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity streak(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        user.setStreak(user.getStreak() + 1);
+        userRepository.save(user);
+        return ResponseEntity.ok().build();
+    }
+
+    public Boolean unstreak(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        Date date = new Date();
+        long razlika = Math.abs(user.getPoslednjiKviz().getTime() - date.getTime());
+        long daniRazlika = TimeUnit.DAYS.convert(razlika, TimeUnit.MILLISECONDS);
+        if (daniRazlika >= 2){
+            user.setStreak(0);
+            userRepository.save(user);
+            return true;
+        }else {
+            return false;
+        }
     }
 }
