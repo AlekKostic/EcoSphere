@@ -24,7 +24,7 @@ const Tree = () => {
   const [toShow, setToShow] = useState(0);
   const [toShow2, setToShow2] = useState(0);
   const [red, setRed] = useState(false);
-  const [visits, setVisits] = useState(0);
+  const [visits, setVisits] = useState(-1);
   const prevVisitsRef = useRef(visits); // Čuvamo prethodnu vrednost visits
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -52,13 +52,8 @@ const Tree = () => {
         }
     
         const streakk = response.data.streak;
-        streakRef.current = streakk; // Ažuriramo ref sa vrednošću streak
         setStreak(streakk);
-        st = streakk;
-    
-        console.log(pstreak + " ttt " + streak);
-    
-        await AsyncStorage.setItem('streak', streakk.toString());
+  
         await AsyncStorage.setItem('treeVisits', poeni.toString());
       } catch (error) {
         console.error('Error fetching tree visits:', error);
@@ -76,8 +71,6 @@ const Tree = () => {
     if (visits === 0) {
       barRef.current.play(0, 0);
     }
-  
-    console.log(pstreak + " aaaaa" + streak);
   
     prevVisitsRef.current = visits;
     setToShow(visits % 100 + (poeni - visits));
@@ -100,19 +93,16 @@ const Tree = () => {
         treeRef.current.play(88, f * 0.88);
         barRef.current.play(60, 0.5 * f + 1);
   
-      }, 2500); // Čekamo da se prva animacija završi pre druge
+      }, 2500); 
     } else {
       console.log("🎬 Neposredno pokretanje treće animacije");
       treeRef.current.play(0.88 * (visits % 100), 0.88 * poeni2);
       barRef.current.play(0.5 * (visits % 100), 0.5 * poeni2 + 1);
   
     }
-  }, [visits, streak]);
-  
-  
-  useEffect(() => {
-    
   }, [visits]);
+  
+  
 
   useEffect(() => {
     const getMode = async () => {
@@ -173,7 +163,7 @@ const Tree = () => {
               fontWeight: 'bold',
               marginLeft: 5,
             }}>
-              {show ? streakRef.current : pstreak}
+              {streak}
             </Text>
           </View>
         </View>

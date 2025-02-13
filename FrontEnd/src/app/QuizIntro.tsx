@@ -232,17 +232,17 @@ const Icon4 = () => {
     data={users}
     keyExtractor={(item) => item.user_id.toString()}
     renderItem={({ item }) => {
-      let rankColor = dark ? '#ddd' : '#949494'; // Default boja za ostale
+      let rankColor = dark ? '#ddd' : 'white'; // Default boja za ostale
       let medalIcon = null;
 
       if (item.rank === 1) {
-        rankColor = '#2f6d8c'; // Zlatna
-        medalIcon = <FontAwesome6 name="medal" size={20} color="#FFD700" />;
+        rankColor = dark?'#2f6d8c':'white'; // Zlatna
+        medalIcon = <FontAwesome6 name="medal" size={20} color="#FFD700" style={[{}]} />;
       } else if (item.rank === 2) {
-        rankColor = '#2f6d8c'; // Srebrna
+        rankColor = dark?'#2f6d8c':'white'; // Srebrna
         medalIcon = <FontAwesome6 name="medal" size={20} color="#C0C0C0" />;
       } else if (item.rank === 3) {
-        rankColor = '#2f6d8c'; // Bronzana
+        rankColor = dark?'#2f6d8c':'white'; // Bronzana
         medalIcon = <FontAwesome6 name="medal" size={20} color="#CD7F32" />;
       }
 
@@ -276,7 +276,7 @@ const Icon4 = () => {
             ) : (
               <Text
                 style={{
-                  color: dark?'black':'black',
+                  color: dark?'#124460':'#124460',
                   fontSize: 16,
                   fontWeight: 'bold',
                 }}

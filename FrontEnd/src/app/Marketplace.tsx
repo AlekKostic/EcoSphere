@@ -34,6 +34,7 @@ const ProductsPage = () => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const router = useRouter(); 
   const [loading, setLoading] = useState(true);
+  const [tried, setTried]=useState(false);
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -156,17 +157,23 @@ const ProductsPage = () => {
     if (!result.canceled) {
       setPath(result.assets[0].uri);
     }
+    console.log("path "+ path)
   };
 
   const uploadImage = async (path) => {
     try {
-      const timestamp = new Date().toISOString().replace(/[:.-]/g, ''); // Formatiranje vremena
-      const fileName = `image_${timestamp}.png`; // Kreiranje jedinstvenog imena
+      if (!path) {
+        console.warn("No image path provided, skipping upload.");
+        return null; // Ako nema putanje, vrati null
+      }
+  
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, ''); 
+      const fileName = `image_${timestamp}.png`;  
   
       const formData = new FormData();
       formData.append('file', {
-        uri: path, // Ovo je lokalna putanja slike
-        name: fileName, // Koristi generisano ime
+        uri: path, 
+        name: fileName, 
         type: 'image/png',
       });
   
@@ -178,7 +185,8 @@ const ProductsPage = () => {
       return response.data; // Vrati URL slike
     } catch (error) {
       console.error('Error uploading image:', error);
-      return null;
+      setErrorMessage("Došlo je do greške prilikom dodavanja slike");
+      return null; // Ako dođe do greške, vrati null
     }
   };
   
@@ -187,34 +195,45 @@ const ProductsPage = () => {
       setErrorMessage('Molimo vas da popunite sva polja'); 
       return;
     }
+
   
     if (description.length > 250) {
       setErrorMessage('Opis može imati do 250 karaktera'); 
       return;
+    }
+
+    console.log(path)
+
+    if ((path===null || path===undefined || path==="") && !tried) {
+      setTried(true)
+      return; 
     }
   
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
       const parsedUserInfo = JSON.parse(userInfo);
   
+      
       console.log("1 " + path);
   
-      // 1️⃣ **Čekamo da se upload završi i dobijemo URL slike**
-      const imageUrl = await uploadImage(path); // SADA koristimo `await`
-      if (!imageUrl) {
-        setPath('')
-        return;
+      // **Ako nema putanje, ne uploadujemo sliku**
+      const imageUrl = path ? await uploadImage(path) : null;
+  
+      if (path && !imageUrl) {
+        setErrorMessage("Došlo je do greške prilikom dodavanja slike");
+        return; // Ako upload nije uspeo, prekini dodavanje proizvoda
       }
+
+      
   
       console.log("2 " + imageUrl);
   
-      // 2️⃣ **Kreiranje proizvoda sa dobijenom putanjom slike**
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
         name: name,
         description: description,
         price: 0,
         phone_number: phoneNumber,
-        path: imageUrl, // Koristimo dobijeni URL
+        path: imageUrl, // Direktno koristimo `imageUrl`
         user_id: parsedUserInfo.userId,
         broj_pregleda: 0
       });
@@ -228,7 +247,7 @@ const ProductsPage = () => {
         description: description,
         price: 0,
         phone_number: phoneNumber,
-        path: imageUrl, // Sada koristimo tačan URL slike
+        path: imageUrl, // Direktno koristimo `imageUrl`
         user_id: parsedUserInfo.userId,
         broj_pregleda: 0,
         saved: false
@@ -242,17 +261,20 @@ const ProductsPage = () => {
       // Resetujemo state
       setName("");
       setDescription("");
-      setPath('');
+      setPath(null); // Umesto '', koristimo null
       setPhoneNumber("");
       setIsKeyboardVisible(false);
       setErrorMessage("");
+      setTried(false)
   
       setProducts([newPost, ...products]);
   
     } catch (error) {
+      setErrorMessage("Došlo je do greške prilikom dodavanja proizvoda");
       console.log('Error adding product:', error);
     }
   };
+  
   
 
   const renderProduct = ({ item }) => {
@@ -264,6 +286,10 @@ const ProductsPage = () => {
   };
 
   const closeModal = () => {
+    if(tried){
+      setTried(false)
+      return
+    }
     setIsModalVisible(false);
     setName('');
     setDescription('');
@@ -373,7 +399,17 @@ const ProductsPage = () => {
         >
           <View style={styles.modalContainer}>
             <View style={[styles.modalContent, { backgroundColor: dark ? '#124460' : 'white' }]}>
-              <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>Dodaj novi proizvod</Text>
+              
+              <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
+                {tried?"Upozorenje":"Dodaj novi proizvod"}</Text>
+              
+              {tried && 
+              <Text style={[{
+                color: dark?'white':'#124460',
+                marginTop:20, marginBottom:30, fontSize:16,
+              }]}>Da li ste sigurni da želite dodati proizvod bez slike?</Text>
+              }
+              {!tried && <>
               {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
               <TextInput
                 style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', color: dark ? '#124460' : '#124460', borderColor: '#124460' }]}
@@ -396,14 +432,39 @@ const ProductsPage = () => {
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
               />
-              <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+
+              
+              {
+              (path==='' || path===null || path===undefined) && 
+              <TouchableOpacity style={[styles.imagePickerButton, {width:'70%', marginBottom:20}]} onPress={pickImage}>
                 <Text style={styles.imagePickerButtonText}>Izaberi sliku proizvoda</Text>
               </TouchableOpacity>
-              {path!=='' && <Image source={{ uri: path }} style={styles.previewImage} />}
+              }
+
+            {path!=='' && path!==null && path!==undefined && <Image source={{ uri: path }} style={styles.previewImage} />}
+
+            {
+              (path!=='' && path!==null && path!==undefined) && 
+              <View style={[{justifyContent:'center', alignItems:'center', width:'70%',marginBottom:20}]}>
+              <TouchableOpacity style={[styles.imagePickerButton, 
+                {marginBottom:5, }]} onPress={pickImage}>
+                <Text style={styles.imagePickerButtonText}>Promeni sliku proizvoda</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.imagePickerButton, {marginTop:5,
+                backgroundColor:'red'
+              }]} onPress={()=>setPath("")}>
+                <Text style={styles.imagePickerButtonText}>Obriši sliku proizvoda</Text>
+              </TouchableOpacity>
+              </View>
+              }
+              </>
+              }
+              
               <View style={styles.modalActions}>
                 
               <TouchableOpacity onPress={closeModal}>
-                  <Text style={[styles.cancelButtonText, { color: dark ? 'white' : '#124460' }]}>Otkaži</Text>
+                  <Text style={[styles.cancelButtonText, { color: dark ? 'white' : '#124460' }]}>
+                    {tried ? "Izmeni proizvod":"Otkaži"}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={addProduct}>
                   <Text style={[styles.deleteButtonText2, { color: dark ? '#6ac17f' : '#6ac17f' }]}>Dodaj</Text>
@@ -515,15 +576,18 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   imagePickerButton: {
-    backgroundColor: '#124460',
-    paddingVertical: 10,
+    paddingVertical: 5,
     borderRadius: 10,
     marginBottom: 15,
     width: '100%',
     alignItems: 'center',
+    backgroundColor:'#6ac17f', 
+    paddingHorizontal:15,
+    
   },
   imagePickerButtonText: {
     color: 'white',
+    fontWeight:'500'
   },
   previewImage: {
     width: 100,
