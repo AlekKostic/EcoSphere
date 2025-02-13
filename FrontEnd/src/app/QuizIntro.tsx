@@ -1,15 +1,20 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Modal, FlatList } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { FontAwesome6, MaterialIcons } from '@expo/vector-icons';
+const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
 
 const Icon4 = () => {
   const router = useRouter();
   const [canTakeQuiz, setCanTakeQuiz] = useState(true);
   const [error, setError] = useState(false);
   const [dark, setDark] = useState(false);
+  const [modalVisible, setModalVisible]=useState(false)
+
+  const [users, setUsers]=useState([])
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -26,6 +31,34 @@ const Icon4 = () => {
 
     getMode();
   }, []);
+
+  useEffect(()=>{
+    const getUsers = async()=>{
+      console.log("ee")
+      const response = await axios.get(`http://${ip}:8080/v1/api/getAll`)
+
+      const filteredData = response.data.map(({ user_id, ime, prezime, broj_bodova }) => ({
+        user_id,
+        ime,
+        prezime,
+        broj_bodova
+      }))
+      .filter(user => user.broj_bodova > 0)
+      .sort((a, b) => b.broj_bodova - a.broj_bodova);;
+
+      let rank = 1;
+      filteredData.forEach((user, index) => {
+        if (index > 0 && user.broj_bodova < filteredData[index - 1].broj_bodova) {
+          rank = index + 1; 
+        }
+        user.rank = rank; 
+      });
+      console.log(filteredData)
+      setUsers(filteredData)
+    }
+
+    getUsers();
+  }, [])
 
   useEffect(() => {
     const checkIfCanTakeQuiz = async () => {
@@ -79,9 +112,18 @@ const Icon4 = () => {
     }
   };
 
+  const onUserPress = (user) => {
+    router.push({
+      pathname: '/UserInfo',
+      params: { id: user.user_id },
+    });
+  };
+
   return (
+    <>
+    <BackNav />
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : '#f5f5f5' }]}>
-      <BackNav />
+
       <View style={styles.contentContainer}>
         <Text style={[styles.title, { color: dark ? 'white' : '#333' }]}>Dobrodošli u kviz!</Text>
         <Text style={[styles.subtitle, { color: dark ? 'white' : '#555' }]}>
@@ -97,11 +139,160 @@ const Icon4 = () => {
           <Text style={styles.buttonText}>Počni kviz</Text>
         </TouchableOpacity>
 
+        <View style={[{marginTop:20}]}>
+          <TouchableOpacity onPress={()=>setModalVisible(true)} style={[{
+            flexDirection:'row',
+            alignItems: 'center', 
+            justifyContent: 'center'}]}>
+            <Text style={[{color:dark ? 'white' : '#124460',
+              fontSize:18,
+              fontWeight:'500',
+              textDecorationLine:'underline',
+              marginRight:5
+            }]}>Rang lista korisnika</Text>
+            <MaterialIcons
+            name={"arrow-forward-ios"} 
+            size={20}
+            color={dark ? 'white' : '#124460'}
+            style={[{paddingRight:10, marginTop:2}]}
+          />
+          </TouchableOpacity>
+        </View>
+        
+
         {error && (
           <Text style={[styles.errorMessage, {color: dark? '#ff999c':'#9a2626'}]}>Već ste radili današnji kviz!</Text>
         )}
       </View>
     </View>
+
+    <Modal visible={modalVisible} animationType="slide" transparent={true} >
+      <View style={[{flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)'}]}>
+
+        <View style={[{width: '100%',
+          height: height * 0.7,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20, 
+          backgroundColor: dark ? '#124460' : 'white' }]}>
+
+          <View style={[{marginTop:20,
+            alignItems: 'flex-end',
+            justifyContent: 'flex-end',
+            marginRight:20, marginBottom:20}]}>
+            <TouchableOpacity onPress={()=>{setModalVisible(false)}}>
+                <MaterialIcons name="close" size={30} color={dark ? 'white' : '#124460'} />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={[{fontSize: 20,
+            fontWeight: 'bold',
+            marginBottom: 30,
+            marginLeft:20, 
+            color: dark ? '#fff' : '#124460' }]}>
+              Rang lista korisnika</Text>
+
+            {users.length === 0 ? (
+              <Text style={[{ color: dark ? '#ccc' : '#124460',
+                fontSize:18,
+                marginLeft:20
+               }]}>Nema korisnika.</Text>
+            ) : (
+              <View style={{ flex: 1, paddingHorizontal: 20, marginBottom: 20 }}>
+  <FlatList
+    data={users}
+    keyExtractor={(item) => item.user_id.toString()}
+    renderItem={({ item }) => {
+      let rankColor = dark ? '#ddd' : '#949494'; // Default boja za ostale
+      let medalIcon = null;
+
+      if (item.rank === 1) {
+        rankColor = '#2f6d8c'; // Zlatna
+        medalIcon = <FontAwesome6 name="medal" size={20} color="#FFD700" />;
+      } else if (item.rank === 2) {
+        rankColor = '#2f6d8c'; // Srebrna
+        medalIcon = <FontAwesome6 name="medal" size={20} color="#C0C0C0" />;
+      } else if (item.rank === 3) {
+        rankColor = '#2f6d8c'; // Bronzana
+        medalIcon = <FontAwesome6 name="medal" size={20} color="#CD7F32" />;
+      }
+
+      return (
+        <View
+          style={{
+            backgroundColor: dark ? '#2f6d8c' : '#d3d3d3',
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            marginBottom: 20,
+            borderRadius: 10,
+            marginHorizontal: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          <View
+            style={{
+              width: 35,
+              height: 35,
+              borderRadius: 17.5,
+              borderColor:'black',
+              backgroundColor: rankColor,
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: 10,
+            }}
+          >
+            {medalIcon ? (
+              medalIcon
+            ) : (
+              <Text
+                style={{
+                  color: dark?'black':'black',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                }}
+              >
+                {item.rank}
+              </Text>
+            )}
+          </View>
+
+          <TouchableOpacity onPress={() => onUserPress(item)}>
+            <Text
+              style={{
+                color: dark ? 'white' : '#124460',
+                fontSize: 16,
+                fontWeight: '500',
+              }}
+            >
+              {item.ime} {item.prezime}
+            </Text>
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              color: dark ? 'white' : '#124460',
+              fontSize: 18,
+              fontWeight: '500',
+              position: 'absolute',
+              right: 20,
+            }}
+          >
+            {item.broj_bodova}
+          </Text>
+        </View>
+      );
+    }}
+  />
+</View>
+
+          )}
+
+        </View>
+      </View>
+    </Modal>
+    </>
   );
 };
 
