@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Modal, FlatList } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,8 +13,13 @@ const Icon4 = () => {
   const [error, setError] = useState(false);
   const [dark, setDark] = useState(false);
   const [modalVisible, setModalVisible]=useState(false)
+  const flatListRef=useRef(null)
+  const [highlightedUser, setHighlightedUser] = useState(null); 
 
   const [users, setUsers]=useState([])
+
+  const [logId, setLogId]=useState(null)
+  const [logIndex, setLogIndex]=useState(null)
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -43,7 +48,6 @@ const Icon4 = () => {
         prezime,
         broj_bodova
       }))
-      .filter(user => user.broj_bodova > 0)
       .sort((a, b) => b.broj_bodova - a.broj_bodova);;
 
       let rank = 1;
@@ -63,8 +67,10 @@ const Icon4 = () => {
   useEffect(() => {
     const checkIfCanTakeQuiz = async () => {
       const userInfo = await AsyncStorage.getItem('userInfo');
+      
       if (userInfo) {
         const user = JSON.parse(userInfo);
+        setLogId(user.userId)
         
         const korisnik = await axios.get(`http://${ip}:8080/v1/api/${user.userId}`);
 
@@ -111,6 +117,27 @@ const Icon4 = () => {
       setError(true); 
     }
   };
+
+  useEffect(() => {
+    if (users.length > 0 && logId !== null) {
+      const index = users.findIndex(user => user.user_id === logId);
+      setLogIndex(index !== -1 ? index : null); // Ako ga nema, stavi null
+    }
+  }, [users, logId]);
+  
+  useEffect(() => {
+    if (modalVisible && logIndex !== null && flatListRef.current) {
+      setTimeout(() => {
+        flatListRef.current.scrollToIndex({ index: logIndex, animated: true, viewPosition: 0.5 });
+        
+        setHighlightedUser(logId); // Postavi korisnika koji treba da potamni
+        setTimeout(() => {
+          setHighlightedUser(null); // Posle 1 sekunde vrati u normalno stanje
+        }, 1000); // Ovaj timeout je unutar prvog
+      }, 500); // Ovaj timeout je za skrolovanje
+    }
+  }, [modalVisible, logIndex]);
+  
 
   const onUserPress = (user) => {
     router.push({
@@ -201,6 +228,7 @@ const Icon4 = () => {
             ) : (
               <View style={{ flex: 1, paddingHorizontal: 20, marginBottom: 20 }}>
   <FlatList
+  ref={flatListRef}
     data={users}
     keyExtractor={(item) => item.user_id.toString()}
     renderItem={({ item }) => {
@@ -221,7 +249,7 @@ const Icon4 = () => {
       return (
         <View
           style={{
-            backgroundColor: dark ? '#2f6d8c' : '#d3d3d3',
+            backgroundColor:  highlightedUser===item.user_id?( dark ? '#285d78' : '#bdbdbd'):( dark ? '#2f6d8c' : '#d3d3d3'),
             paddingHorizontal: 15,
             paddingVertical: 10,
             marginBottom: 20,
