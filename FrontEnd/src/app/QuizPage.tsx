@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import BackNav from '../components/Backnavhome';
 import Question from '../components/Question';
 import axios from 'axios';
@@ -15,6 +15,9 @@ const QuizPage = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [dark, setDark] = useState(false); 
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   useEffect(() => {
     getQuestions();
@@ -51,15 +54,27 @@ const QuizPage = () => {
   }, []);
 
   const getQuestions = async () => {
+    setLoading(true);
+    setErrorMessage("");
+
     try {
       const response = await axios.get(`http://${ip}:8080/v2/api/`);
+      if (!response.data || response.data.length === 0) {
+        throw new Error("Baza nije vratila nijedno pitanje.");
+      }
+
       const allQuestions = response.data;
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
+
       const questionsWithAnswers = await Promise.all(
         shuffledQuestions.map(async (question) => {
           const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
-          const answers = answersResponse.data;
 
+          if (!answersResponse.data || answersResponse.data.length === 0) {
+            throw new Error(`Baza nije vratila odgovore za pitanje ID: ${question.id_Pitanja}`);
+          }
+
+          const answers = answersResponse.data;
           const correctAnswer = answers.find(ans => ans.tacno)?.odgovor;
 
           return {
@@ -72,11 +87,14 @@ const QuizPage = () => {
 
       setQuestions(questionsWithAnswers);
     } catch (error) {
+      setErrorMessage("Pitanja su trenutno nedostupna. Pokušajte ponovo kasnije.");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (showingFeedback || quizCompleted) return;
+    if (showingFeedback || quizCompleted || questions.length===0) return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -89,7 +107,7 @@ const QuizPage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, currentQuestionIndex, showingFeedback, quizCompleted]);
+  }, [timeLeft, currentQuestionIndex, showingFeedback, quizCompleted, questions.length]);
 
   const handleNextQuestion = () => {
     setTimeLeft(15);
@@ -111,6 +129,7 @@ const QuizPage = () => {
   };
 
   const dodajBodove = async () => {
+    try{
     const value = await AsyncStorage.getItem('userInfo');
     const userInfo = value ? JSON.parse(value) : null;
     const userId = userInfo?.userId;
@@ -125,6 +144,9 @@ const QuizPage = () => {
     await axios.put(`http://${ip}:8080/v1/api/streak/${userId}`)
 
     await axios.put(`http://${ip}:8080/v1/api/uradjen/${userId}`);
+    }catch(error){
+      alert("Došlo je do greške prilikom dodavanja bodova. Pokušajte ponovo.");
+    }
   };
 
   if (quizCompleted) {
@@ -150,19 +172,37 @@ const QuizPage = () => {
   return (
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <BackNav />
+
+      {loading && (
+        <View style={[{ justifyContent: 'center', alignItems: 'center', flex: 1 }]}>
+        <ActivityIndicator size="large" color={dark?'white':'#124460'} />
+        <Text style={{ color: dark?'white':'#124460', fontSize:18, marginTop:10 }}>Učitavanje pitanja</Text>
+      </View>
+      
+      )}
+      {errorMessage!=="" && 
+      <View style={[{ justifyContent: 'center', alignItems: 'center', flex: 1 }]}>
+        <Text style={{ color: dark?'white':'#124460', fontSize:18, marginTop:10 }}>
+          Pitanja su trenutno nedostupna.
+        </Text>
+      </View>
+      }
+      {questions.length > 0 && (<>
       <Text style={[styles.timer, { color: dark ? 'white' : '#9a2626' }]}>Preostalo vremena: {timeLeft} sekundi</Text>
-      {questions.length > 0 && (
+
         <Question
           quiz={questions[currentQuestionIndex]}
           onAnswer={handleAnswer}
           showingFeedback={showingFeedback}
         />
-      )}
       <View style={styles.footer}>
         <Text style={[styles.footerText, { color: dark ? 'white' : '#333' }]}>
           Pitanje {currentQuestionIndex + 1} od {questions.length}
         </Text>
       </View>
+      </>
+      
+    )}
     </View>
   );
 };

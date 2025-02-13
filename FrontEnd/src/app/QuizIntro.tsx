@@ -39,6 +39,8 @@ const Icon4 = () => {
 
   useEffect(()=>{
     const getUsers = async()=>{
+
+      try{
       const response = await axios.get(`http://${ip}:8080/v1/api/getAll`)
 
       const filteredData = response.data.map(({ user_id, ime, prezime, broj_bodova }) => ({
@@ -57,6 +59,8 @@ const Icon4 = () => {
         user.rank = rank; 
       });
       setUsers(filteredData)
+    }catch(error){
+    }
     }
 
     getUsers();
@@ -69,6 +73,8 @@ const Icon4 = () => {
       if (userInfo) {
         const user = JSON.parse(userInfo);
         setLogId(user.userId)
+
+        try{
         
         const korisnik = await axios.get(`http://${ip}:8080/v1/api/${user.userId}`);
 
@@ -91,6 +97,8 @@ const Icon4 = () => {
         if (isSameDay) {
           setCanTakeQuiz(false);
         }
+      }catch(error){
+      }
       }
     };
 

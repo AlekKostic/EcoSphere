@@ -94,8 +94,10 @@ const Login = () => {
   };
 
   return (
+    <>
+          <BackNav />
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
-      <BackNav />
+
       <KeyboardAwareScrollView 
         style={styles.container} 
         contentContainerStyle={styles.scrollViewContent}>
@@ -146,13 +148,15 @@ const Login = () => {
           <Text style={{ textDecorationLine: 'underline' }}>Registrujte se</Text>
         </Text>
       </TouchableOpacity>
-      {isLoading && (
+      {isLoading && (<>
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#075eec" />
-          <Text style={styles.loadingText}>Proveravanje podataka...</Text>
+          <ActivityIndicator size="large" color={dark?'white':'#6ac17f'} />
+          <Text style={[styles.loadingText, {color:dark?'white':'#6ac17f'}]}>Proveravanje podataka...</Text>
         </View>
+        </>
       )}
     </SafeAreaView>
+    </>
   );
   
 }
@@ -309,7 +313,7 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,

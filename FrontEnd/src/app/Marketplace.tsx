@@ -34,6 +34,7 @@ const ProductsPage = () => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const router = useRouter(); 
   const [loading, setLoading] = useState(true);
+  const [loadingg, setLoadingg] = useState(false);
   const [tried, setTried]=useState(false);
 
   const config = require('../../config.json');
@@ -193,6 +194,8 @@ const ProductsPage = () => {
       setTried(true)
       return; 
     }
+
+    setLoadingg(true)
   
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
@@ -243,10 +246,13 @@ const ProductsPage = () => {
       setIsKeyboardVisible(false);
       setErrorMessage("");
       setTried(false)
+      setLoadingg(false)
   
       setProducts([newPost, ...products]);
   
     } catch (error) {
+      setTried(false)
+      setLoadingg(false)
       setErrorMessage("Došlo je do greške prilikom dodavanja proizvoda");
     }
   };
@@ -311,7 +317,7 @@ const ProductsPage = () => {
             kao i da pogledate koje to proizvode drugi korisnici poklanjaju.
           </Text>
         </View>
-        <View style={styles.actions}>
+        <View style={[styles.actions,{alignItems:'center', justifyContent:'center'}]}>
         <View style={styles.searchContainer}>
           <TextInput
             ref={inputRef} 
@@ -371,7 +377,19 @@ const ProductsPage = () => {
         >
           <View style={styles.modalContainer}>
             <View style={[styles.modalContent, { backgroundColor: dark ? '#124460' : 'white' }]}>
-              
+              {loadingg && (
+                                <View style={{
+                                  position: "absolute",
+                                  top: 0, left: 0, right: 0, bottom: 0,
+                                  backgroundColor: "rgba(0,0,0,0.3)",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  borderRadius: 10,
+                                  zIndex:9999
+                                }}>
+                                  <ActivityIndicator size="large" color={dark ? "white" : "#124460"} />
+                                </View>
+                              )}
               <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
                 {tried?"Upozorenje":"Dodaj novi proizvod"}</Text>
               

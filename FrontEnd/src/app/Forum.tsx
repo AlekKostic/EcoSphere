@@ -201,11 +201,14 @@ const NotificationsPage = () => {
 
   
   const addPost = async () => {
+    
 
     if(!newPost){
       setErrorMessage("Molimo unesite tekst.")
       return
     }
+
+    setLoadingg(true)
     try {
     const userInfo = await new Promise((resolve, reject) => {
       AsyncStorage.getItem('userInfo', (err, result) => {
@@ -248,13 +251,17 @@ const NotificationsPage = () => {
     setNewPost("");
     setErrorMessage("")
     setIsModalVisible(false);
+    setLoadingg(false)
     
   } catch (error) {
+    setLoadingg(false)
     setErrorMessage("Došlo je do greške.")
   }
 };
   const [errorEdit, setErrorEdit]=useState("")
   const submitEdit = async()=>{
+
+    try{
     if(editedContent=="")
     {
       setErrorEdit("Molimo unesite tekst objave.")
@@ -287,7 +294,9 @@ const NotificationsPage = () => {
     
 
     setErrorEdit("")
-    setIsModalVisibleEdit(false)
+    setIsModalVisibleEdit(false)}
+    catch(error){
+    }
 
   }
 
@@ -346,10 +355,25 @@ const NotificationsPage = () => {
         onRequestClose={() => {setIsModalVisible(false);setErrorMessage("")}}
       >
         <View style={[styles.modalContainer]}>
+
           <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
             <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
              }]}>Nova objava</Text>
-             {loadingg && <Text>loding</Text>}
+
+          {loadingg && (
+                  <View style={{
+                    position: "absolute",
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: "rgba(0,0,0,0.3)",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 10,
+                    zIndex:9999
+                  }}>
+                    <ActivityIndicator size="large" color={dark ? "white" : "#124460"} />
+                  </View>
+                )}
+             
             <TextInput
               style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
                 color: dark ? '#124460' : '#124460',
@@ -378,10 +402,10 @@ const NotificationsPage = () => {
 
             <View style={styles.modalActions}>
               
-            <TouchableOpacity onPress={() => {setNewPost(""),setIsModalVisible(false),setErrorMessage("")}}>
+            <TouchableOpacity disabled={loadingg} onPress={() => {setNewPost(""),setIsModalVisible(false),setErrorMessage(""), setLoadingg(false)} }>
               <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={addPost}>
+            <TouchableOpacity onPress={addPost} disabled={loadingg}>
               <Text style={[styles.deleteButtonText2, , {color: dark?'#6ac17f':'#6ac17f'}]}>Dodaj</Text>
             </TouchableOpacity>
             </View>

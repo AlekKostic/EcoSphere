@@ -48,6 +48,7 @@ const UserInfo = () => {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [deleteModalVisiblePost, setDeleteModalVisiblePost] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deleteaModalVisible, setDeleteaModalVisible] = useState(false);
   const [seeSaved, setSeeSaved] = useState(false);
   const [postToDelete, setPostToDelete] = useState(null);
   const [selectedTab, setSelectedTab] = useState('objave'); 
@@ -112,6 +113,7 @@ const UserInfo = () => {
   }
 
   const fetchProduct = async()=>{
+    try{
     const response = await axios.get(`http://${ip}:8080/v5/api/user/${iduser}`);
     let productsData = response.data.reverse();
     if(logged)
@@ -134,6 +136,9 @@ const UserInfo = () => {
       }));
     }
     setProducts(productsData)
+  }catch(error){
+
+  }
   }
 
   useEffect(() => {
@@ -187,6 +192,7 @@ const UserInfo = () => {
       setLoadingPosts(false);
 
     } catch (err) {
+      setLoadingPosts(false);
     }
   };
 
@@ -281,28 +287,24 @@ const UserInfo = () => {
     }
   };
 
+  const [loadingDelete, setLoadingDelete]=useState(false);
+  const [ee, setee]=useState("");
+
   const handleDeleteAccount = async () => {
-    Alert.alert(
-      'Potvrdi brisanje',
-      'Da li ste sigurni da želite da obrišete svoj nalog? Ova akcija se ne može poništiti.',
-      [
-        { text: 'Odustani', style: 'cancel' },
-        {
-          text: 'Obriši nalog',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem('userInfo');
-              await AsyncStorage.removeItem('treeVisits');
-              await axios.delete(`http://${ip}:8080/v1/api/delete/${iduser}`);
-              router.push('/Home');
-            } catch (err) {
-              setErrorMessage('Greška prilikom brisanja naloga.');
-            }
-          },
-        },
-      ]
-    );
+    setLoadingDelete(true)
+    try {
+      await axios.delete(`http://${ip}:8080/v1/api/delete/${iduser}`);
+      
+      await AsyncStorage.removeItem('userInfo');
+      await AsyncStorage.removeItem('treeVisits');
+      setee("")
+      setLoadingDelete(false)
+      setDeleteaModalVisible(false)
+      router.push('/Home');
+    } catch (err) {
+      setLoadingDelete(false)
+      setee('Greška prilikom brisanja naloga.');
+    }
   };
 
   const savePost = async (item) => {
@@ -482,7 +484,7 @@ const UserInfo = () => {
             {user.ime + ' ' + user.prezime}
           </Text>
           <Text style={[styles.userDetails, {color: dark?'white':'#124460'}]}>
-            {'E-mail: ' + (user.email || 'E-mail nije naveden')}
+            {user.mail ? 'E-mail: ' + (user.email): ""}
           </Text>
         </View>
         
@@ -540,7 +542,7 @@ const UserInfo = () => {
               <>
                 <View style={[styles.changePasswordHeader, {color: dark?'white':'#124460'}]}>
                   <Text style={[styles.changePasswordTitle,  {color: dark?'white':'#124460'}]}>Promena lozinke</Text>
-                  <TouchableOpacity onPress={() => setChanging(false)} style={styles.cancelButton}>
+                  <TouchableOpacity onPress={() => {setChanging(false); setErrorMessage("")}} style={styles.cancelButton}>
                     <Text style={styles.buttonText}>X</Text>
                   </TouchableOpacity>
                 </View>
@@ -580,7 +582,7 @@ const UserInfo = () => {
             {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
           </View>
 
-          <TouchableOpacity onPress={handleDeleteAccount} style={styles.deleteButton}>
+          <TouchableOpacity onPress={()=>setDeleteaModalVisible(true)} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Obrišite nalog</Text>
           </TouchableOpacity>
         </>
@@ -615,7 +617,7 @@ const UserInfo = () => {
 
     {selectedTab === 'objave' && (
         loadingPosts ? (
-          <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
+          <ActivityIndicator size="large" color={dark?'white':'#124460'} style={styles.loadingIndicator} />
         ) : posts.length > 0 ? (
           posts.map((post) => (
             <Post key={post.id} item={post} likePost={likePost} personal={personal}
@@ -632,7 +634,7 @@ const UserInfo = () => {
 
 {selectedTab === 'proizvodi' && (
   loadingPosts ? (
-    <ActivityIndicator size="large" color="#075eec" style={styles.loadingIndicator} />
+    <ActivityIndicator size="large" color={dark?'white':'#124460'} style={styles.loadingIndicator} />
   ) : products.length > 0 ? (
     products.map((product) => (
       <TouchableOpacity key={product.product_id} onPress={() => {
@@ -649,7 +651,6 @@ const UserInfo = () => {
   )
 )}
 
-{/* Delete Confirmation Modal */}
 <Modal
   transparent={true}
   visible={deleteModalVisible}
@@ -669,6 +670,47 @@ const UserInfo = () => {
           <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
         </TouchableOpacity>   
          <TouchableOpacity onPress={handleDeleteProduct}>
+          <Text style={[styles.deleteButtonText2, {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
+<Modal
+  transparent={true}
+  visible={deleteaModalVisible}
+  onRequestClose={() => setDeleteaModalVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
+      {loadingDelete && (
+                        <View style={{
+                          position: "absolute",
+                          top: 0, left: 0, right: 0, bottom: 0,
+                          backgroundColor: "rgba(0,0,0,0.3)",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderRadius: 10,
+                          zIndex:9999
+                        }}>
+                          <ActivityIndicator size="large" color={dark ? "white" : "#124460"} />
+                        </View>
+                      )}
+      <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
+        <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
+      </View>
+      <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>
+        Da li ste sigurni da želite da obrišete nalog?
+      </Text>
+
+      {ee!=="" && <Text style={{color: dark?'#ff999c':'#9a2626', alignSelf:'center'}}>{ee}</Text>}
+      <View style={styles.modalActions}>
+
+        <TouchableOpacity onPress={() => {setDeleteaModalVisible(false); setee("");}}>
+          <Text style={[styles.cancelButtonText, {color: dark?'white':'#124460'}]}>Otkaži</Text>
+        </TouchableOpacity>   
+         <TouchableOpacity onPress={handleDeleteAccount}>
           <Text style={[styles.deleteButtonText2, {color: dark?'#ff999c':'#9a2626'}]}>Obriši</Text>
         </TouchableOpacity>
       </View>
@@ -763,7 +805,7 @@ const UserInfo = () => {
                 style={[
                   { color: 'red' },
                   { alignSelf: 'center' },
-                  {marginBottom: 10}  // This will center the text horizontally
+                  {marginBottom: 10}  
                 ]}
               >
                 {errorEdit}

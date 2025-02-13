@@ -110,8 +110,10 @@ const Signup = () => {
   };
 
   return (
+    <>
+    <BackNav/>
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
-      <BackNav/>
+
       <KeyboardAwareScrollView style={styles.container}>
         <View style={styles.header}>
           <Image source={require('../img/logo.png')} style={styles.logo} />
@@ -166,11 +168,12 @@ const Signup = () => {
       </TouchableOpacity>
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#075eec" />
-          <Text style={styles.loadingText}>Kreiranje naloga...</Text>
+          <ActivityIndicator size="large" color={dark?'white':'#6ac17f'} />
+          <Text style={[styles.loadingText, {color:dark?'white':'#6ac17f'}]}>Kreiranje naloga...</Text>
         </View>
       )}
     </SafeAreaView>
+    </>
   );
 };
 
