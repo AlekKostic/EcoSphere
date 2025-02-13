@@ -44,7 +44,6 @@ const QuizPage = () => {
           setUser(JSON.parse(userData));
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
       }
     };
 
@@ -73,7 +72,6 @@ const QuizPage = () => {
 
       setQuestions(questionsWithAnswers);
     } catch (error) {
-      console.error('Error fetching questions or answers:', error);
     }
   };
 
@@ -121,10 +119,8 @@ const QuizPage = () => {
       "user_id": userId,
       "broj_poena": correctAnswers,
     });
-    console.log(userInfo)
     if(userInfo.kviz){
       const resp = await axios.put(`http://${ip}:8080/v1/api/unstreak/${userId}`)
-      console.log(resp)
     }
     await axios.put(`http://${ip}:8080/v1/api/streak/${userId}`)
 

@@ -88,7 +88,6 @@ const UserInfo = () => {
         setLogged(true);
       }
     } catch (err) {
-      console.error('Error fetching user info:', err);
     }
   };
 
@@ -98,12 +97,10 @@ const UserInfo = () => {
       setDeleteModalVisible(false);
       setProducts(prevProducts => {
         const filteredProducts = prevProducts.filter(product => product.product_id !== productToDelete);
-        console.log("Filtered products:", filteredProducts);
         return filteredProducts;
       });
 
     } catch (err) {
-      console.error('Error deleting product:', err);
     }
   };
 
@@ -119,12 +116,10 @@ const UserInfo = () => {
     let productsData = response.data.reverse();
     if(logged)
     {
-      console.log("alo")
 
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${logId}`);
 
         const savedProducts = savedResponse.data.sacuvaniProductids;
-        console.log(savedProducts)
         productsData = productsData
           .map((product) => ({
             ...product,
@@ -192,7 +187,6 @@ const UserInfo = () => {
       setLoadingPosts(false);
 
     } catch (err) {
-      console.error('Error fetching posts data:', err);
     }
   };
 
@@ -233,7 +227,6 @@ const UserInfo = () => {
       setErrorMessage('');
       setChanging(false);
     } catch (err) {
-      console.error('Error updating password:', err);
       setErrorMessage('Greška prilikom promene lozinke.');
     }
   };
@@ -244,7 +237,6 @@ const UserInfo = () => {
       setDeleteModalVisiblePost(false);
       fetchPostsData();
     } catch (err) {
-      console.error('Error deleting post:', err);
     }
   };
 
@@ -269,7 +261,6 @@ const UserInfo = () => {
       
         fetchPostsData();
       } catch (error) {
-        console.log(error);
       }
     }else{
       item.likes=false;
@@ -286,7 +277,6 @@ const UserInfo = () => {
       
         fetchPostsData();
       } catch (error) {
-        console.log(error);
       }
     }
   };
@@ -307,7 +297,6 @@ const UserInfo = () => {
               await axios.delete(`http://${ip}:8080/v1/api/delete/${iduser}`);
               router.push('/Home');
             } catch (err) {
-              console.error('Error deleting account:', err);
               setErrorMessage('Greška prilikom brisanja naloga.');
             }
           },
@@ -330,7 +319,6 @@ const UserInfo = () => {
     setSavedProducts((prevPosts) => {
       return prevPosts.map((post) => {
         if (post.product_id === item.product_id) {
-          console.log("Updating post:", post);  // Proveri koji post se ažurira
           return {
             ...post,
             saved: newSaveStatus
@@ -343,7 +331,6 @@ const UserInfo = () => {
 
     setProducts((prevPosts) => {
       return prevPosts.map((post) => {
-        console.log(post.product_id + " sssss " + item.product_id)
         if (post.product_id === item.product_id) {
           return {
             ...post,
@@ -394,7 +381,6 @@ const UserInfo = () => {
 
       }
     } catch (error) {
-      console.error(error);
       setSavedProducts((prevPosts) =>
         prevPosts.map((post) =>
           post.product_id === item.product_id
@@ -411,14 +397,12 @@ const UserInfo = () => {
   const seeFolders = async() =>{
     setSeeSaved(true)
     const response = await axios.get(`http://${ip}:8080/v5/api`)
-    console.log(user)
 
     const data = response.data.filter(product => user.sacuvaniProductids.includes(product.product_id));
     setSaved(data.length)
     const updatedData = data.map(product => ({ ...product, saved: true }));
     setSavedProducts(updatedData);
 
-    console.log(data)
 
   }
 
@@ -475,7 +459,6 @@ const UserInfo = () => {
 
   const handleTree = ()=>{
 
-    console.log(user)
     router.push({
       pathname: '/Tree',
       params: { poeni: user.broj_bodova, userId: user.user_id},

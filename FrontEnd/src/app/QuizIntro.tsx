@@ -39,7 +39,6 @@ const Icon4 = () => {
 
   useEffect(()=>{
     const getUsers = async()=>{
-      console.log("ee")
       const response = await axios.get(`http://${ip}:8080/v1/api/getAll`)
 
       const filteredData = response.data.map(({ user_id, ime, prezime, broj_bodova }) => ({
@@ -57,7 +56,6 @@ const Icon4 = () => {
         }
         user.rank = rank; 
       });
-      console.log(filteredData)
       setUsers(filteredData)
     }
 
@@ -80,15 +78,10 @@ const Icon4 = () => {
         date.setHours(date.getHours() + 1);
 
         const dateString2 = date.toISOString();
-        console.log(dateString);
 
         const dateFromString = new Date(dateString2);
 
         const currentDate = new Date();
-        console.log("Current Date:", currentDate.toISOString());
-        console.log("Date from String:", dateFromString.toISOString());
-
-        console.log(currentDate.getUTCDate() + " " + dateFromString.getUTCDate());
 
         const isSameDay =
           dateFromString.getUTCFullYear() === currentDate.getUTCFullYear() &&
@@ -121,7 +114,7 @@ const Icon4 = () => {
   useEffect(() => {
     if (users.length > 0 && logId !== null) {
       const index = users.findIndex(user => user.user_id === logId);
-      setLogIndex(index !== -1 ? index : null); // Ako ga nema, stavi null
+      setLogIndex(index !== -1 ? index : null); 
     }
   }, [users, logId]);
   
@@ -130,11 +123,11 @@ const Icon4 = () => {
       setTimeout(() => {
         flatListRef.current.scrollToIndex({ index: logIndex, animated: true, viewPosition: 0.5 });
         
-        setHighlightedUser(logId); // Postavi korisnika koji treba da potamni
+        setHighlightedUser(logId); 
         setTimeout(() => {
-          setHighlightedUser(null); // Posle 1 sekunde vrati u normalno stanje
-        }, 1000); // Ovaj timeout je unutar prvog
-      }, 500); // Ovaj timeout je za skrolovanje
+          setHighlightedUser(null); 
+        }, 1000); 
+      }, 500);
     }
   }, [modalVisible, logIndex]);
   
@@ -232,17 +225,17 @@ const Icon4 = () => {
     data={users}
     keyExtractor={(item) => item.user_id.toString()}
     renderItem={({ item }) => {
-      let rankColor = dark ? '#ddd' : 'white'; // Default boja za ostale
+      let rankColor = dark ? '#ddd' : 'white';
       let medalIcon = null;
 
       if (item.rank === 1) {
-        rankColor = dark?'#2f6d8c':'white'; // Zlatna
+        rankColor = dark?'#2f6d8c':'white';
         medalIcon = <FontAwesome6 name="medal" size={20} color="#FFD700" style={[{}]} />;
       } else if (item.rank === 2) {
-        rankColor = dark?'#2f6d8c':'white'; // Srebrna
+        rankColor = dark?'#2f6d8c':'white'; 
         medalIcon = <FontAwesome6 name="medal" size={20} color="#C0C0C0" />;
       } else if (item.rank === 3) {
-        rankColor = dark?'#2f6d8c':'white'; // Bronzana
+        rankColor = dark?'#2f6d8c':'white'; 
         medalIcon = <FontAwesome6 name="medal" size={20} color="#CD7F32" />;
       }
 

@@ -76,7 +76,6 @@ const Signup = () => {
           timeout: 3000,
         }
       );
-      console.log("data "+response.data)
       if(response.data===""){
         setErrorText("Postoji nalog sa datom email adresom")
         setError(true)
@@ -94,14 +93,11 @@ const Signup = () => {
         streak:0,
       };
 
-      console.log(response.data)
-
 
       await AsyncStorage.setItem('userInfo', JSON.stringify(userInfo));
 
       router.push('/Home');
     } catch (err) {
-      console.log(error)
       setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.");
       setError(true);
     } finally {

@@ -28,7 +28,6 @@ export const Question = ({ quiz, onAnswer, showingFeedback }) => {
     setFeedbackMessage(isCorrect ? 'Tačno!' : 'Netačno.');
     setFeedbackColor(isCorrect ? '#6ac17f' : '#9a2626');
     onAnswer(isCorrect);
-    console.log(selectedOption)
   };
 
   return (

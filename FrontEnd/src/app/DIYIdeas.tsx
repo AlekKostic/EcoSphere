@@ -13,7 +13,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WebView from 'react-native-webview';
 
-const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
+const { height } = Dimensions.get('window'); 
 
 const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,7 +139,6 @@ const Icon2 = () => {
 
   const handlePress = (url) => {
     setCurrentUrl(url);
-    console.log(url)
     setLoading(true);
     setModalVisible(true);
   };

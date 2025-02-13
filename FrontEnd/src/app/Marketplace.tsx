@@ -50,7 +50,6 @@ const ProductsPage = () => {
       setLoading(true);
       const response = await axios.get(`http://${ip}:8080/v5/api`);
       let productsData = response.data.reverse();
-      console.log(productsData)
   
       if (userInfo) {
         const parsedUserInfo = JSON.parse(userInfo);
@@ -58,15 +57,11 @@ const ProductsPage = () => {
 
         const savedResponse = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
         
-        console.log(savedResponse.data)
         const savedProducts = savedResponse.data.sacuvaniProductids;
-        console.log(savedProducts)
-        console.log(productsData)
   
         productsData = productsData.map((product) => {
           const isSaved = savedProducts.includes(product.product_id);
           
-          console.log(`Product ID: ${product.product_id}, Saved: ${isSaved}`);
         
           return {
             ...product,
@@ -80,17 +75,14 @@ const ProductsPage = () => {
           saved: false,
         }));
       }
-      console.log(productsData)
       setProducts(productsData);
     } catch (error) {
-      console.log("a" + error);
     } finally {
       setLoading(false);
     }
   };
 
   const savePost = async(item) => {
-    console.log(item);
 
     if (!logged) {
       router.push('/Login');
@@ -101,7 +93,6 @@ const ProductsPage = () => {
     const userId = userInfo ? JSON.parse(userInfo).userId : null;
 
     const newSaveStatus = !item.saved;
-    console.log(newSaveStatus)
 
     setProducts((prevPosts) =>
       prevPosts.map((post) =>
@@ -125,7 +116,6 @@ const ProductsPage = () => {
         });
       }
     } catch (error) {
-      console.error(error);
       setProducts((prevPosts) =>
         prevPosts.map((post) =>
           post.product_id === item.product_id ? {
@@ -157,14 +147,12 @@ const ProductsPage = () => {
     if (!result.canceled) {
       setPath(result.assets[0].uri);
     }
-    console.log("path "+ path)
   };
 
   const uploadImage = async (path) => {
     try {
       if (!path) {
-        console.warn("No image path provided, skipping upload.");
-        return null; // Ako nema putanje, vrati null
+        return null; 
       }
   
       const timestamp = new Date().toISOString().replace(/[:.-]/g, ''); 
@@ -181,12 +169,10 @@ const ProductsPage = () => {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
   
-      console.log('Uploaded Image URL:', response.data);
-      return response.data; // Vrati URL slike
+      return response.data; 
     } catch (error) {
-      console.error('Error uploading image:', error);
       setErrorMessage("Došlo je do greške prilikom dodavanja slike");
-      return null; // Ako dođe do greške, vrati null
+      return null;
     }
   };
   
@@ -202,7 +188,6 @@ const ProductsPage = () => {
       return;
     }
 
-    console.log(path)
 
     if ((path===null || path===undefined || path==="") && !tried) {
       setTried(true)
@@ -214,31 +199,25 @@ const ProductsPage = () => {
       const parsedUserInfo = JSON.parse(userInfo);
   
       
-      console.log("1 " + path);
-  
-      // **Ako nema putanje, ne uploadujemo sliku**
       const imageUrl = path ? await uploadImage(path) : null;
   
       if (path && !imageUrl) {
         setErrorMessage("Došlo je do greške prilikom dodavanja slike");
-        return; // Ako upload nije uspeo, prekini dodavanje proizvoda
+        return; 
       }
 
       
-  
-      console.log("2 " + imageUrl);
   
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
         name: name,
         description: description,
         price: 0,
         phone_number: phoneNumber,
-        path: imageUrl, // Direktno koristimo `imageUrl`
+        path: imageUrl, 
         user_id: parsedUserInfo.userId,
         broj_pregleda: 0
       });
   
-      console.log('Product added successfully:', response.data);
       setIsModalVisible(false);
   
       const newPost = {
@@ -247,21 +226,19 @@ const ProductsPage = () => {
         description: description,
         price: 0,
         phone_number: phoneNumber,
-        path: imageUrl, // Direktno koristimo `imageUrl`
+        path: imageUrl,
         user_id: parsedUserInfo.userId,
         broj_pregleda: 0,
         saved: false
       };
   
-      console.log(products);
       setTimeout(() => {
         productRef.current?.scrollToOffset({ animated: true, offset: 0 });
       }, 300);
   
-      // Resetujemo state
       setName("");
       setDescription("");
-      setPath(null); // Umesto '', koristimo null
+      setPath(null); 
       setPhoneNumber("");
       setIsKeyboardVisible(false);
       setErrorMessage("");
@@ -271,7 +248,6 @@ const ProductsPage = () => {
   
     } catch (error) {
       setErrorMessage("Došlo je do greške prilikom dodavanja proizvoda");
-      console.log('Error adding product:', error);
     }
   };
   
@@ -279,7 +255,7 @@ const ProductsPage = () => {
 
   const renderProduct = ({ item }) => {
     return (
-      <TouchableOpacity onPress={()=>{console.log(item)}}>
+      <TouchableOpacity onPress={()=>{}}>
       <Product item={item} dark={dark} savePost={savePost}/>
       </TouchableOpacity>
     );
@@ -312,13 +288,13 @@ const ProductsPage = () => {
     }
   };
 
-  const inputRef = useRef(null);  // Define the inputRef
+  const inputRef = useRef(null); 
 
   const handleSearchIconPress = () => {
     if (isKeyboardVisible) {
       Keyboard.dismiss();
     } else {
-      inputRef.current?.focus();  // Focus on the input field
+      inputRef.current?.focus(); 
     }
     setIsKeyboardVisible(!isKeyboardVisible);
   };
@@ -336,10 +312,9 @@ const ProductsPage = () => {
           </Text>
         </View>
         <View style={styles.actions}>
-        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <TextInput
-            ref={inputRef}  // Attach the inputRef to TextInput
+            ref={inputRef} 
             style={[styles.searchInput, { backgroundColor: dark ? 'white' : 'white', borderColor: dark ? 'white' : '#124460' }]}
             placeholderTextColor={dark ? '#124460' : '#124460'}
             placeholder="Pretraži proizvode..."
@@ -352,8 +327,7 @@ const ProductsPage = () => {
             <MaterialIcons name="search" size={24} color={dark ? '#124460' : '#124460'} />
           </TouchableOpacity>
         </View>
-    
-        {/* Add Product Button */}
+  
         <TouchableOpacity
           style={styles.addProductButton}
           onPress={() => { if (!logged) router.push('/Login'); else setIsModalVisible(true); }}
@@ -389,8 +363,6 @@ const ProductsPage = () => {
           />
         )}
 
-    
-        {/* Modal for Adding Product */}
         <Modal
           visible={isModalVisible}
           transparent={true}

@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 import Post from '../components/Post';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import getWorkingHeight from '../components/ScreenHeight';
-const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
+const { height } = Dimensions.get('window'); 
 
 const NotificationsPage = () => {
 
@@ -30,6 +30,7 @@ const NotificationsPage = () => {
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dark, setDark] = useState(false); 
+  const [loadingg, setLoadingg] = useState(false); 
   const [modalAnim] = useState(new Animated.Value(0)); 
 
   const [showModal, setShowModal]=useState(false)
@@ -82,11 +83,7 @@ const NotificationsPage = () => {
       setLikedPosts(postsWithAuthors.filter(post=>post.likes).reverse())
 
 
-      console.log(likedPosts)
-      console.log("ff"+total)
-
     } catch (error) {
-      console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
@@ -117,7 +114,6 @@ const NotificationsPage = () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
     const userId = userInfo ? JSON.parse(userInfo).userId : null;
   
-    // Ako post nema likes ili likedIds, inicijalizujte ih
     if (!item.likes) item.likes = false;
     if (!item.likedIds) item.likedIds = [];
   
@@ -179,8 +175,6 @@ const NotificationsPage = () => {
       }
       
     } catch (error) {
-      console.error(error);
-      // Vrati stanje ako je došlo do greške
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === item.id ? {
@@ -213,7 +207,6 @@ const NotificationsPage = () => {
       return
     }
     try {
-    // Vratite Promise koji se rešava kada korisnički podaci budu učitani
     const userInfo = await new Promise((resolve, reject) => {
       AsyncStorage.getItem('userInfo', (err, result) => {
         if (err) {
@@ -224,13 +217,10 @@ const NotificationsPage = () => {
       });
     });
 
-    // Ako korisnički podaci nisu pronađeni ili nema userId, obustavite dalji rad
     if (!userInfo || !userInfo.userId) {
-      console.log("User ID not found");
-      return; // Prestanite sa izvršavanjem funkcije ako userId nije pronađen
+      return; 
     }
 
-    // Poziv za kreiranje posta
     const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
       "context": newPost,
       "user_id": userInfo.userId
@@ -239,7 +229,6 @@ const NotificationsPage = () => {
 
     const newPostData = response.data;
 
-    // Učitajte podatke autora nakon što je post napravljen
     const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
     const authorData = authorResponse.data;
 
@@ -250,7 +239,6 @@ const NotificationsPage = () => {
     };
 
 
-    // Dodajte novi post u stanje
     setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
 
     setTimeout(() => {
@@ -262,12 +250,11 @@ const NotificationsPage = () => {
     setIsModalVisible(false);
     
   } catch (error) {
-    console.error("Error in API request:", error);
+    setErrorMessage("Došlo je do greške.")
   }
 };
   const [errorEdit, setErrorEdit]=useState("")
   const submitEdit = async()=>{
-    console.log(editedContent)
     if(editedContent=="")
     {
       setErrorEdit("Molimo unesite tekst objave.")
@@ -362,6 +349,7 @@ const NotificationsPage = () => {
           <View style={[styles.modalContent, {backgroundColor: dark?'#124460':'white'}]}>
             <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460'
              }]}>Nova objava</Text>
+             {loadingg && <Text>loding</Text>}
             <TextInput
               style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
                 color: dark ? '#124460' : '#124460',
@@ -424,7 +412,7 @@ const NotificationsPage = () => {
               <Text 
                 style={[
                   { color: 'red' },
-                  { alignSelf: 'center' }  // This will center the text horizontally
+                  { alignSelf: 'center' } 
                 ]}
               >
                 {errorEdit}

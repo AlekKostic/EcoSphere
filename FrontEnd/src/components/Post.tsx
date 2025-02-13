@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto', 
   },
   iconButton: {
-    marginLeft: 10, // Spacing between icons
+    marginLeft: 10, 
   },
   
 });

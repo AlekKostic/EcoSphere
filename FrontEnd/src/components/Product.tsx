@@ -6,7 +6,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import ExtendedProduct from './ExtendedProduct';
 
-const { height } = Dimensions.get('window'); // Dobijamo visinu ekrana
+const { height } = Dimensions.get('window'); 
 
 const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => {
   const router = useRouter();
@@ -24,12 +24,11 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
   const ip = config.ipAddress;
 
   const getUser = async () => {
-    console.log(item.path)
     const res = await axios.get(`http://${ip}:8080/v1/api/${item.user_id}`);
     setIme(res.data.ime);
     setPrezime(res.data.prezime);
     setId(res.data.user_id);
-    setUserImage(res.data.profile_picture); // Assuming there is a profile_picture field
+    setUserImage(res.data.profile_picture);
   }
 
   useEffect(() => { getUser() }, []);
@@ -38,14 +37,14 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
     await axios.put(`http://${ip}:8080/v5/api/${item.product_id}`);
     setCnt(cnt + 1);
     setShowModal(true); 
-    Animated.spring(modalAnim, { toValue: 1, useNativeDriver: true }).start(); // Animiraj modal
+    Animated.spring(modalAnim, { toValue: 1, useNativeDriver: true }).start();
   };
 
   const viewCount = item.broj_pregleda;
 
   const closeModal = () => {
-    setShowModal(false); // Zatvori modal
-    Animated.spring(modalAnim, { toValue: 0, useNativeDriver: true }).start(); // Animiraj povratak
+    setShowModal(false);
+    Animated.spring(modalAnim, { toValue: 0, useNativeDriver: true }).start(); 
   };
 
   const handleUser = () => {

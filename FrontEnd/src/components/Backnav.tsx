@@ -7,7 +7,7 @@ const BackNav = () => {
   const router = useRouter();
 
   const handleBack = () => {
-    router.back(); // Go back to the previous screen
+    router.back(); 
   };
 
   const [dark, setDark]=useState(false)
@@ -15,9 +15,9 @@ const BackNav = () => {
   const getMode =async()=>{
 
     const storedMode = await AsyncStorage.getItem('darkMode');
-    console.log(storedMode)
+
     if(storedMode==="true")setDark(true)
-    console.log("nab"+dark)
+
   }
 
   useEffect(()=>{getMode()},[])

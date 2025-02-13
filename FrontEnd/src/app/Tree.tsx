@@ -12,7 +12,7 @@ const Tree = () => {
   const [dark, setDark] = useState(false);
   const treeRef = useRef(null);
   const barRef = useRef(null);
-  const streakRef = useRef(0); // Koristimo ref za čuvanje vrednosti streak
+  const streakRef = useRef(0); 
   const poeni = route.params?.poeni ?? 0;
   const userId = route.params?.userId ?? null;
   const poeni2 = poeni % 100;
@@ -25,7 +25,7 @@ const Tree = () => {
   const [toShow2, setToShow2] = useState(0);
   const [red, setRed] = useState(false);
   const [visits, setVisits] = useState(-1);
-  const prevVisitsRef = useRef(visits); // Čuvamo prethodnu vrednost visits
+  const prevVisitsRef = useRef(visits); 
   const config = require('../../config.json');
   const ip = config.ipAddress;
   let st = 0;
@@ -45,7 +45,6 @@ const Tree = () => {
         setToShow2(Math.floor(visits / 100));
     
         const response = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
-        console.log(response.data);
     
         if (response.data.radjen) {
           await axios.put(`http://${ip}:8080/v1/api/unstreak/${userId}`);
@@ -56,7 +55,6 @@ const Tree = () => {
   
         await AsyncStorage.setItem('treeVisits', poeni.toString());
       } catch (error) {
-        console.error('Error fetching tree visits:', error);
       }
     };
   
@@ -80,12 +78,10 @@ const Tree = () => {
     barRef.current.reset();
   
     if (visits % 100 + (poeni - visits) >= 100) {
-      console.log("🎬 Prva animacija start");
       treeRef.current.play(0.88 * (visits % 100), 88);
       barRef.current.play(0.5 * (visits % 100), 60);
   
       setTimeout(() => {
-        console.log("🎬 Druga animacija start");
         const f = toShow % 100;
         setToShow((prev) => prev % 100);
         setToShow2(Math.floor(poeni / 100));
@@ -95,7 +91,6 @@ const Tree = () => {
   
       }, 2500); 
     } else {
-      console.log("🎬 Neposredno pokretanje treće animacije");
       treeRef.current.play(0.88 * (visits % 100), 0.88 * poeni2);
       barRef.current.play(0.5 * (visits % 100), 0.5 * poeni2 + 1);
   
@@ -177,7 +172,6 @@ const Tree = () => {
           <Text style={{ marginTop: 5, fontSize: 15, color: dark ? 'white' : '#124460' }}>
             Radite dnevne kvizove i osvajajte poene!
           </Text>
-          <Text>{streak + " " + pstreak}</Text>
         </View>
       </ScrollView>
     </View>

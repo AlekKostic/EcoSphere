@@ -61,7 +61,6 @@ const Login = () => {
       setError(false);
       setErrorText("");
       setIsLoading(false);
-      console.log(response.data)
 
       if (response.data) {
         const transformedData = {

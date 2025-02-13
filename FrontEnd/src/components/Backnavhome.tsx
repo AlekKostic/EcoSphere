@@ -15,9 +15,9 @@ const BackNav = () => {
   const getMode =async()=>{
 
     const storedMode = await AsyncStorage.getItem('darkMode');
-    console.log(storedMode)
+
     if(storedMode==="true")setDark(true)
-    console.log("nab"+dark)
+
   }
 
   useEffect(()=>{getMode()},[])
