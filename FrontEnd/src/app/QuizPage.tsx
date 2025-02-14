@@ -174,7 +174,6 @@ const QuizPage = () => {
       const userInfo = await AsyncStorage.getItem('userInfo');
       if (userInfo) {
         const user = JSON.parse(userInfo);
-        console.log(user)
         router.push({
           pathname: '/Tree',
           params: {userId: user.userId },

@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Dimensions, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';  
@@ -34,7 +34,6 @@ const Tree = () => {
     if (state.routes.length > 1) {
       const previousRoute = state.routes[state.routes.length - 2];
       setPrev(previousRoute.name);
-      
     }
   }, [navigation]);
   
@@ -56,11 +55,17 @@ const Tree = () => {
   const ip = config.ipAddress;
   let st = 0;
 
+  const [loading, setLoading]=useState(false);
+  const [error, setError]=useState("");
+
     useEffect(()=>{
 
       const getUser = async()=>{
 
         try{
+          
+          setError("")
+          setLoading(true)
           const userResponse = await axios(`http://${ip}:8080/v1/api/${userId}`)
 
           if(userResponse.data.poslednjiPoeni)
@@ -79,9 +84,13 @@ const Tree = () => {
             ppoeni2: userResponse.data.poslednjiPoeni ?? 0,
           });
 
+          setLoading(false)
+          setError("")
+
         }
         catch(error){
-
+          setError("Došlo je do greške prilikom učitavanja stabla.")
+          setLoading(false)
         }
       }
 
@@ -192,86 +201,122 @@ const Tree = () => {
 
 
   return (
-    <View style={{ flex: 1, backgroundColor: dark ? '#124460' : 'white' }}>
-      {prev==="" ? (<BackNav />):(<BackNav2/>)}
-      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-        <View style={{ alignItems: 'center', marginTop: 20 }}>
-          <View style={styles.animationWrapper}>
-            <LottieView 
-              key={dark ? 'dark' : 'light'} 
-              ref={treeRef}
-              source={src} 
-              style={styles.animation}
-              autoPlay={false}  
-              loop={false}    
-            />
+    <>
+      {prev !== "QuizPage" ? <BackNav /> : <BackNav2 />}
+      <View style={{ flex: 1, backgroundColor: dark ? '#124460' : 'white' }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          <View style={{ alignItems: 'center', marginTop: 20 }}>
+            <View style={styles.animationWrapper}>
+              <LottieView
+                key={dark ? 'dark' : 'light'}
+                ref={treeRef}
+                source={src}
+                style={styles.animation}
+                autoPlay={false}
+                loop={false}
+              />
+            </View>
           </View>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.cropBar}>
-            <Text style={[styles.pointsText, { color: dark ? 'white' : '#124460' }]}>{toShow}/100</Text>
-            <LottieView 
-              ref={barRef}
-              source={require('../assets/load.json')} 
-              style={styles.loadAnimation} 
-              autoPlay={false}  
-              loop={false}
-            />
+          <View style={{ flexDirection: 'row' }}>
+            <View style={styles.cropBar}>
+              <Text style={[styles.pointsText, { color: dark ? 'white' : '#124460' }]}>
+                {toShow}/100
+              </Text>
+              <LottieView
+                ref={barRef}
+                source={require('../assets/load.json')}
+                style={styles.loadAnimation}
+                autoPlay={false}
+                loop={false}
+              />
+            </View>
           </View>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', 
-          justifyContent: 'center',
-          marginBottom:10 }}>
-          <View style={{ alignItems: 'center', marginBottom: 10, flexDirection: 'row' }}>
-            <View style={{
-              backgroundColor: dark ? '#6ac17f' : '#6ac17f',
-              paddingHorizontal: 20,
-              paddingVertical: 5,
-              borderTopLeftRadius: 50,
-              borderBottomLeftRadius: 50,
-              borderTopRightRadius: 50,
-              borderBottomRightRadius: 50,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              minWidth: 80
-            }}>
-              <FontAwesome6 name='fire' size={20} color={red ? 'red' : (dark ? '#124460' : 'white')} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
+            <View style={{ alignItems: 'center', marginBottom: 10, flexDirection: 'row' }}>
+              <View style={{
+                backgroundColor: dark ? '#6ac17f' : '#6ac17f',
+                paddingHorizontal: 20,
+                paddingVertical: 5,
+                borderTopLeftRadius: 50,
+                borderBottomLeftRadius: 50,
+                borderTopRightRadius: 50,
+                borderBottomRightRadius: 50,
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minWidth: 80
+              }}>
+                <FontAwesome6 name='fire' size={20} color={red ? 'red' : (dark ? '#124460' : 'white')} />
+                <Text style={{
+                  color: red ? 'red' : (dark ? '#124460' : 'white'),
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  marginLeft: 5,
+                }}>
+                  {pstreak}
+                </Text>
+              </View>
+  
               <Text style={{
-                color: red ? 'red' : (dark ? '#124460' : 'white'),
+                color: red ? 'red' : (!dark ? '#124460' : 'white'),
                 fontSize: 20,
                 fontWeight: 'bold',
-                marginLeft: 5,
+                marginLeft: 10,
               }}>
-                {pstreak}
+                {add !== 0 && "+" + add}
               </Text>
             </View>
-
-            <Text style={{
-              color: red ? 'red' : (!dark ? '#124460' : 'white'),
-              fontSize: 20,
-              fontWeight: 'bold',
-              marginLeft: 10,
-            }}>
-              {add !== 0 && "+" + add}
+          </View>
+  
+          <View style={{ marginLeft: 30 }}>
+            <Text style={{ fontSize: 20, color: dark ? 'white' : '#124460' }}>
+              Broj celih stabala: {toShow2}
             </Text>
           </View>
-        </View>
-
-
-        <View style={{ marginLeft: 30 }}>
-          <Text style={{ fontSize: 20, color: dark ? 'white' : '#124460' }}>
-            Broj celih stabala: {toShow2}
-          </Text>
-        </View>
-        <View style={{ marginLeft: 30 }}>
-          <Text style={{ marginTop: 5, fontSize: 16, color: dark ? 'white' : '#124460' }}>
-            Radite dnevne kvizove redovne i osvajajte poene!
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+          <View style={{ marginLeft: 30 }}>
+            <Text style={{ marginTop: 5, fontSize: 16, color: dark ? 'white' : '#124460' }}>
+              Radite dnevne kvizove redovne i osvajajte poene!
+            </Text>
+          </View>
+        </ScrollView>
+        {/* Loading screen */}
+        {loading && (
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10
+          }}>
+            <ActivityIndicator size="large" color={dark ? 'white' : '#6ac17f'} />
+            <Text style={[{ color: dark ? 'white' : '#6ac17f', marginTop: 10, fontSize: 18 }]}>Učitavanje stabla...</Text>
+          </View>
+        )}
+        {error !== "" && (
+          <View style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 10
+          }}>
+            <Text style={[{ color: dark ? 'white' : '#6ac17f', marginTop: 10, fontSize: 18 }]}>
+              {error}
+            </Text>
+          </View>
+        )}
+      </View>
+    </>
   );
+  
 };
 
 const styles = StyleSheet.create({
