@@ -1,9 +1,6 @@
 package com.example.Backend.Controllers;
 
-import com.example.Backend.DTO.User.UserDTO;
-import com.example.Backend.DTO.User.UserLoginDTO;
-import com.example.Backend.DTO.User.UserPoeniDTO;
-import com.example.Backend.DTO.User.UserResetDTO;
+import com.example.Backend.DTO.User.*;
 import com.example.Backend.Models.User;
 import com.example.Backend.Services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +70,24 @@ public class UserController {
     @PutMapping("/uradjen/{id}")
     public ResponseEntity uradjen(@PathVariable("id") Long id){
         return userServices.uradjen(id);
+    }
+
+    @PutMapping("/poeni")
+    public ResponseEntity promenaPoeni(@RequestBody UserPoslednjiDTO userPoslednjiDTO){
+        return userServices.promenaPoeni(userPoslednjiDTO);
+    }
+
+    @PutMapping("/promena")
+    public ResponseEntity promenaStreak(@RequestBody UserPoslednjiDTO userPoslednjiDTO){
+        return userServices.promenaStreak(userPoslednjiDTO);
+    }
+
+    @GetMapping("/uso/{id}")
+    public Boolean uso(@PathVariable("id") Long id){
+        return userServices.uso(id);
+    }
+    @PutMapping("/drvo/{id}")
+    public ResponseEntity drvo(@PathVariable("id") Long id){
+        return userServices.drvo(id);
     }
 }
