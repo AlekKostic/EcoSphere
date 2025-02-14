@@ -1,14 +1,12 @@
 package com.example.Backend.Services;
 
-import com.example.Backend.DTO.User.UserPoeniDTO;
-import com.example.Backend.DTO.User.UserResetDTO;
-import com.example.Backend.DTO.User.UserDTO;
-import com.example.Backend.DTO.User.UserLoginDTO;
+import com.example.Backend.DTO.User.*;
 import com.example.Backend.Models.*;
 import com.example.Backend.Repository.LikeRepository;
 import com.example.Backend.Repository.ProductRepository;
 import com.example.Backend.Repository.SacuvaneRepository;
 import com.example.Backend.Repository.UserRepository;
+import com.example.Backend.Utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -63,7 +61,7 @@ public class UserServices {
             for (Sacuvane sacuvane1 : user.getSacuvane()){
                 sacuvane.add(sacuvane1.getProduct().getProduct_id());
             }
-            return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(),user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak());
+            return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(),user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak(), user.getPoslednjiPoeni(), user.getPoslednjiStreak(), user.getUso());
         }).collect(Collectors.toList());
     }
 
@@ -86,7 +84,7 @@ public class UserServices {
         for (Sacuvane sacuvane1 : user.get().getSacuvane()){
             sacuvane.add(sacuvane1.getProduct().getProduct_id());
         }
-        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product, sacuvane, user.get().getStreak());
+        return new UserDTO(user.get().getIme(), user.get().getPrezime(), user.get().getEmail(), posts, likes, user.get().getId(),user.get().getBrojPoena(), user.get().getPoslednjiKviz(), product, sacuvane, user.get().getStreak(), user.get().getPoslednjiPoeni(), user.get().getPoslednjiStreak(), user.get().getUso());
     }
 
     public UserDTO find(Long id){
@@ -109,7 +107,7 @@ public class UserServices {
         for (Sacuvane sacuvane1 : user.getSacuvane()){
             sacuvane.add(sacuvane1.getProduct().getProduct_id());
         }
-        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak());
+        return new UserDTO(user.getIme(), user.getPrezime(), user.getEmail(), posts, likes, user.getId(), user.getBrojPoena(), user.getPoslednjiKviz(), product, sacuvane, user.getStreak(), user.getPoslednjiPoeni(), user.getPoslednjiStreak(), user.getUso());
     }
 
     public ResponseEntity reset(UserResetDTO userResetDTO){
@@ -149,7 +147,7 @@ public class UserServices {
     public Boolean radjen(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         Date date = new Date();
-        if(user.getPoslednjiKviz() == date){
+        if(DateUtils.istiDatum(user.getPoslednjiKviz(), date)){
             return true;
         }else {
             return false;
@@ -167,6 +165,7 @@ public class UserServices {
     public ResponseEntity streak(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         user.setStreak(user.getStreak() + 1);
+        user.setUso(false);
         userRepository.save(user);
         return ResponseEntity.ok().build();
     }
@@ -181,6 +180,31 @@ public class UserServices {
             userRepository.save(user);
             return true;
         }else {
+            return false;
+        }
+    }
+
+    public ResponseEntity promenaPoeni(UserPoslednjiDTO userPoslednjiDTO){
+        User user = userRepository.findById(userPoslednjiDTO.getUser_id()).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        user.setPoslednjiPoeni(user.getPoslednjiPoeni() + userPoslednjiDTO.getDelta());
+        userRepository.save(user);
+        return ResponseEntity.ok("Bodovi promenjeni za: " + userPoslednjiDTO.getDelta());
+    }
+
+    public ResponseEntity promenaStreak(UserPoslednjiDTO userPoslednjiDTO){
+        User user = userRepository.findById(userPoslednjiDTO.getUser_id()).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        user.setPoslednjiStreak(user.getPoslednjiStreak() + userPoslednjiDTO.getDelta());
+        userRepository.save(user);
+        return ResponseEntity.ok("Streak promenjeni za: " + userPoslednjiDTO.getDelta());
+    }
+
+    public Boolean uso(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        if(user.getUso()){
+            return true;
+        }else {
+            user.setUso(true);
+            userRepository.save(user);
             return false;
         }
     }

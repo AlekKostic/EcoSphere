@@ -50,6 +50,39 @@ public class User {
     @Column(name = "streak")
     private Integer streak;
 
+    @Column(name = "poslednjiPoeni")
+    private Integer poslednjiPoeni;
+
+    @Column(name = "poslednjiStreak")
+    private Integer poslednjiStreak;
+
+    @Column(name = "uso")
+    private Boolean uso;
+
+    public Integer getPoslednjiPoeni() {
+        return poslednjiPoeni;
+    }
+
+    public void setPoslednjiPoeni(Integer poslednjiPoeni) {
+        this.poslednjiPoeni = poslednjiPoeni;
+    }
+
+    public Integer getPoslednjiStreak() {
+        return poslednjiStreak;
+    }
+
+    public void setPoslednjiStreak(Integer poslednjiStreak) {
+        this.poslednjiStreak = poslednjiStreak;
+    }
+
+    public Boolean getUso() {
+        return uso;
+    }
+
+    public void setUso(Boolean uso) {
+        this.uso = uso;
+    }
+
     public Integer getStreak() {
         return streak;
     }

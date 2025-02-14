@@ -17,8 +17,11 @@ public class UserDTO {
     private List<Long> productids;
     private List<Long> sacuvaniProductids;
     private Integer streak;
+    private Integer poslednjiPoeni;
+    private Integer poslednjiStreak;
+    private Boolean uso;
 
-    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova, Date radjen, List<Long> productids, List<Long> sacuvaniProductids, Integer streak) {
+    public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids, Long user_id, Integer broj_bodova, Date radjen, List<Long> productids, List<Long> sacuvaniProductids, Integer streak, Integer poslednjiPoeni, Integer poslednjiStreak, Boolean uso) {
         this.ime = ime;
         this.prezime = prezime;
         this.email = email;
@@ -30,6 +33,9 @@ public class UserDTO {
         this.productids = productids;
         this.sacuvaniProductids = sacuvaniProductids;
         this.streak = streak;
+        this.poslednjiPoeni = poslednjiPoeni;
+        this.poslednjiStreak = poslednjiStreak;
+        this.uso = uso;
     }
 
     public UserDTO(String ime, String prezime, String email, List<Long> postsids, List<Long> likesids) {
@@ -38,6 +44,30 @@ public class UserDTO {
         this.email = email;
         this.postsids = postsids;
         this.likesids = likesids;
+    }
+
+    public Integer getPoslednjiPoeni() {
+        return poslednjiPoeni;
+    }
+
+    public void setPoslednjiPoeni(Integer poslednjiPoeni) {
+        this.poslednjiPoeni = poslednjiPoeni;
+    }
+
+    public Integer getPoslednjiStreak() {
+        return poslednjiStreak;
+    }
+
+    public void setPoslednjiStreak(Integer poslednjiStreak) {
+        this.poslednjiStreak = poslednjiStreak;
+    }
+
+    public Boolean getUso() {
+        return uso;
+    }
+
+    public void setUso(Boolean uso) {
+        this.uso = uso;
     }
 
     public Integer getStreak() {
