@@ -14,26 +14,63 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import getWorkingHeight from '../components/ScreenHeight';
 const { height } = Dimensions.get('window'); 
 
+interface Post {
+  id: number;
+  authorId: string;
+  content: string | null;
+  likes: boolean;
+  likedIds: string[];
+  author: {
+    ime: string;
+    prezime: string;
+  };
+}
+
+interface Item {
+  id_likes: number;
+  postovis: {
+    content: string;
+    id: number;
+  };
+}
+
+type Author = {
+  broj_bodova: number;
+  email: string;
+  ime: string;
+  likesids: number[];
+  postsids: number[];
+  prezime: string;
+  productids: number[];
+  radjen: string | null;
+  sacuvaniProductids: number[];
+  streak: number;
+  user_id: number;
+};
+
+
 const NotificationsPage = () => {
 
-  const flatListRef = useRef(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [likedPosts, setLikedPosts] = useState<Post[]>([]);
+  const [newPost, setNewPost] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [editing, setEditing] = useState<Post | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const flatListRef = useRef<FlatList<Post>>(null);
+
 
 
   const router = useRouter();
-  const [posts, setPosts] = useState([]);
   const [total, setTotal]=useState(0);
-  const [likedPosts, setLikedPosts] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [newPost, setNewPost] = useState('');
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
   const [logged, setLogged] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dark, setDark] = useState(false); 
   const [loadingg, setLoadingg] = useState(false); 
-  const [modalAnim] = useState(new Animated.Value(0)); 
 
-  const [showModal, setShowModal]=useState(false)
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
@@ -55,32 +92,34 @@ const NotificationsPage = () => {
       setLogged(isLogged);
   
       const response = await axios.get(`http://${ip}:8080/v4/api`);
-      const fetchedPosts = response.data;
+      const fetchedPosts: Post[] = response.data;
+
   
-      let dictionary = {};
+      let dictionary: { [key: number]: boolean } = {};
       if (isLogged) {
         const response2 = await axios.get(`http://${ip}:8080/v4/api/user/${userId}`);
-        response2.data.forEach(item => {
+        response2.data.forEach((item: Item) => {
           if(item.postovis)dictionary[item.postovis.id] = true;
         });
       }
-  
-      const authorsResponses = await Promise.all(
-        fetchedPosts.map(post =>
-          axios.get(`http://${ip}:8080/v1/api/${post.authorId}`)
+      const authorsResponses: Author[] = await Promise.all(
+        fetchedPosts.map((post: Post) =>
+          axios
+            .get(`http://${ip}:8080/v1/api/${post.authorId}`)
             .then(res => res.data)
             .catch(() => ({ ime: "Nepoznato", prezime: "" }))
         )
       );
+      
   
-      const postsWithAuthors = fetchedPosts.map((post, index) => ({
+      const postsWithAuthors = fetchedPosts.map((post: Post, index:number) => ({
         ...post,
-        author: authorsResponses[index],
+        author: authorsResponses[index] as Author,
         likes: isLogged ? !!dictionary[post.id] : false,
       }));
   
       setPosts(postsWithAuthors.reverse());
-      setLikedPosts(postsWithAuthors.filter(post=>post.likes).reverse())
+      setLikedPosts(postsWithAuthors.filter((post:Post)=>post.likes))
 
 
     } catch (error) {
@@ -105,7 +144,7 @@ const NotificationsPage = () => {
     }
   };
 
-  const likePost = async (item) => {
+  const likePost = async (item:Post) => {
     if (!logged) {
       router.push('/Login');
       return;
@@ -189,10 +228,10 @@ const NotificationsPage = () => {
     }
   };
 
-  const [editing, setEditing] = useState(null);
-  const [editedContent, setEditedContent] = useState(null);
+  const [editedContent, setEditedContent] = useState<string | null>(null);
 
-  const handleEdit = async (item) => {
+
+  const handleEdit = async (item:Post) => {
     if(showModal)setShowModal(false)
     setIsModalVisibleEdit(true)
     setEditing(item)
@@ -200,66 +239,70 @@ const NotificationsPage = () => {
   };
 
   
+  interface UserInfo {
+    userId: number; 
+  }
+  
   const addPost = async () => {
-    
-
-    if(!newPost){
-      setErrorMessage("Molimo unesite tekst.")
-      return
+    if (!newPost) {
+      setErrorMessage("Molimo unesite tekst.");
+      return;
     }
-
-    setLoadingg(true)
+  
+    setLoadingg(true);
     try {
-    const userInfo = await new Promise((resolve, reject) => {
-      AsyncStorage.getItem('userInfo', (err, result) => {
-        if (err) {
-          reject("Error loading user info");
-        } else {
-          resolve(result ? JSON.parse(result) : null);
-        }
+      const userInfo = await new Promise<UserInfo | null>((resolve, reject) => {
+        AsyncStorage.getItem('userInfo', (err, result) => {
+          if (err) {
+            reject("Error loading user info");
+          } else {
+            resolve(result ? JSON.parse(result) : null);
+          }
+        });
       });
-    });
-
-    if (!userInfo || !userInfo.userId) {
-      return; 
-    }
-
-    const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
-      "context": newPost,
-      "user_id": userInfo.userId
-    });
-
-
-    const newPostData = response.data;
-
-    const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
-    const authorData = authorResponse.data;
-
-
-    const newPostWithAuthor = {
-      ...newPostData,
-      author: authorData
-    };
-
-
-    setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
-
-    setTimeout(() => {
+  
+      if (!userInfo?.userId) {
+        setErrorMessage("Korisnik nije prijavljen.");
+        setLoadingg(false);
+        return;
+      }
+  
+      const response = await axios.post(`http://${ip}:8080/v4/api/create`, {
+        context: newPost,
+        user_id: userInfo.userId
+      });
+  
+      const newPostData = response.data;
+  
+      const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${userInfo.userId}`);
+      const authorData = authorResponse.data;
+  
+      const newPostWithAuthor = {
+        ...newPostData,
+        author: authorData
+      };
+  
+      setPosts(prevPosts => [newPostWithAuthor, ...prevPosts]);
+  
+      setTimeout(() => {
         flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
       }, 300);
-
-    setNewPost("");
-    setErrorMessage("")
-    setIsModalVisible(false);
-    setLoadingg(false)
-    
-  } catch (error) {
-    setLoadingg(false)
-    setErrorMessage("Došlo je do greške.")
-  }
-};
+  
+      setNewPost("");
+      setErrorMessage("");
+      setIsModalVisible(false);
+      setLoadingg(false);
+  
+    } catch (error) {
+      setLoadingg(false);
+      setErrorMessage("Došlo je do greške.");
+    }
+  };
+  
   const [errorEdit, setErrorEdit]=useState("")
   const submitEdit = async()=>{
+
+    if(!editing)return
 
     try{
     if(editedContent=="")
@@ -269,29 +312,34 @@ const NotificationsPage = () => {
     }
 
     const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
-        "post_id": editing.id,
+        "post_id": editing?.id,
         "new_content": editedContent
     })
 
 
-    posts.map((post, index) => {
-      if(post.id === editing.id) {
+    const updatedPosts = posts.map((post) => {
+      if (post.id === editing?.id) {
         return {
           ...post,
-          content: editedContent
+          content: editedContent,
         };
       }
-    
       return post;
     });
-    
-    setPosts(prevPosts => {
-      const updatedPosts = [newPostWithAuthor, ...prevPosts];
-      return updatedPosts;
+
+    const updatedliked = likedPosts.map((post) => {
+      if (post.id === editing?.id) {
+        return {
+          ...post,
+          content: editedContent,
+        };
+      }
+      return post;
     });
 
-    
-    
+    setPosts(updatedPosts);
+    setLikedPosts(updatedliked)
+
 
     setErrorEdit("")
     setIsModalVisibleEdit(false)}
@@ -342,7 +390,7 @@ const NotificationsPage = () => {
             data={posts}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <Post item={item} likePost={likePost} 
-            handleEdit={handleEdit} setEditing={setEditing} editing={editing}/>}
+            handleEdit={handleEdit} handleDelete={()=>{}}/>}
             contentContainerStyle={[styles.postsList, {backgroundColor: dark ? '#1b5975' : '#fff',}]}
           />}
         </>
@@ -429,7 +477,7 @@ const NotificationsPage = () => {
                 borderColor: '#124460', fontSize:16, paddingVertical:15, borderRadius:15 }]}
               placeholder="Unesite izmenjenu objavu"
               placeholderTextColor={dark ? '#124460' : '#124460'}
-              value={editedContent}
+              value={editedContent || ''}
               onChangeText={setEditedContent}
             />
             {errorEdit && (
@@ -494,8 +542,7 @@ const NotificationsPage = () => {
                 item={item}
                 likePost={likePost}
                 handleEdit={handleEdit}
-                setEditing={setEditing}
-                editing={editing}
+                handleDelete={()=>{}}
               />
             ))}
           </View>

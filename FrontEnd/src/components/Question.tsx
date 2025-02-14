@@ -2,8 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const Question = ({ quiz, onAnswer, showingFeedback }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+interface Quiz {
+  correctAnswer: string;
+  options: string[];
+  question: string;
+}
+
+interface QuestionProps {
+  quiz: Quiz; 
+  onAnswer: (isCorrect: boolean) => void;  
+  showingFeedback: boolean; 
+}
+
+export const Question: React.FC<QuestionProps> = ({ quiz, onAnswer, showingFeedback }) => {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
   const [feedbackMessage, setFeedbackMessage] = useState('');
   const [feedbackColor, setFeedbackColor] = useState('green');
   const [dark, setDark] = useState(false); 
@@ -21,7 +34,7 @@ export const Question = ({ quiz, onAnswer, showingFeedback }) => {
     }
   };
 
-  const handleOptionPress = (option) => {
+  const handleOptionPress = (option: string) => {
     if (showingFeedback) return;
     setSelectedOption(option);
     const isCorrect = option === quiz.correctAnswer;
@@ -44,7 +57,7 @@ export const Question = ({ quiz, onAnswer, showingFeedback }) => {
                 || (option === quiz.correctAnswer))?'#6ac17f':'#ff999c',
                 
               borderWidth: (selectedOption === option 
-              || (option === quiz.correctAnswer && quiz.options.includes(selectedOption))) ? 3:0
+              || (selectedOption!==null && option === quiz.correctAnswer && quiz.options.includes(selectedOption))) ? 3:0
             } 
           ]}
           onPress={() => handleOptionPress(option)}

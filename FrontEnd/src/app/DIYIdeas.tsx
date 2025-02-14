@@ -19,7 +19,7 @@ const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [dark, setDark] = useState(false); 
-  const inputRef = useRef(null);
+  const inputRef = useRef<TextInput | null>(null);
   const [currentUrl, setCurrentUrl] = useState("");
   const [modalVisible,setModalVisible]=useState(false)
   const [loading,setLoading]=useState(false)
@@ -137,7 +137,7 @@ const Icon2 = () => {
     });
   }, []);
 
-  const handlePress = (url) => {
+  const handlePress = (url:string) => {
     setCurrentUrl(url);
     setLoading(true);
     setModalVisible(true);
@@ -164,7 +164,7 @@ const Icon2 = () => {
     }
   };
 
-  const saveMode = async (mode) => {
+  const saveMode = async (mode: boolean) => {
     await AsyncStorage.setItem('darkMode', mode ? "true" : "false");
   };
 

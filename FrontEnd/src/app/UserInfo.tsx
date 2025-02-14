@@ -6,13 +6,67 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useRouter } from 'expo-router';
 import axios from 'axios';
 import Post from '../components/Post';
-import { useRoute } from '@react-navigation/native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import Product from '../components/Product';
 
+type User = {
+  email: string;
+  ime: string;
+  likesids: number[];
+  postsids: number[];
+  prezime: string;
+  broj_bodova: number;
+  radjen: string;
+  sacuvaniProductids: number[];  
+  streak: number;
+  user_id: number;
+};
+
+
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  phone_number: string;
+  path: string;
+  user_id: number;
+  broj_pregleda: number;
+  saved: boolean;
+}
+
+interface Post {
+  id: number;
+  authorId: string;
+  content: string | null;
+  likes: boolean;
+  likedIds: string[];
+  author: {
+    ime: string;
+    prezime: string;
+  };
+}
+
+type RootStackParamList = {
+  UserInfo: {
+    id: number | null;
+  };
+};
+
+interface Item {
+  id_likes: number;
+  postovis: {
+    content: string;
+    id: number;
+  };
+}
+
+type RouteParams = RouteProp<RootStackParamList, 'UserInfo'>;
+
 const UserInfo = () => {
-  const route = useRoute();
+
+  const route = useRoute<RouteParams>();
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -27,32 +81,38 @@ const UserInfo = () => {
 
     getMode();
   }, []);
-  const iduser = route.params?.id ?? false;
+  const iduser = route.params?.id ?? 0;
 
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<User>({
     email: '',
     ime: '',
     likesids: [],
     postsids: [],
     prezime: '',
     broj_bodova: 0,
-    radjen: ''
+    radjen: '',
+    sacuvaniProductids: [],
+    streak: 0,
+    user_id: 0
   });
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [logged, setLogged] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [personal, setPersonal] = useState(false);
   const [changing, setChanging] = useState(false);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [deleteModalVisiblePost, setDeleteModalVisiblePost] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [deleteaModalVisible, setDeleteaModalVisible] = useState(false);
   const [seeSaved, setSeeSaved] = useState(false);
-  const [postToDelete, setPostToDelete] = useState(null);
+  const [postToDelete, setPostToDelete] = useState<number | null>(null);
+
   const [selectedTab, setSelectedTab] = useState('objave'); 
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
   const [saves, setSaved] = useState(0);
 
   const [logId, setLogId]=useState(0)
@@ -61,8 +121,9 @@ const UserInfo = () => {
   const config = require('../../config.json');
   const ip = config.ipAddress;
   
-  const [products, setProducts] = useState([]);
-  const [savedProducts, setSavedProducts] = useState([]);
+  const [savedProducts, setSavedProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+
   const [errorEdit, setErrorEdit]=useState("")
 
   const imageId = iduser % 6 + 1;
@@ -93,11 +154,12 @@ const UserInfo = () => {
   };
 
   const handleDeleteProduct = async () => {
+    if(!productToDelete)return
     try {
       await deleteProd(productToDelete)
       setDeleteModalVisible(false);
       setProducts(prevProducts => {
-        const filteredProducts = prevProducts.filter(product => product.product_id !== productToDelete);
+        const filteredProducts = prevProducts.filter((product:Product) => product.product_id !== productToDelete);
         return filteredProducts;
       });
 
@@ -106,7 +168,7 @@ const UserInfo = () => {
   };
 
   
-  const deleteProd = async(id)=>{
+  const deleteProd = async(id:number)=>{
 
     await axios.delete(`http://${ip}:8080/v5/api/delete/${id}`);
     
@@ -123,14 +185,14 @@ const UserInfo = () => {
 
         const savedProducts = savedResponse.data.sacuvaniProductids;
         productsData = productsData
-          .map((product) => ({
+          .map((product:Product) => ({
             ...product,
             saved: savedProducts.includes(product.product_id),
           }))
-          .sort((a, b) => 
+          .sort((a:Product, b:Product) => 
             savedProducts.indexOf(a.product_id) - savedProducts.indexOf(b.product_id));
     }else{
-      productsData = productsData.map((product) => ({
+      productsData = productsData.map((product:Product) => ({
         ...product,
         saved: false,
       }));
@@ -161,21 +223,22 @@ const UserInfo = () => {
       const response = await axios.get(`http://${ip}:8080/v4/api`);
       const fetchedPosts = response.data;
 
-      let dictionary = {};
+      let dictionary: { [key: number]: boolean } = {};
 
       if (logged) {
         const userInfo2 = await AsyncStorage.getItem('userInfo');
+        if(!userInfo2)return
         const parsedUserInfo2 = JSON.parse(userInfo2);
         const userId2 = parsedUserInfo2.userId;
 
         const response2 = await axios.get(`http://${ip}:8080/v4/api/user/${userId2}`);
-        response2.data.forEach(item => {
+        response2.data.forEach((item:Item) => {
           dictionary[item.postovis.id] = true;
         });
       }
 
       const postsWithAuthors = await Promise.all(
-        userres.data.postsids.map(async (postId) => {
+        userres.data.postsids.map(async (postId:number) => {
           const postResponse = await axios.get(`http://${ip}:8080/v4/api/${postId}`);
           const postData = postResponse.data;
           const authorResponse = await axios.get(`http://${ip}:8080/v1/api/${postData.authorId}`);
@@ -210,6 +273,7 @@ const UserInfo = () => {
       return;
     }
     const odg = await AsyncStorage.getItem('userInfo');
+    if(!odg)return
     const parsedUserInfo = JSON.parse(odg);
     const userPas = parsedUserInfo.password;
 
@@ -246,7 +310,7 @@ const UserInfo = () => {
     }
   };
 
-  const likePost = async (item) => {
+  const likePost = async (item: Post) => {
     if (!logged) {
       router.push('/Login');
       return;
@@ -307,7 +371,7 @@ const UserInfo = () => {
     }
   };
 
-  const savePost = async (item) => {
+  const savePost = async (item:Product) => {
     if (!logged) {
       router.push('/Login');
       return;
@@ -353,10 +417,10 @@ const UserInfo = () => {
         });
 
         setUser((prevUser) => {
-          const updatedProductIds = [...prevUser.sacuvaniProductids, item.product_id]; // Dodajemo broj 1
+          const updatedProductIds = [...prevUser.sacuvaniProductids, item.product_id]; 
           return {
             ...prevUser,
-            sacuvaniProductids: updatedProductIds // Ažuriraj sacuvaniProductIds
+            sacuvaniProductids: updatedProductIds 
           };
         });
 
@@ -400,19 +464,19 @@ const UserInfo = () => {
     setSeeSaved(true)
     const response = await axios.get(`http://${ip}:8080/v5/api`)
 
-    const data = response.data.filter(product => user.sacuvaniProductids.includes(product.product_id));
+    const data = response.data.filter((product:Product) => user.sacuvaniProductids.includes(product.product_id));
     setSaved(data.length)
-    const updatedData = data.map(product => ({ ...product, saved: true }));
+    const updatedData = data.map((product:Product) => ({ ...product, saved: true }));
     setSavedProducts(updatedData);
 
 
   }
 
-  const [editing, setEditing] = useState(null);
-  const [editedContent, setEditedContent] = useState(null);
+  const [editing, setEditing] = useState<Post | null>(null);
+  const [editedContent, setEditedContent] = useState<string | null>(null);
   const [isModalVisibleEdit, setIsModalVisibleEdit] = useState(false);
 
-  const handleEdit = async (item) => {
+  const handleEdit = async (item:Post) => {
     setIsModalVisibleEdit(true)
     setEditing(item)
     setEditedContent(item.content)
@@ -420,6 +484,7 @@ const UserInfo = () => {
   };
 
   const submitEdit = async()=>{
+    if(!editing)return
     if(editedContent=="")
       {
         setErrorEdit("Molimo unesite tekst objave.")
@@ -428,13 +493,13 @@ const UserInfo = () => {
     setErrorEdit("")
 
     const resp = await axios.put(`http://${ip}:8080/v4/api/edit`, {
-      "post_id": editing.id,
+      "post_id": editing?.id,
       "new_content": editedContent
   })
 
     posts.map((post, index) => {
     
-      if(post.id === editing.id) {
+      if(post.id === editing?.id) {
         return {
           ...post,
           content: editedContent
@@ -484,7 +549,7 @@ const UserInfo = () => {
             {user.ime + ' ' + user.prezime}
           </Text>
           <Text style={[styles.userDetails, {color: dark?'white':'#124460'}]}>
-            {user.mail ? 'E-mail: ' + (user.email): ""}
+            {user.email ? 'E-mail: ' + (user.email): ""}
           </Text>
         </View>
         
@@ -540,8 +605,8 @@ const UserInfo = () => {
           <View style={styles.passwordChangeContainer}>
             {changing && (
               <>
-                <View style={[styles.changePasswordHeader, {color: dark?'white':'#124460'}]}>
-                  <Text style={[styles.changePasswordTitle,  {color: dark?'white':'#124460'}]}>Promena lozinke</Text>
+                <View style={[styles.changePasswordHeader, {backgroundColor: dark ? 'white' : '#124460'}]}>
+                  <Text style={[styles.changePasswordTitle, {color: dark ? 'white' : '#124460'}]}>Promena lozinke</Text>
                   <TouchableOpacity onPress={() => {setChanging(false); setErrorMessage("")}} style={styles.cancelButton}>
                     <Text style={styles.buttonText}>X</Text>
                   </TouchableOpacity>
@@ -658,9 +723,12 @@ const UserInfo = () => {
 >
   <View style={styles.modalOverlay}>
     <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
-      <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
-        <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
-      </View>
+    <View style={[styles.modalHeader]}>
+      <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
+        Potvrdi brisanje
+      </Text>
+    </View>
+
       <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>
         Da li ste sigurni da želite da obrišete ovaj proizvod?
       </Text>
@@ -697,9 +765,12 @@ const UserInfo = () => {
                           <ActivityIndicator size="large" color={dark ? "white" : "#124460"} />
                         </View>
                       )}
-      <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
-        <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
-      </View>
+      <View style={styles.modalHeader}>
+          <Text style={[styles.modalTitle, { color: dark ? 'white' : '#124460' }]}>
+            Potvrdi brisanje
+          </Text>
+        </View>
+
       <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>
         Da li ste sigurni da želite da obrišete nalog?
       </Text>
@@ -725,7 +796,7 @@ const UserInfo = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContainer, {backgroundColor: dark?'#1b5975':'white'}]}>
-            <View style={[styles.modalHeader, {color: dark?'white':'#124460'}]}>
+            <View style={[styles.modalHeader]}>
               <Text style={[styles.modalTitle,{color: dark?'white':'#124460'}]}>Potvrdi brisanje</Text>
             </View>
             <Text style={[styles.modalText, {color: dark?'white':'#124460'}]}>Da li ste sigurni da želite da obrišete ovaj post?</Text>
@@ -770,7 +841,7 @@ const UserInfo = () => {
             renderItem={({ item }) => (
               <Product item={item} dark={dark} savePost={savePost} />
             )}
-            contentContainerStyle={{ paddingBottom: 20, marginTop:15, marginHorizontal:5 }} // Ostavlja mesta za skrol
+            contentContainerStyle={{ paddingBottom: 20, marginTop:15, marginHorizontal:5 }}
           />
 
           )}
@@ -791,15 +862,18 @@ const UserInfo = () => {
                     , marginBottom: 20
                      }]}>Izmena objave</Text>
                     <TextInput
-                      style={[styles.input, { backgroundColor: dark ? 'white' : '#fff', 
-                        color: dark ? '#124460' : '#124460',
-                        borderColor: '#124460',
-                      marginBottom:10 }]}
-                      placeholder="Unesite izmenjenu objavu"
-                      placeholderTextColor={dark ? '#124460' : '#124460'}
-                      value={editedContent}
-                      onChangeText={setEditedContent}
-                    />
+                    style={[styles.input, { 
+                      backgroundColor: dark ? 'white' : '#fff',
+                      color: dark ? '#124460' : '#124460',
+                      borderColor: '#124460',
+                      marginBottom: 10 
+                    }]}
+                    placeholder="Unesite izmenjenu objavu"
+                    placeholderTextColor={dark ? '#124460' : '#124460'}
+                    value={editedContent || ''}
+                    onChangeText={setEditedContent}
+                  />
+
                     {errorEdit && (
               <Text 
                 style={[

@@ -1,10 +1,31 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, TouchableOpacity, Image, StyleSheet, Dimensions, ImageSourcePropType } from 'react-native'
 import React from 'react'
 
 const imageWidth = Dimensions.get('window').width * 0.9; 
-const imageHeight = imageWidth * 0.8;
+const imageHeight = imageWidth;
 
-const ExtendedProduct = ({item, dark, ime, prezime, profileImageSource, handleUser}) => {
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  phone_number: string;
+  path: string;
+  user_id: number;
+  broj_pregleda: number;
+  saved: boolean;
+}
+
+interface ExtendedProductProps {
+  item: Product;
+  dark: boolean;
+  ime: string;
+  prezime: string;
+  profileImageSource: ImageSourcePropType;
+  handleUser: () => void;
+}
+
+const ExtendedProduct: React.FC<ExtendedProductProps> = ({ item, dark, ime, prezime, profileImageSource, handleUser }) => {
   return (
     <View  style={[{marginBottom:30}]} >
       <TouchableOpacity onPress={()=>handleUser()}>

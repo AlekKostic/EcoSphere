@@ -15,7 +15,7 @@ const { height } = Dimensions.get('window');
 
 const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const inputRef = useRef(null);
+  const inputRef = useRef<TextInput | null>(null);
   const [dark, setDark] = useState(false);
   const [currentUrl, setCurrentUrl] = useState("");
   const [modalVisible,setModalVisible]=useState(false)
@@ -70,7 +70,7 @@ const Icon2 = () => {
     });
   }, []);
 
-  const handlePress = (url) => {
+  const handlePress = (url: string) => {
 
     
     setCurrentUrl(url);
@@ -129,7 +129,7 @@ const Icon2 = () => {
             filteredLinks.map((video, index) => (
               <TouchableOpacity key={index} onPress={() => handlePress(video.link)} style={styles.videoLink}>
                 <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
-                  <MaterialIcons name={assignedIcons[index]} size={24} color={dark ? '#E8F5E9' : '#124460'} style={styles.icon} />
+                  <MaterialIcons name={assignedIcons[index] as keyof typeof MaterialIcons.glyphMap} size={24} color={dark ? '#E8F5E9' : '#124460'} style={styles.icon} />
                   <Text style={[styles.videoTitle, dark ? styles.videoTitleDark : styles.videoTitleLight]}>{video.title}</Text>
                 </View>
               </TouchableOpacity>

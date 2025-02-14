@@ -7,13 +7,30 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useRouter } from 'expo-router';
 
+
+interface QuestionType {
+  pitanje: string;
+  id_Pitanja: number;
+}
+interface Quiz {
+  correctAnswer: string;
+  options: string[];
+  question: string;
+}
+interface AnswerType {
+  id_Odgovora: number;
+  pitanje: QuestionType;
+  odgovor: string;
+  tacno: boolean;
+}
+
 const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showingFeedback, setShowingFeedback] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<Quiz[]>([]);
   const [dark, setDark] = useState(false); 
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,23 +80,25 @@ const QuizPage = () => {
         throw new Error("Baza nije vratila nijedno pitanje.");
       }
 
+      
+
       const allQuestions = response.data;
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
 
       const questionsWithAnswers = await Promise.all(
-        shuffledQuestions.map(async (question) => {
-          const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
+        shuffledQuestions.map(async (question: QuestionType) => {
 
-          if (!answersResponse.data || answersResponse.data.length === 0) {
+          const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
+          if (!answersResponse.data ||   answersResponse.data.length === 0) {
             throw new Error(`Baza nije vratila odgovore za pitanje ID: ${question.id_Pitanja}`);
           }
 
           const answers = answersResponse.data;
-          const correctAnswer = answers.find(ans => ans.tacno)?.odgovor;
+          const correctAnswer = answers.find((ans:AnswerType) => ans.tacno)?.odgovor;
 
           return {
             question: question.pitanje,
-            options: answers.map(ans => ans.odgovor),
+            options: answers.map((ans:AnswerType) => ans.odgovor),
             correctAnswer,
           };
         })
@@ -119,7 +138,8 @@ const QuizPage = () => {
     }
   };
 
-  const handleAnswer = (isCorrect) => {
+  const handleAnswer = (isCorrect: boolean) => {
+
     if (isCorrect) setCorrectAnswers((prev) => prev + 1);
     setShowingFeedback(true);
 

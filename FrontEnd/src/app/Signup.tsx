@@ -126,25 +126,25 @@ const Signup = () => {
           <AnimatedInputField
             label="Ime"
             value={form.name}
-            onChangeText={(name) => setForm({ ...form, name })}
+            onChangeText={(name:string) => setForm({ ...form, name })}
             dark={dark}
           />
           <AnimatedInputField
             label="Prezime"
             value={form.surname}
-            onChangeText={(surname) => setForm({ ...form, surname })}
+            onChangeText={(surname:string) => setForm({ ...form, surname })}
             dark={dark}
           />
           <AnimatedInputField
             label="Email"
             value={form.email}
-            onChangeText={(email) => setForm({ ...form, email })}
+            onChangeText={(email:string) => setForm({ ...form, email })}
             dark={dark}
           />
           <AnimatedInputField
             label="Lozinka"
             value={form.password}
-            onChangeText={(password) => setForm({ ...form, password })}
+            onChangeText={(password:string) => setForm({ ...form, password })}
             dark={dark}
           />
           <View style={styles.formAction}>

@@ -76,7 +76,7 @@ const Login = () => {
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
         router.push('/Home');
       }
-    } catch (error) {
+    } catch (error:any) {
       if (error.status === "500") {
         setError(true);
         setErrorText("Pogrešan e-mail ili lozinka.");
@@ -99,8 +99,7 @@ const Login = () => {
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
 
       <KeyboardAwareScrollView 
-        style={styles.container} 
-        contentContainerStyle={styles.scrollViewContent}>
+        style={styles.container} >
         <View style={styles.header}>
           <Image 
             source={require('../img/logo.png')}
@@ -117,13 +116,13 @@ const Login = () => {
           <AnimatedInputField
             label="Email"
             value={form.email}
-            onChangeText={(email) => setForm({ ...form, email })}
+            onChangeText={(email: string) => setForm({ ...form, email })}
             dark={dark}
           />
           <AnimatedInputField
             label="Lozinka"
             value={form.password}
-            onChangeText={(password) => setForm({ ...form, password })}
+            onChangeText={(password: string) => setForm({ ...form, password })}
             dark={dark}
           />
           <View style={styles.formAction}>

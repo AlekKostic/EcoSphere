@@ -5,8 +5,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router'; 
 import { Feather } from '@expo/vector-icons';
 
-const UserMenu = ({ setDarkMode2 }) => {
-  const [user, setUser] = useState(null);
+interface UserMenuProps {
+  setDarkMode2: (value: boolean) => void;
+}
+interface User {
+  name: string;
+  surname: string;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ setDarkMode2 }) => {
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [darkMode, setDarkMode] = useState(false);
   const toggleAnim = new Animated.Value(darkMode ? 1 : 0); 
@@ -19,7 +27,6 @@ const UserMenu = ({ setDarkMode2 }) => {
           setUser(JSON.parse(storedUser));
         }
       } catch (err) {
-        console.error('Error fetching user info:', err);
       }
     };
 
@@ -36,7 +43,6 @@ const UserMenu = ({ setDarkMode2 }) => {
           await AsyncStorage.setItem('darkMode', JSON.stringify(false)); 
         }
       } catch (err) {
-        console.error('Error fetching dark mode:', err);
       }
     };
 
@@ -146,7 +152,7 @@ const UserMenu = ({ setDarkMode2 }) => {
           </View>
         ) : (
           <TouchableOpacity style={styles.LoginButton} onPress={handleLogin}>
-            <Text style={[styles.LoginText, darkMode ? styles.LoginTextDark : styles.LoginTextLight]}>
+            <Text style={[styles.LoginText, darkMode && styles.LoginTextDark]}>
               Ulogujte se
             </Text>
           </TouchableOpacity>

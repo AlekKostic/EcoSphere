@@ -6,13 +6,26 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
-import Product from '../components/Product';
+import Productt from '../components/Product';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'; 
+
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  phone_number: string;
+  path: string;
+  user_id: number;
+  broj_pregleda: number;
+  saved: boolean;
+}
+
 
 const ProductsPage = () => {
   const [dark, setDark] = useState(false); 
 
-  const productRef = useRef(null);
+  const productRef = useRef<FlatList<Product>>(null); 
 
   useEffect(() => {
     const getMode = async () => {
@@ -22,26 +35,27 @@ const ProductsPage = () => {
 
     getMode();
   }, []);
+  const [products, setProducts] = useState<Product[]>([]);
+const [name, setName] = useState<string>('');
+const [description, setDescription] = useState<string>('');
+const [price, setPrice] = useState<number>(0);
+const [phoneNumber, setPhoneNumber] = useState<string>('');
+const [path, setPath] = useState<string | null>(null);
+const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+const [searchQuery, setSearchQuery] = useState<string>('');
+const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
+const [loading, setLoading] = useState<boolean>(true);
+const [loadingg, setLoadingg] = useState<boolean>(false);
+const [tried, setTried] = useState<boolean>(false);
+const [logged, setLogged] = useState<boolean>(false);
+const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const [products, setProducts] = useState([]);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState(0);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [path, setPath] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  
   const router = useRouter(); 
-  const [loading, setLoading] = useState(true);
-  const [loadingg, setLoadingg] = useState(false);
-  const [tried, setTried]=useState(false);
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  const [logged, setLogged] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const check = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
@@ -60,7 +74,8 @@ const ProductsPage = () => {
         
         const savedProducts = savedResponse.data.sacuvaniProductids;
   
-        productsData = productsData.map((product) => {
+        productsData = productsData.map((product: Product) => {
+
           const isSaved = savedProducts.includes(product.product_id);
           
         
@@ -71,7 +86,7 @@ const ProductsPage = () => {
         });
 
       } else {
-        productsData = productsData.map((product) => ({
+        productsData = productsData.map((product: Product) => ({
           ...product,
           saved: false,
         }));
@@ -83,7 +98,8 @@ const ProductsPage = () => {
     }
   };
 
-  const savePost = async(item) => {
+  const savePost = async(item: Product) => {
+
 
     if (!logged) {
       router.push('/Login');
@@ -150,32 +166,32 @@ const ProductsPage = () => {
     }
   };
 
-  const uploadImage = async (path) => {
+  const uploadImage = async (path: string) => {
     try {
       if (!path) {
-        return null; 
+        return null;
       }
   
-      const timestamp = new Date().toISOString().replace(/[:.-]/g, ''); 
-      const fileName = `image_${timestamp}.png`;  
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+      const fileName = `image_${timestamp}.png`;
+  
+      const response = await fetch(path);
+      const blob = await response.blob(); 
   
       const formData = new FormData();
-      formData.append('file', {
-        uri: path, 
-        name: fileName, 
-        type: 'image/png',
-      });
+      formData.append('file', blob, fileName); 
   
-      const response = await axios.post(`http://${ip}:8080/s3`, formData, {
+      const res = await axios.post(`http://${ip}:8080/s3`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
   
-      return response.data; 
+      return res.data; 
     } catch (error) {
       setErrorMessage("Došlo je do greške prilikom dodavanja slike");
       return null;
     }
   };
+  
   
   const addProduct = async () => {
     if (!name || !description || !phoneNumber) {
@@ -199,6 +215,7 @@ const ProductsPage = () => {
   
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
+      if(!userInfo)return
       const parsedUserInfo = JSON.parse(userInfo);
   
       
@@ -259,10 +276,10 @@ const ProductsPage = () => {
   
   
 
-  const renderProduct = ({ item }) => {
+  const renderProduct = ({ item }: { item: Product}) => {
     return (
       <TouchableOpacity onPress={()=>{}}>
-      <Product item={item} dark={dark} savePost={savePost}/>
+      <Productt item={item} dark={dark} savePost={savePost}/>
       </TouchableOpacity>
     );
   };
@@ -285,16 +302,8 @@ const ProductsPage = () => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const checkImageExists = async ({ path }) => {
-    const fileInfo = await FileSystem.getInfoAsync(path);
-    if (fileInfo.exists) {
-      alert('Image exists at the path: ' + path);
-    } else {
-      alert('Image does not exist at the path');
-    }
-  };
 
-  const inputRef = useRef(null); 
+  const inputRef = useRef<TextInput>(null);
 
   const handleSearchIconPress = () => {
     if (isKeyboardVisible) {

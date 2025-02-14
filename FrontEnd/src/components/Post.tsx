@@ -5,10 +5,39 @@ import { useRouter } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdit }) => {
+interface Posti {
+  id: number;
+  authorId: string;
+  content: string | null;
+  likes: boolean;
+  likedIds: string[];
+  author: {
+    ime: string;
+    prezime: string;
+  };
+}
+
+type PostProps = {
+  item: Posti;
+  likePost: (post: Posti) => void;
+  personal?: boolean;
+  handleDelete: (postId: number) => void;
+  handleEdit: (post: Posti) => void;
+};
+
+type LikedUser = {
+  ime: string;
+  prezime: string;
+  id: string;
+  profileImage: any;
+};
+
+
+const Post: React.FC<PostProps> = ({ item, likePost, personal = false, handleDelete, handleEdit }) => {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
-  const [likedUsers, setLikedUsers] = useState([]);
+  const [likedUsers, setLikedUsers] = useState<LikedUser[]>([]);
+
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
@@ -20,9 +49,10 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
   const getEdit = async()=>{
 
     const userInfo = await AsyncStorage.getItem('userInfo');
+    if(!userInfo)return
     const parsedUserInfo = JSON.parse(userInfo);
 
-    if (parsedUserInfo.userId===item.author.user_id)
+    if (parsedUserInfo.userId===item.authorId)
     {
       setEditable(true);
     }
@@ -55,7 +85,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
   const onAuthorPress = () => {
     router.push({
       pathname: '/UserInfo',
-      params: { id: item.author.user_id },
+      params: { id: item.authorId },
     });
   };
 
@@ -66,8 +96,10 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
       const odg = await axios.get(`http://${ip}:8080/v1/api/${value}`);
   
       let profileImageSource = require('../img/profilna6.png');
+
   
-      const imageId = value % 6 + 1;
+      const imageId = Number(value) % 6 + 1;
+
       if (imageId === 1) profileImageSource = require('../img/profilna1.png');
       else if (imageId === 2) profileImageSource = require('../img/profilna2.png');
       else if (imageId === 3) profileImageSource = require('../img/profilna3.png');
@@ -85,7 +117,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
     setModalVisible(true);
   };
 
-  const onUserPress = (user) => {
+  const onUserPress = (user: LikedUser) => {
     router.push({
       pathname: '/UserInfo',
       params: { id: user.id },
@@ -96,7 +128,7 @@ const Post = ({ item, likePost, index, personal = false, handleDelete, handleEdi
     handleEdit(item)
   }
 
-  const imageId = item.author.user_id % 6 + 1;
+  const imageId = Number(item.authorId) % 6 + 1;
   let profileImageSource = require('../img/profilna6.png');
   if (imageId == 1) profileImageSource = require('../img/profilna1.png');
   else if (imageId == 2) profileImageSource = require('../img/profilna2.png');

@@ -3,15 +3,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';  
 import BackNav from '../components/Backnav';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { FontAwesome6 } from '@expo/vector-icons';
 
+type RootStackParamList = {
+  Tree: {
+    poeni: number;
+    userId: string | null;
+  };
+};
+
+type RouteParams = RouteProp<RootStackParamList, 'Tree'>;
+
 const Tree = () => {
-  const route = useRoute();
+
+  const route = useRoute<RouteParams>();
   const [dark, setDark] = useState(false);
-  const treeRef = useRef(null);
-  const barRef = useRef(null);
+  const treeRef = useRef<LottieView | null>(null);
+  const barRef = useRef<LottieView | null>(null);
   const streakRef = useRef(0); 
   const poeni = route.params?.poeni ?? 0;
   const userId = route.params?.userId ?? null;
@@ -86,8 +96,8 @@ const Tree = () => {
         setToShow((prev) => prev % 100);
         setToShow2(Math.floor(poeni / 100));
   
-        treeRef.current.play(88, f * 0.88);
-        barRef.current.play(60, 0.5 * f + 1);
+        treeRef.current?.play(88, f * 0.88);
+        barRef.current?.play(60, 0.5 * f + 1);
   
       }, 2500); 
     } else {
