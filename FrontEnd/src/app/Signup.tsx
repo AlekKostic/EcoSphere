@@ -67,7 +67,9 @@ const Signup = () => {
           email: email,
           password: password,
           brojPoena: 0,
-          streak:0
+          streak:0,
+          poslednjiPoeni:0,
+          poslednjiStreak:0
         },
         {
           headers: {

@@ -169,6 +169,23 @@ const QuizPage = () => {
     }
   };
 
+  const visitTree = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        console.log(user)
+        router.push({
+          pathname: '/Tree',
+          params: {userId: user.userId },
+        });
+      } else {
+        return
+      }
+    } catch (error) {
+    }
+  };
+
   if (quizCompleted) {
     dodajBodove();
     return (
@@ -182,6 +199,14 @@ const QuizPage = () => {
           <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>
             Vratite se ponovo da radite sutrašnji kviz i ne zaboravite da posetite stablo!
           </Text>
+          <View style={[{ marginTop: 20 }]}>
+            <TouchableOpacity onPress={visitTree} style={[{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
+                <Text style={[{ color: dark ? 'white' : '#124460', fontSize: 18, fontWeight: '500', textDecorationLine: 'underline', marginRight: 5 }]}>
+                  Vidi stablo
+                </Text>
+                <MaterialIcons name={"arrow-forward-ios"} size={20} color={dark ? 'white' : '#124460'} style={[{ paddingRight: 10, marginTop: 2 }]} />
+            </TouchableOpacity>
+          </View>
         </View>
         <View>
         </View>

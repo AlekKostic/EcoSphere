@@ -3,9 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';  
 import BackNav from '../components/Backnav';
+import BackNav2 from '../components/Backnavhome';
+
 import { RouteProp, useRoute } from '@react-navigation/native';
 import axios from 'axios';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { useNavigation } from 'expo-router';
 
 type RootStackParamList = {
   Tree: {
@@ -17,97 +20,74 @@ type RootStackParamList = {
 type RouteParams = RouteProp<RootStackParamList, 'Tree'>;
 
 const Tree = () => {
-
+  const navigation = useNavigation();
   const route = useRoute<RouteParams>();
   const [dark, setDark] = useState(false);
   const treeRef = useRef<LottieView | null>(null);
   const barRef = useRef<LottieView | null>(null);
-  const streakRef = useRef(0); 
-  const poeni = route.params?.poeni ?? 0;
+
+  const [prev, setPrev]=useState("")
+
+  useEffect(() => {
+    const state = navigation.getState();
+    if(state===undefined)return
+    if (state.routes.length > 1) {
+      const previousRoute = state.routes[state.routes.length - 2];
+      setPrev(previousRoute.name);
+      
+    }
+  }, [navigation]);
+  
   const userId = route.params?.userId ?? null;
-  const poeni2 = poeni % 100;
+
   const [src, setSrc] = useState(require('../assets/lightTree.json'));
-  const { width, height } = Dimensions.get('window');
-  const [pstreak, setpStreak] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [show, setShow] = useState(false);
   const [toShow, setToShow] = useState(0);
+  const [add, setAdd]=useState(0)
   const [toShow2, setToShow2] = useState(0);
   const [red, setRed] = useState(false);
-  const [visits, setVisits] = useState(-1);
-  const prevVisitsRef = useRef(visits); 
+  const [pstreak, setpStreak] = useState(0);
+  const [streak, setStreak] = useState(0);
+
+  const [poeni, setPoeni]=useState(0)
+  const [ppoeni, setpPoeni]=useState(0)
+  
+  
   const config = require('../../config.json');
   const ip = config.ipAddress;
   let st = 0;
 
-  useEffect(() => {
-    const getTreeVisits = async () => {
-      try {
-        const storedVisits = await AsyncStorage.getItem('treeVisits');
-        const parsedVisits = storedVisits !== null ? parseInt(storedVisits, 10) : 0;
-    
-        
-    
-        setVisits(parsedVisits);
+    useEffect(()=>{
 
-    
-        setToShow(visits % 100 + (poeni - visits));
-        setToShow2(Math.floor(visits / 100));
-    
-        const response = await axios.get(`http://${ip}:8080/v1/api/${userId}`);
-    
-        if (response.data.radjen) {
-          await axios.put(`http://${ip}:8080/v1/api/unstreak/${userId}`);
+      const getUser = async()=>{
+
+        try{
+          const userResponse = await axios(`http://${ip}:8080/v1/api/${userId}`)
+
+          if(userResponse.data.poslednjiPoeni)
+            setpPoeni(userResponse.data.poslednjiPoeni)
+
+          if(userResponse.data.poslednjiStreak)
+            setpStreak(userResponse.data.poslednjiStreak)
+
+          setStreak(userResponse.data.streak)
+          setPoeni(userResponse.data.broj_bodova)
+
+          showAnim({
+            pstreak2: userResponse.data.poslednjiStreak ?? 0,
+            streak2: userResponse.data.streak,
+            poeni2: userResponse.data.broj_bodova,
+            ppoeni2: userResponse.data.poslednjiPoeni ?? 0,
+          });
+
         }
-    
-        const streakk = response.data.streak;
-        setStreak(streakk);
-  
-        await AsyncStorage.setItem('treeVisits', poeni.toString());
-      } catch (error) {
+        catch(error){
+
+        }
       }
-    };
-  
-    getTreeVisits();
-  }, [poeni, visits]);
-  
-  useEffect(() => {
-    if (!treeRef.current || !barRef.current) return;
-  
-    if (prevVisitsRef.current === visits) return;
-  
-    if (visits === 0) {
-      barRef.current.play(0, 0);
-    }
-  
-    prevVisitsRef.current = visits;
-    setToShow(visits % 100 + (poeni - visits));
-    setToShow2(Math.floor(visits / 100));
-  
-    treeRef.current.reset();
-    barRef.current.reset();
-  
-    if (visits % 100 + (poeni - visits) >= 100) {
-      treeRef.current.play(0.88 * (visits % 100), 88);
-      barRef.current.play(0.5 * (visits % 100), 60);
-  
-      setTimeout(() => {
-        const f = toShow % 100;
-        setToShow((prev) => prev % 100);
-        setToShow2(Math.floor(poeni / 100));
-  
-        treeRef.current?.play(88, f * 0.88);
-        barRef.current?.play(60, 0.5 * f + 1);
-  
-      }, 2500); 
-    } else {
-      treeRef.current.play(0.88 * (visits % 100), 0.88 * poeni2);
-      barRef.current.play(0.5 * (visits % 100), 0.5 * poeni2 + 1);
-  
-    }
-  }, [visits]);
-  
-  
+
+      getUser()
+
+    }, [])
 
   useEffect(() => {
     const getMode = async () => {
@@ -119,9 +99,101 @@ const Tree = () => {
     getMode();
   }, []);
 
+  const showAnim = async({ pstreak2, streak2, poeni2, ppoeni2 }: { pstreak2: number, streak2: number, poeni2: number, ppoeni2: number }) => {
+
+    if(pstreak2!==0 && streak2===0){
+      setTimeout(()=>{setRed(true); setTimeout(()=>setRed(false),2000)},1500)
+    }
+
+    const r = await axios.get(`http://${ip}:8080/v1/api/uso/${userId}`)
+
+
+    if(!r.data){
+      const dod = Math.min(streak2, 10)
+      poeni2+=dod;
+      setAdd(dod)
+      
+      setPoeni(poeni2)
+
+
+      await axios.put(`http://${ip}:8080/v1/api/bodovi`,{
+        "user_id": userId,
+        "broj_poena":dod
+      })
+
+      
+      await axios.put(`http://${ip}:8080/v1/api/drvo/${userId}`)
+
+    }
+
+    const dstreak = (streak2 ?? 0) - (pstreak2 ?? 0);
+    const dpoeni = (poeni2 ?? 0) - (ppoeni2 ?? 0); 
+  
+    saveChanges({ dstreak, dpoeni })
+
+    
+
+
+    if (poeni2==ppoeni2 && poeni2%100===0) {
+      barRef.current?.play(1, 1);
+      return
+    }
+
+    setToShow(ppoeni2 % 100 + (poeni2 - ppoeni2));
+    setToShow2(Math.floor(ppoeni2 / 100));
+    if(streak2===0 && pstreak2!==0){
+      setTimeout(()=>{setpStreak(streak2)},1500)
+    }else
+      setpStreak(streak2)
+
+    
+
+  
+    if ( ppoeni2 % 100 + (poeni2 - ppoeni2) >= 100) {
+
+      treeRef.current?.play(0.88 * (ppoeni2 % 100), 88);
+      barRef.current?.play(0.5 * (ppoeni2 % 100), 60);
+  
+      setTimeout(() => {
+        const f = toShow % 100;
+        setToShow((prev) => prev % 100);
+        setToShow2(Math.floor(poeni2 / 100));
+  
+        treeRef.current?.play(88, (poeni2%100) * 0.88);
+        barRef.current?.play(60, 0.5 * (poeni2%100 + 1));
+  
+      }, 2500); 
+    } else {
+      treeRef.current?.play(0.88 * (ppoeni2 % 100), 0.88 * (poeni2%100));
+      barRef.current?.play(0.5 * (ppoeni2 % 100), 0.5 * (poeni2%100 +1));
+    }
+    
+    
+
+  };
+
+  const saveChanges = async({dstreak, dpoeni}:{dstreak:number, dpoeni:number}) =>{
+
+    try{
+    const re = await axios.put(`http://${ip}:8080/v1/api/poeni`,{
+      "user_id": userId,
+      "delta": dpoeni
+    })
+
+    await axios.put(`http://${ip}:8080/v1/api/promena`,{
+      "user_id": userId,
+      "delta": dstreak
+    })
+  }catch(error){}
+  }
+  
+
+  
+
+
   return (
     <View style={{ flex: 1, backgroundColor: dark ? '#124460' : 'white' }}>
-      <BackNav />
+      {prev==="" ? (<BackNav />):(<BackNav2/>)}
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
         <View style={{ alignItems: 'center', marginTop: 20 }}>
           <View style={styles.animationWrapper}>
@@ -147,31 +219,45 @@ const Tree = () => {
             />
           </View>
         </View>
-        <View style={{ alignItems: 'center', marginBottom: 10 }}>
-          <View style={{
-            backgroundColor: dark ? '#6ac17f' : '#6ac17f',
-            paddingHorizontal: 20,
-            paddingVertical: 5,
-            borderTopLeftRadius: 50,
-            borderBottomLeftRadius: 50,
-            borderTopRightRadius: 50,
-            borderBottomRightRadius: 50,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minWidth: 80, 
-          }}>
-            <FontAwesome6 name='fire' size={20} color={red ? 'red' : (dark?'#124460':'white')} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', 
+          justifyContent: 'center',
+          marginBottom:10 }}>
+          <View style={{ alignItems: 'center', marginBottom: 10, flexDirection: 'row' }}>
+            <View style={{
+              backgroundColor: dark ? '#6ac17f' : '#6ac17f',
+              paddingHorizontal: 20,
+              paddingVertical: 5,
+              borderTopLeftRadius: 50,
+              borderBottomLeftRadius: 50,
+              borderTopRightRadius: 50,
+              borderBottomRightRadius: 50,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              minWidth: 80
+            }}>
+              <FontAwesome6 name='fire' size={20} color={red ? 'red' : (dark ? '#124460' : 'white')} />
+              <Text style={{
+                color: red ? 'red' : (dark ? '#124460' : 'white'),
+                fontSize: 20,
+                fontWeight: 'bold',
+                marginLeft: 5,
+              }}>
+                {pstreak}
+              </Text>
+            </View>
+
             <Text style={{
-              color: red ? 'red' : (dark ? '#124460' : 'white'),
+              color: red ? 'red' : (!dark ? '#124460' : 'white'),
               fontSize: 20,
               fontWeight: 'bold',
-              marginLeft: 5,
+              marginLeft: 10,
             }}>
-              {streak}
+              {add !== 0 && "+" + add}
             </Text>
           </View>
         </View>
+
 
         <View style={{ marginLeft: 30 }}>
           <Text style={{ fontSize: 20, color: dark ? 'white' : '#124460' }}>
@@ -179,8 +265,8 @@ const Tree = () => {
           </Text>
         </View>
         <View style={{ marginLeft: 30 }}>
-          <Text style={{ marginTop: 5, fontSize: 15, color: dark ? 'white' : '#124460' }}>
-            Radite dnevne kvizove i osvajajte poene!
+          <Text style={{ marginTop: 5, fontSize: 16, color: dark ? 'white' : '#124460' }}>
+            Radite dnevne kvizove redovne i osvajajte poene!
           </Text>
         </View>
       </ScrollView>
