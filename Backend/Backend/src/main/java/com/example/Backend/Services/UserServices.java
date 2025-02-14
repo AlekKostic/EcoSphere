@@ -200,12 +200,13 @@ public class UserServices {
 
     public Boolean uso(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
-        if(user.getUso()){
-            return true;
-        }else {
-            user.setUso(true);
-            userRepository.save(user);
-            return false;
-        }
+        return user.getUso();
+    }
+
+    public ResponseEntity drvo(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
+        user.setUso(true);
+        userRepository.save(user);
+        return ResponseEntity.ok("User je uso u drvo");
     }
 }

@@ -86,4 +86,8 @@ public class UserController {
     public Boolean uso(@PathVariable("id") Long id){
         return userServices.uso(id);
     }
+    @PutMapping("/drvo/{id}")
+    public ResponseEntity drvo(@PathVariable("id") Long id){
+        return userServices.drvo(id);
+    }
 }
