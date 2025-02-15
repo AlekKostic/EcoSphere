@@ -172,25 +172,33 @@ const [errorMessage, setErrorMessage] = useState<string>('');
         return null;
       }
   
+  
       const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
       const fileName = `image_${timestamp}.png`;
   
-      const response = await fetch(path);
-      const blob = await response.blob(); 
   
       const formData = new FormData();
-      formData.append('file', blob, fileName); 
+      formData.append('file', {
+        uri: path,
+        type: 'image/png',
+        name: fileName,
+      } as unknown as Blob);
   
       const res = await axios.post(`http://${ip}:8080/s3`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 5000,
       });
-  
-      return res.data; 
-    } catch (error) {
-      setErrorMessage("Došlo je do greške prilikom dodavanja slike");
+
+      return res.data;
+    } catch (axiosError) {
+      setLoadingg(false)
+      setErrorMessage("Greška prilikom slanja slike na server");
       return null;
     }
   };
+  
+  
+  
   
   
   const addProduct = async () => {
@@ -206,6 +214,7 @@ const [errorMessage, setErrorMessage] = useState<string>('');
     }
 
 
+
     if ((path===null || path===undefined || path==="") && !tried) {
       setTried(true)
       return; 
@@ -217,9 +226,9 @@ const [errorMessage, setErrorMessage] = useState<string>('');
       const userInfo = await AsyncStorage.getItem('userInfo');
       if(!userInfo)return
       const parsedUserInfo = JSON.parse(userInfo);
-  
       
       const imageUrl = path ? await uploadImage(path) : null;
+
   
       if (path && !imageUrl) {
         setErrorMessage("Došlo je do greške prilikom dodavanja slike");
