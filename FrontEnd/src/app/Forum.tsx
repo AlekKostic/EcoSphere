@@ -3,7 +3,10 @@ import {
   View, Text, TextInput, FlatList, TouchableOpacity, 
   StyleSheet, Modal, Button, ActivityIndicator, Animated,
   Dimensions,
-  ScrollView
+  ScrollView,
+  StatusBar,
+  Platform,
+  AppState
 } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -74,6 +77,33 @@ const NotificationsPage = () => {
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
   const closeModal = () =>
   {

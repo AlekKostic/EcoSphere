@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, StatusBar, Text } from 'react-native';
+import { View, StyleSheet, Platform, StatusBar, Text, AppState } from 'react-native';
 import UserMenu from '../components/usermenu';
 import PictureSection from '../components/PictureSection';
 import Icon from '../components/Icon';
@@ -8,6 +8,32 @@ import { Link } from 'expo-router';
 
 const Home = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('default'); 
+    } else {
+      StatusBar.setBarStyle(darkMode ? 'light-content' : 'dark-content'); 
+      StatusBar.setBackgroundColor(darkMode ? '#124460' : '#fff'); 
+    }
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        if (Platform.OS === 'ios') {
+          StatusBar.setBarStyle('default'); 
+        } else {
+          StatusBar.setBarStyle(darkMode ? 'light-content' : 'dark-content');
+          StatusBar.setBackgroundColor(darkMode ? '#124460' : '#fff');
+        }
+      }
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
+  }, [appState, darkMode]);
 
   const iconData = [
     { id: '1', source: !darkMode?require('../img/lightMap.png'):require('../img/darkMap.png'), route: '/Map' },

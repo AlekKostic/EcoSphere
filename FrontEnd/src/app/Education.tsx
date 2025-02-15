@@ -3,7 +3,10 @@ import {
   TextInput, Keyboard, TouchableWithoutFeedback, 
   Modal,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar,
+  Platform,
+  AppState
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
@@ -21,6 +24,33 @@ const Icon2 = () => {
   const [modalVisible,setModalVisible]=useState(false)
   const [loading,setLoading]=useState(false)
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
   const getMode = async () => {
     const storedMode = await AsyncStorage.getItem('darkMode');

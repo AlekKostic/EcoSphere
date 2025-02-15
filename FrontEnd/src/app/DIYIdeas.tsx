@@ -4,7 +4,9 @@ import {
   Platform, 
   ActivityIndicator,
   Modal,
-  Dimensions
+  Dimensions,
+  AppState,
+  StatusBar
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
@@ -23,6 +25,33 @@ const Icon2 = () => {
   const [currentUrl, setCurrentUrl] = useState("");
   const [modalVisible,setModalVisible]=useState(false)
   const [loading,setLoading]=useState(false)
+
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('default'); 
+    } else {
+      StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+      StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+    }
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        if (Platform.OS === 'ios') {
+          StatusBar.setBarStyle('default'); 
+        } else {
+          StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+          StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+        }
+      }
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
+  }, [appState, dark]);
 
   const videoLinks = [
     { 

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator, StatusBar, Platform, AppState } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
@@ -49,6 +49,33 @@ const [loadingg, setLoadingg] = useState<boolean>(false);
 const [tried, setTried] = useState<boolean>(false);
 const [logged, setLogged] = useState<boolean>(false);
 const [errorMessage, setErrorMessage] = useState<string>('');
+
+const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('default'); 
+    } else {
+      StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+      StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+    }
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        if (Platform.OS === 'ios') {
+          StatusBar.setBarStyle('default'); 
+        } else {
+          StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+          StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+        }
+      }
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
+  }, [appState, dark]);
 
   
   const router = useRouter(); 
