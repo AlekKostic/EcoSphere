@@ -121,7 +121,7 @@ const Login = () => {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
           <BackNav />
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
 
@@ -182,7 +182,7 @@ const Login = () => {
         </>
       )}
     </SafeAreaView>
-    </>
+    </SafeAreaView>
   );
   
 }

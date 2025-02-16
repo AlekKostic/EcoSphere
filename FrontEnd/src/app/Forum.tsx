@@ -6,7 +6,8 @@ import {
   ScrollView,
   StatusBar,
   Platform,
-  AppState
+  AppState,
+  SafeAreaView
 } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -380,7 +381,7 @@ const NotificationsPage = () => {
 
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <BackNav />
     <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <View style={styles.headerContainer}>
@@ -580,7 +581,7 @@ const NotificationsPage = () => {
         </View>
       </View>
       </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 

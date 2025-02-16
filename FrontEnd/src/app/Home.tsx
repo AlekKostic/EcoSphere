@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Platform, StatusBar, Text, AppState } from 'react-native';
+import { View, StyleSheet, Platform, StatusBar, Text, AppState, SafeAreaView } from 'react-native';
 import UserMenu from '../components/usermenu';
 import PictureSection from '../components/PictureSection';
 import Icon from '../components/Icon';
@@ -45,7 +45,7 @@ const Home = () => {
   ];
 
   return (
-    <View style={darkMode ? styles.darkModeContainer : styles.lightModeContainer}>
+    <SafeAreaView style={darkMode ? styles.darkModeContainer : styles.lightModeContainer}>
       <UserMenu setDarkMode2={setDarkMode} />
       <PictureSection darkMode={darkMode}/>
 
@@ -55,7 +55,7 @@ const Home = () => {
         ))}
       </View>
 
-    </View>
+    </SafeAreaView>
   );
 };
 

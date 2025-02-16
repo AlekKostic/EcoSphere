@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar, Platform, AppState } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import BackNav from '../components/Backnavhome';
 import Question from '../components/Question';
 import axios from 'axios';
@@ -215,6 +215,7 @@ const QuizPage = () => {
   if (quizCompleted) {
     dodajBodove();
     return (
+      <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
         <BackNav />
         <View style={styles.container2}>
@@ -237,6 +238,7 @@ const QuizPage = () => {
         <View>
         </View>
       </View>
+      </SafeAreaView>
     );
   }
 

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Modal, FlatList, ListRenderItemInfo, StatusBar, AppState, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Modal, FlatList, ListRenderItemInfo, StatusBar, AppState, Platform, SafeAreaView } from 'react-native';
 import BackNav from '../components/Backnav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -178,7 +178,7 @@ const Icon4 = () => {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
       <BackNav />
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : '#f5f5f5' }]}>
         <View style={styles.contentContainer}>
@@ -297,7 +297,7 @@ const Icon4 = () => {
           </View>
         </View>
       </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 

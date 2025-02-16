@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert, FlatList, ActivityIndicator, Modal, StatusBar, Platform, AppState } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert, FlatList, ActivityIndicator, Modal, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BackNav from '../components/Backnav';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -560,7 +560,7 @@ const UserInfo = () => {
   }
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     
     <BackNav />
     <KeyboardAwareScrollView style={[styles.container, {
@@ -927,7 +927,7 @@ const UserInfo = () => {
         
 
     </KeyboardAwareScrollView>
-    </>
+    </SafeAreaView>
   );
 };
 

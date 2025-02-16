@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WebView from 'react-native-webview';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const { height } = Dimensions.get('window');
 
 const Icon2 = () => {
@@ -121,7 +122,7 @@ const Icon2 = () => {
   );
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <>
       <BackNav />
@@ -211,7 +212,7 @@ const Icon2 = () => {
         </View>
       </View>
     </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 

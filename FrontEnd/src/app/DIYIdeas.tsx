@@ -6,7 +6,8 @@ import {
   Modal,
   Dimensions,
   AppState,
-  StatusBar
+  StatusBar,
+  SafeAreaView
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
@@ -315,7 +316,7 @@ const Icon2 = () => {
       <>
       
       <BackNav />
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.heading}>Ideje za ponovnu upotrebu materijala</Text>
         <Text style={styles.subheading}>
           Ovde možete pronaći kreativne ideje za ponovnu upotrebu materijala u svakodnevnom životu.
@@ -356,7 +357,7 @@ const Icon2 = () => {
             ))
           )}
         </KeyboardAwareScrollView>
-      </View>
+      </SafeAreaView>
       </>
     </TouchableWithoutFeedback>
 

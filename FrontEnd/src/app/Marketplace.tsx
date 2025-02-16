@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator, StatusBar, Platform, AppState } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
@@ -351,7 +351,7 @@ const [appState, setAppState] = useState(AppState.currentState);
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <BackNav />
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
@@ -510,7 +510,7 @@ const [appState, setAppState] = useState(AppState.currentState);
         </Modal>
       </View>
     </TouchableWithoutFeedback>
-    </>
+    </SafeAreaView>
   );
 };
 

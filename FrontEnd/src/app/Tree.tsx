@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, ScrollView, StyleSheet, ActivityIndicator, StatusBar, Platform, AppState } from 'react-native';
+import { View, Text, Dimensions, ScrollView, StyleSheet, ActivityIndicator, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LottieView from 'lottie-react-native';  
@@ -228,7 +228,7 @@ const Tree = () => {
 
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
       {prev !== "QuizPage" ? <BackNav /> : <BackNav2 />}
       <View style={{ flex: 1, backgroundColor: dark ? '#124460' : 'white' }}>
         <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
@@ -341,7 +341,7 @@ const Tree = () => {
           </View>
         )}
       </View>
-    </>
+    </SafeAreaView>
   );
   
 };
