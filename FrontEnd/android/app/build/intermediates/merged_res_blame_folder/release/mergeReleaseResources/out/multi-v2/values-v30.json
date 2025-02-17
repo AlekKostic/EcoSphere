@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.anonymous.FrontEnd.app-mergeReleaseResources-58:/values-v30/values-v30.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\kosti\\.gradle\\caches\\8.10.2\\transforms\\e479ddbedea1bbe9cab07f23ece24cc9\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-v30\\values-v30.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "7",
+                        "endColumns": "12",
+                        "endOffsets": "433"
+                    }
+                }
+            ]
+        }
+    ]
+}

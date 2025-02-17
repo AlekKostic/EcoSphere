@@ -1,0 +1,358 @@
+[
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_sitemap.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_sitemap.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkdiy.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkdiy.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lightmarket.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lightmarket.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkmarket.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkmarket.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-mdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_file.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_file.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_zocial.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_zocial.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna3.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna3.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_foundation.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_foundation.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkquiz.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkquiz.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_simplelineicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_simplelineicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_solid.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_solid.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_forward.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_forward.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxhdpi_splashscreen_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable-xxhdpi\\splashscreen_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_brands.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_brands.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialcommunityicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialcommunityicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkforum.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkforum.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xhdpi_splashscreen_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable-xhdpi\\splashscreen_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lightdiy.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lightdiy.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontisto.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontisto.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_feather.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_feather.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable_ic_launcher_background.xml.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna6.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna6.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-hdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-hdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lightforum.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lightforum.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkhero.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkhero.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna5.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna5.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darke.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darke.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_entypo.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_entypo.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_pkg.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_pkg.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_ionicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_ionicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_darkmap.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_darkmap.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_antdesign.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_antdesign.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_splashscreen_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable-mdpi\\splashscreen_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_regular.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome5_regular.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lightquiz.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lightquiz.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_pathnull.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_pathnull.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_octicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_octicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-hdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxxhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_backiconmask.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_backiconmask.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxhdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna2.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna2.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_regular.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_regular.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_backicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-hdpi_splashscreen_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable-hdpi\\splashscreen_logo.png"
+    },
+    {
+        "merged": "com.anonymous.FrontEnd.app-release-60:/xml_network_security_config.xml.flat",
+        "source": "com.anonymous.FrontEnd.app-main-61:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lightmap.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lightmap.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xhdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lighte.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lighte.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxxhdpi_splashscreen_logo.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable-xxxhdpi\\splashscreen_logo.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable_rn_edit_text_material.xml.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\drawable\\rn_edit_text_material.xml"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_unmatched.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_unmatched.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna4.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna4.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-xxhdpi\\ic_launcher.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_brands.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_brands.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_searchicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-xxxhdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-xxxhdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_closeicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-mdpi\\ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_lighthero.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_lighthero.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_solid.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome6_solid.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_reactnavigation_elements_lib_commonjs_assets_clearicon.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-main-61:\\mipmap-mdpi\\ic_launcher_round.webp"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_evilicons.ttf.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\raw\\node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_evilicons.ttf"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_node_modules_exporouter_assets_error.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\node_modules_exporouter_assets_error.png"
+    },
+    {
+        "merged": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-release-60:\\drawable-mdpi_src_img_profilna1.png.flat",
+        "source": "C:\\Users\\kosti\\.gradle\\daemon\\8.10.2\\com.anonymous.FrontEnd.app-res-55:\\drawable-mdpi\\src_img_profilna1.png"
+    }
+]
