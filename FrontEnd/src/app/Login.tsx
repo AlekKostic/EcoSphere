@@ -135,9 +135,11 @@ const Login = () => {
           <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>
             Održivost počinje ovde.
           </Text>
+          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
           <Text style={[styles.title, dark ? styles.titleDark : styles.titleLight]}>
             Ulogujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
+          </View>
         </View>
         <View style={[styles.form, { paddingBottom: 30 }]}>
           <AnimatedInputField

@@ -148,9 +148,11 @@ const Signup = () => {
         <View style={styles.header}>
           <Image source={require('../img/logo.png')} style={styles.logo} />
           <Text style={[styles.subtitle, dark ? styles.subtitleDark : styles.subtitleLight]}>Održivost počinje ovde.</Text>
+          <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
           <Text style={[styles.title, dark ? styles.titleDark : styles.titleLight]}>
             Registrujte se na <Text style={dark ? styles.greenTextDark : styles.greenTextLight}>EcoSphere</Text>
           </Text>
+          </View>
         </View>
         <View style={styles.form}>
           <AnimatedInputField
