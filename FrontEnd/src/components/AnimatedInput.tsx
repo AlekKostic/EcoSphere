@@ -2,7 +2,21 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, Text, TextInput, Animated, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-const AnimatedInputField = ({ label, value, onChangeText, isPassword = false, dark }) => {
+interface AnimatedInputFieldProps {
+  label: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  isPassword?: boolean;
+  dark?: boolean;
+}
+
+const AnimatedInputField: React.FC<AnimatedInputFieldProps> = ({
+  label,
+  value,
+  onChangeText,
+  isPassword = false,
+  dark = false
+}) => {
   const [isFocused, setIsFocused] = useState(false);
   const labelAnim = useRef(new Animated.Value(0)).current;
   const inputWidth = useRef(new Animated.Value(0)).current;

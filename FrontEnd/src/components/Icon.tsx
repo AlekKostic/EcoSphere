@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import getWorkingHeight from '../components/ScreenHeight';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Icon = ({ source, route }) => {
+interface IconProps {
+  source: ImageSourcePropType; 
+  route: any; 
+}
+
+const Icon: React.FC<IconProps> = ({ source, route }) => {
   const [dark, setDark] = useState(false);
   const router = useRouter();
 
@@ -22,7 +27,7 @@ const Icon = ({ source, route }) => {
   }, []);
 
   const handlePress = () => {
-    router.push(route);
+    router.push(route);  
   };
 
   return (
@@ -46,19 +51,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 20,
-    borderRadius:10,
+    borderRadius: 10,
     elevation: 3,
   },
   iconContainerLight: {
     backgroundColor: 'black',
     elevation: 5, 
   },
-  iconContainerDark:{
+  iconContainerDark: {
     backgroundColor: '#124460',
     elevation: 5, 
   },
   image: {
-    width: '100%', 
+    width: '100%',
     height: '100%',
     borderRadius: 10,
   },

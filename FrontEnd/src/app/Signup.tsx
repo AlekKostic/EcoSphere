@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, StatusBar, Platform, AppState } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -16,6 +16,33 @@ const Signup = () => {
     const storedMode = await AsyncStorage.getItem('darkMode');
     if (storedMode === "true") setDark(true);
   }
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
   useEffect(() => {
     getMode();
@@ -67,7 +94,9 @@ const Signup = () => {
           email: email,
           password: password,
           brojPoena: 0,
-          streak:0
+          streak:0,
+          poslednjiPoeni:0,
+          poslednjiStreak:0
         },
         {
           headers: {
@@ -98,6 +127,7 @@ const Signup = () => {
 
       router.push('/Home');
     } catch (err) {
+      alert(err)
       setErrorText("Greška prilikom registraciije. Molimo pokušajte ponovo.");
       setError(true);
     } finally {
@@ -110,7 +140,7 @@ const Signup = () => {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <BackNav/>
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
 
@@ -126,25 +156,25 @@ const Signup = () => {
           <AnimatedInputField
             label="Ime"
             value={form.name}
-            onChangeText={(name) => setForm({ ...form, name })}
+            onChangeText={(name:string) => setForm({ ...form, name })}
             dark={dark}
           />
           <AnimatedInputField
             label="Prezime"
             value={form.surname}
-            onChangeText={(surname) => setForm({ ...form, surname })}
+            onChangeText={(surname:string) => setForm({ ...form, surname })}
             dark={dark}
           />
           <AnimatedInputField
             label="Email"
             value={form.email}
-            onChangeText={(email) => setForm({ ...form, email })}
+            onChangeText={(email:string) => setForm({ ...form, email })}
             dark={dark}
           />
           <AnimatedInputField
             label="Lozinka"
             value={form.password}
-            onChangeText={(password) => setForm({ ...form, password })}
+            onChangeText={(password:string) => setForm({ ...form, password })}
             dark={dark}
           />
           <View style={styles.formAction}>
@@ -173,7 +203,7 @@ const Signup = () => {
         </View>
       )}
     </SafeAreaView>
-    </>
+    </SafeAreaView>
   );
 };
 

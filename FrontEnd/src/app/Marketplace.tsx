@@ -1,18 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, Modal, Button, Image, TouchableWithoutFeedback, Keyboard, ActivityIndicator, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker'; 
 import BackNav from '../components/Backnav';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
-import Product from '../components/Product';
+import Productt from '../components/Product';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'; 
+
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  phone_number: string;
+  path: string;
+  user_id: number;
+  broj_pregleda: number;
+  saved: boolean;
+}
+
 
 const ProductsPage = () => {
   const [dark, setDark] = useState(false); 
 
-  const productRef = useRef(null);
+  const productRef = useRef<FlatList<Product>>(null); 
 
   useEffect(() => {
     const getMode = async () => {
@@ -22,26 +35,54 @@ const ProductsPage = () => {
 
     getMode();
   }, []);
+  const [products, setProducts] = useState<Product[]>([]);
+const [name, setName] = useState<string>('');
+const [description, setDescription] = useState<string>('');
+const [price, setPrice] = useState<number>(0);
+const [phoneNumber, setPhoneNumber] = useState<string>('');
+const [path, setPath] = useState<string | null>(null);
+const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+const [searchQuery, setSearchQuery] = useState<string>('');
+const [isKeyboardVisible, setIsKeyboardVisible] = useState<boolean>(false);
+const [loading, setLoading] = useState<boolean>(true);
+const [loadingg, setLoadingg] = useState<boolean>(false);
+const [tried, setTried] = useState<boolean>(false);
+const [logged, setLogged] = useState<boolean>(false);
+const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const [products, setProducts] = useState([]);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState(0);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [path, setPath] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('default'); 
+    } else {
+      StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+      StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+    }
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        if (Platform.OS === 'ios') {
+          StatusBar.setBarStyle('default'); 
+        } else {
+          StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+          StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+        }
+      }
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
+  }, [appState, dark]);
+
+  
   const router = useRouter(); 
-  const [loading, setLoading] = useState(true);
-  const [loadingg, setLoadingg] = useState(false);
-  const [tried, setTried]=useState(false);
 
   const config = require('../../config.json');
   const ip = config.ipAddress;
 
-  const [logged, setLogged] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const check = async () => {
     const userInfo = await AsyncStorage.getItem('userInfo');
@@ -60,7 +101,8 @@ const ProductsPage = () => {
         
         const savedProducts = savedResponse.data.sacuvaniProductids;
   
-        productsData = productsData.map((product) => {
+        productsData = productsData.map((product: Product) => {
+
           const isSaved = savedProducts.includes(product.product_id);
           
         
@@ -71,7 +113,7 @@ const ProductsPage = () => {
         });
 
       } else {
-        productsData = productsData.map((product) => ({
+        productsData = productsData.map((product: Product) => ({
           ...product,
           saved: false,
         }));
@@ -83,7 +125,8 @@ const ProductsPage = () => {
     }
   };
 
-  const savePost = async(item) => {
+  const savePost = async(item: Product) => {
+
 
     if (!logged) {
       router.push('/Login');
@@ -150,32 +193,40 @@ const ProductsPage = () => {
     }
   };
 
-  const uploadImage = async (path) => {
+  const uploadImage = async (path: string) => {
     try {
       if (!path) {
-        return null; 
+        return null;
       }
   
-      const timestamp = new Date().toISOString().replace(/[:.-]/g, ''); 
-      const fileName = `image_${timestamp}.png`;  
+  
+      const timestamp = new Date().toISOString().replace(/[:.-]/g, '');
+      const fileName = `image_${timestamp}.png`;
+  
   
       const formData = new FormData();
       formData.append('file', {
-        uri: path, 
-        name: fileName, 
+        uri: path,
         type: 'image/png',
-      });
+        name: fileName,
+      } as unknown as Blob);
   
-      const response = await axios.post(`http://${ip}:8080/s3`, formData, {
+      const res = await axios.post(`http://${ip}:8080/s3`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 5000,
       });
-  
-      return response.data; 
-    } catch (error) {
-      setErrorMessage("Došlo je do greške prilikom dodavanja slike");
+
+      return res.data;
+    } catch (axiosError) {
+      setLoadingg(false)
+      setErrorMessage("Greška prilikom slanja slike na server");
       return null;
     }
   };
+  
+  
+  
+  
   
   const addProduct = async () => {
     if (!name || !description || !phoneNumber) {
@@ -190,6 +241,7 @@ const ProductsPage = () => {
     }
 
 
+
     if ((path===null || path===undefined || path==="") && !tried) {
       setTried(true)
       return; 
@@ -199,10 +251,11 @@ const ProductsPage = () => {
   
     try {
       const userInfo = await AsyncStorage.getItem('userInfo');
+      if(!userInfo)return
       const parsedUserInfo = JSON.parse(userInfo);
-  
       
       const imageUrl = path ? await uploadImage(path) : null;
+
   
       if (path && !imageUrl) {
         setErrorMessage("Došlo je do greške prilikom dodavanja slike");
@@ -259,10 +312,10 @@ const ProductsPage = () => {
   
   
 
-  const renderProduct = ({ item }) => {
+  const renderProduct = ({ item }: { item: Product}) => {
     return (
       <TouchableOpacity onPress={()=>{}}>
-      <Product item={item} dark={dark} savePost={savePost}/>
+      <Productt item={item} dark={dark} savePost={savePost}/>
       </TouchableOpacity>
     );
   };
@@ -285,16 +338,8 @@ const ProductsPage = () => {
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const checkImageExists = async ({ path }) => {
-    const fileInfo = await FileSystem.getInfoAsync(path);
-    if (fileInfo.exists) {
-      alert('Image exists at the path: ' + path);
-    } else {
-      alert('Image does not exist at the path');
-    }
-  };
 
-  const inputRef = useRef(null); 
+  const inputRef = useRef<TextInput>(null);
 
   const handleSearchIconPress = () => {
     if (isKeyboardVisible) {
@@ -306,7 +351,7 @@ const ProductsPage = () => {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <BackNav />
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
@@ -465,7 +510,7 @@ const ProductsPage = () => {
         </Modal>
       </View>
     </TouchableWithoutFeedback>
-    </>
+    </SafeAreaView>
   );
 };
 

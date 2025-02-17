@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, Animated, Dimensions, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/MaterialIcons'; 
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import ExtendedProduct from './ExtendedProduct';
+import Icon from './Icon';
 
 const { height } = Dimensions.get('window'); 
 
-const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => {
+interface Product {
+  product_id: number;
+  name: string;
+  description: string;
+  price: number;
+  phone_number: string;
+  path: string;
+  user_id: number;
+  broj_pregleda: number;
+  saved: boolean;
+}
+interface ProductProps {
+  item: Product;
+  dark: boolean;
+  savePost: (item: Product) => void;
+  personal?: boolean; 
+  deleteProd?: (item: number) => void; 
+}
+
+const Productt: React.FC<ProductProps> = ({ item, dark, savePost, personal= false, deleteProd=null }) => {
   const router = useRouter();
   
   const [showModal, setShowModal] = useState(false);
@@ -31,7 +50,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
     setUserImage(res.data.profile_picture);
   }
 
-  useEffect(() => { getUser() }, []);
+  useEffect(() => { getUser(); }, []);
 
   const handlePressDetails = async () => {
     await axios.put(`http://${ip}:8080/v5/api/${item.product_id}`);
@@ -69,7 +88,11 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
     <View style={[styles.productContainer, { backgroundColor: dark ? '#2f6d8c' : '#fff' }]}>
       <View style={styles.iconContainer}>
         {personal && (
-          <TouchableOpacity onPress={() => deleteProd(item.product_id)}>
+          <TouchableOpacity onPress={() => { 
+            if (deleteProd) {
+              deleteProd(item.product_id);
+            }
+          }}>
             <Ionicons name="trash-outline" size={22} color={dark ? 'white' : '#124460'} />
           </TouchableOpacity>
         )}
@@ -94,7 +117,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
         </Text>
         
         <View style={styles.viewSection}>
-          <Icon name="visibility" size={20} color={dark ? 'white' : "#124460"} />
+          <MaterialIcons name="visibility" size={20} color={dark ? 'white' : "#124460"} />
           <Text style={[styles.viewCountText, { color: dark ? 'white' : "#124460" }]}>{cnt}</Text>
         </View>
       </View>
@@ -132,7 +155,7 @@ const Product = ({ item, dark, savePost, personal= false, deleteProd=null }) => 
           {prod.map((product, index) => {
             return (
               <ExtendedProduct 
-                  key={product.id ? product.id.toString() : `fallback-${index}`}
+                  key={product.product_id ? product.product_id.toString() : `fallback-${index}`}
                   item={product} 
                   dark={dark}
                   ime={ime} 
@@ -284,4 +307,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Product;
+export default Productt;

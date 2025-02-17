@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, StatusBar, Platform, AppState, SafeAreaView } from 'react-native';
 import BackNav from '../components/Backnavhome';
 import Question from '../components/Question';
 import axios from 'axios';
@@ -7,16 +7,60 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useRouter } from 'expo-router';
 
+
+interface QuestionType {
+  pitanje: string;
+  id_Pitanja: number;
+}
+interface Quiz {
+  correctAnswer: string;
+  options: string[];
+  question: string;
+}
+interface AnswerType {
+  id_Odgovora: number;
+  pitanje: QuestionType;
+  odgovor: string;
+  tacno: boolean;
+}
+
 const QuizPage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [showingFeedback, setShowingFeedback] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<Quiz[]>([]);
   const [dark, setDark] = useState(false); 
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
 
   useEffect(() => {
@@ -63,23 +107,25 @@ const QuizPage = () => {
         throw new Error("Baza nije vratila nijedno pitanje.");
       }
 
+      
+
       const allQuestions = response.data;
       const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5).slice(0, 5);
 
       const questionsWithAnswers = await Promise.all(
-        shuffledQuestions.map(async (question) => {
-          const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
+        shuffledQuestions.map(async (question: QuestionType) => {
 
-          if (!answersResponse.data || answersResponse.data.length === 0) {
+          const answersResponse = await axios.get(`http://${ip}:8080/v3/api/${question.id_Pitanja}`);
+          if (!answersResponse.data ||   answersResponse.data.length === 0) {
             throw new Error(`Baza nije vratila odgovore za pitanje ID: ${question.id_Pitanja}`);
           }
 
           const answers = answersResponse.data;
-          const correctAnswer = answers.find(ans => ans.tacno)?.odgovor;
+          const correctAnswer = answers.find((ans:AnswerType) => ans.tacno)?.odgovor;
 
           return {
             question: question.pitanje,
-            options: answers.map(ans => ans.odgovor),
+            options: answers.map((ans:AnswerType) => ans.odgovor),
             correctAnswer,
           };
         })
@@ -119,7 +165,8 @@ const QuizPage = () => {
     }
   };
 
-  const handleAnswer = (isCorrect) => {
+  const handleAnswer = (isCorrect: boolean) => {
+
     if (isCorrect) setCorrectAnswers((prev) => prev + 1);
     setShowingFeedback(true);
 
@@ -149,9 +196,26 @@ const QuizPage = () => {
     }
   };
 
+  const visitTree = async () => {
+    try {
+      const userInfo = await AsyncStorage.getItem('userInfo');
+      if (userInfo) {
+        const user = JSON.parse(userInfo);
+        router.push({
+          pathname: '/Tree',
+          params: {userId: user.userId },
+        });
+      } else {
+        return
+      }
+    } catch (error) {
+    }
+  };
+
   if (quizCompleted) {
     dodajBodove();
     return (
+      <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
       <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
         <BackNav />
         <View style={styles.container2}>
@@ -162,10 +226,19 @@ const QuizPage = () => {
           <Text style={[styles.resultText, { color: dark ? 'white' : '#124460' }]}>
             Vratite se ponovo da radite sutrašnji kviz i ne zaboravite da posetite stablo!
           </Text>
+          <View style={[{ marginTop: 20 }]}>
+            <TouchableOpacity onPress={visitTree} style={[{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }]}>
+                <Text style={[{ color: dark ? 'white' : '#124460', fontSize: 18, fontWeight: '500', textDecorationLine: 'underline', marginRight: 5 }]}>
+                  Vidi stablo
+                </Text>
+                <MaterialIcons name={"arrow-forward-ios"} size={20} color={dark ? 'white' : '#124460'} style={[{ paddingRight: 10, marginTop: 2 }]} />
+            </TouchableOpacity>
+          </View>
         </View>
         <View>
         </View>
       </View>
+      </SafeAreaView>
     );
   }
 

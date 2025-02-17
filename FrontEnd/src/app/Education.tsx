@@ -3,7 +3,10 @@ import {
   TextInput, Keyboard, TouchableWithoutFeedback, 
   Modal,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar,
+  Platform,
+  AppState
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
@@ -11,16 +14,44 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WebView from 'react-native-webview';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const { height } = Dimensions.get('window');
 
 const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const inputRef = useRef(null);
+  const inputRef = useRef<TextInput | null>(null);
   const [dark, setDark] = useState(false);
   const [currentUrl, setCurrentUrl] = useState("");
   const [modalVisible,setModalVisible]=useState(false)
   const [loading,setLoading]=useState(false)
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
   const getMode = async () => {
     const storedMode = await AsyncStorage.getItem('darkMode');
@@ -70,7 +101,7 @@ const Icon2 = () => {
     });
   }, []);
 
-  const handlePress = (url) => {
+  const handlePress = (url: string) => {
 
     
     setCurrentUrl(url);
@@ -91,7 +122,7 @@ const Icon2 = () => {
   );
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <>
       <BackNav />
@@ -129,7 +160,7 @@ const Icon2 = () => {
             filteredLinks.map((video, index) => (
               <TouchableOpacity key={index} onPress={() => handlePress(video.link)} style={styles.videoLink}>
                 <View style={[styles.card, dark ? styles.cardDark : styles.cardLight]}>
-                  <MaterialIcons name={assignedIcons[index]} size={24} color={dark ? '#E8F5E9' : '#124460'} style={styles.icon} />
+                  <MaterialIcons name={assignedIcons[index] as keyof typeof MaterialIcons.glyphMap} size={24} color={dark ? '#E8F5E9' : '#124460'} style={styles.icon} />
                   <Text style={[styles.videoTitle, dark ? styles.videoTitleDark : styles.videoTitleLight]}>{video.title}</Text>
                 </View>
               </TouchableOpacity>
@@ -181,7 +212,7 @@ const Icon2 = () => {
         </View>
       </View>
     </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 

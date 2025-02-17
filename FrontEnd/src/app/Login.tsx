@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image } from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, ActivityIndicator, Image, StatusBar, AppState, Platform } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,6 +12,33 @@ const Login = () => {
 
   const router = useRouter();
   const [dark, setDark] = useState(false);
+
+  const [appState, setAppState] = useState(AppState.currentState);
+  
+    useEffect(() => {
+      if (Platform.OS === 'ios') {
+        StatusBar.setBarStyle('default'); 
+      } else {
+        StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+        StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+      }
+  
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (appState.match(/inactive|background/) && nextAppState === 'active') {
+          if (Platform.OS === 'ios') {
+            StatusBar.setBarStyle('default'); 
+          } else {
+            StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+            StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+          }
+        }
+        setAppState(nextAppState);
+      });
+  
+      return () => {
+        subscription.remove(); 
+      };
+    }, [appState, dark]);
 
   const getMode = async () => {
     const storedMode = await AsyncStorage.getItem('darkMode');
@@ -76,7 +103,7 @@ const Login = () => {
         await AsyncStorage.setItem('userInfo', JSON.stringify(transformedData));
         router.push('/Home');
       }
-    } catch (error) {
+    } catch (error:any) {
       if (error.status === "500") {
         setError(true);
         setErrorText("Pogrešan e-mail ili lozinka.");
@@ -94,13 +121,12 @@ const Login = () => {
   };
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
           <BackNav />
     <SafeAreaView style={[styles.safeArea, dark ? styles.safeAreaDark : styles.safeAreaLight]}>
 
       <KeyboardAwareScrollView 
-        style={styles.container} 
-        contentContainerStyle={styles.scrollViewContent}>
+        style={styles.container} >
         <View style={styles.header}>
           <Image 
             source={require('../img/logo.png')}
@@ -117,13 +143,13 @@ const Login = () => {
           <AnimatedInputField
             label="Email"
             value={form.email}
-            onChangeText={(email) => setForm({ ...form, email })}
+            onChangeText={(email: string) => setForm({ ...form, email })}
             dark={dark}
           />
           <AnimatedInputField
             label="Lozinka"
             value={form.password}
-            onChangeText={(password) => setForm({ ...form, password })}
+            onChangeText={(password: string) => setForm({ ...form, password })}
             dark={dark}
           />
           <View style={styles.formAction}>
@@ -156,7 +182,7 @@ const Login = () => {
         </>
       )}
     </SafeAreaView>
-    </>
+    </SafeAreaView>
   );
   
 }

@@ -4,7 +4,10 @@ import {
   Platform, 
   ActivityIndicator,
   Modal,
-  Dimensions
+  Dimensions,
+  AppState,
+  StatusBar,
+  SafeAreaView
 } from 'react-native';
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import BackNav from '../components/Backnav';
@@ -19,10 +22,37 @@ const Icon2 = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [dark, setDark] = useState(false); 
-  const inputRef = useRef(null);
+  const inputRef = useRef<TextInput | null>(null);
   const [currentUrl, setCurrentUrl] = useState("");
   const [modalVisible,setModalVisible]=useState(false)
   const [loading,setLoading]=useState(false)
+
+  const [appState, setAppState] = useState(AppState.currentState);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('default'); 
+    } else {
+      StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content'); 
+      StatusBar.setBackgroundColor(dark ? '#124460' : '#fff'); 
+    }
+
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        if (Platform.OS === 'ios') {
+          StatusBar.setBarStyle('default'); 
+        } else {
+          StatusBar.setBarStyle(dark ? 'light-content' : 'dark-content');
+          StatusBar.setBackgroundColor(dark ? '#124460' : '#fff');
+        }
+      }
+      setAppState(nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
+  }, [appState, dark]);
 
   const videoLinks = [
     { 
@@ -137,7 +167,7 @@ const Icon2 = () => {
     });
   }, []);
 
-  const handlePress = (url) => {
+  const handlePress = (url:string) => {
     setCurrentUrl(url);
     setLoading(true);
     setModalVisible(true);
@@ -164,7 +194,7 @@ const Icon2 = () => {
     }
   };
 
-  const saveMode = async (mode) => {
+  const saveMode = async (mode: boolean) => {
     await AsyncStorage.setItem('darkMode', mode ? "true" : "false");
   };
 
@@ -286,7 +316,7 @@ const Icon2 = () => {
       <>
       
       <BackNav />
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text style={styles.heading}>Ideje za ponovnu upotrebu materijala</Text>
         <Text style={styles.subheading}>
           Ovde možete pronaći kreativne ideje za ponovnu upotrebu materijala u svakodnevnom životu.
@@ -327,7 +357,7 @@ const Icon2 = () => {
             ))
           )}
         </KeyboardAwareScrollView>
-      </View>
+      </SafeAreaView>
       </>
     </TouchableWithoutFeedback>
 
