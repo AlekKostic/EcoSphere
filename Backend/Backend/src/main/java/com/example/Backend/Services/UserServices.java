@@ -2,10 +2,7 @@ package com.example.Backend.Services;
 
 import com.example.Backend.DTO.User.*;
 import com.example.Backend.Models.*;
-import com.example.Backend.Repository.LikeRepository;
-import com.example.Backend.Repository.ProductRepository;
-import com.example.Backend.Repository.SacuvaneRepository;
-import com.example.Backend.Repository.UserRepository;
+import com.example.Backend.Repository.*;
 import com.example.Backend.Utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +28,8 @@ public class UserServices {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private PostoviRepository postoviRepository;
 
 
     public User saveUser(User user) {
@@ -121,6 +120,7 @@ public class UserServices {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User nije pronadjen"));
         List<Sacuvane> sacuvanes = sacuvaneRepository.findByUser(user);
         List<Product> productList = productRepository.findByUser(user);
+        List<Postovi> postoviList = postoviRepository.findAllByAuthor(user);
         for (Sacuvane sacuvane : sacuvanes){
             sacuvane.setUser(null);
             sacuvane.setProduct(null);
@@ -131,6 +131,12 @@ public class UserServices {
             product.setUser(null);
             productRepository.save(product);
             productRepository.delete(product);
+        }
+        for (Postovi postovi : postoviList){
+            postovi.setAuthor(null);
+            postovi.setLajkovi(null);
+            postoviRepository.save(postovi);
+            postoviRepository.delete(postovi);
         }
         likeRepository.setLikesToNullForUser(id);
         userRepository.delete(user);
