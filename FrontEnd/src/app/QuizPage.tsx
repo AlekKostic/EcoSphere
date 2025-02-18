@@ -243,7 +243,7 @@ const QuizPage = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: dark ? '#124460' : 'white' }]}>
       <BackNav />
 
       {loading && (
@@ -276,7 +276,7 @@ const QuizPage = () => {
       </>
       
     )}
-    </View>
+    </SafeAreaView>
   );
 };
 

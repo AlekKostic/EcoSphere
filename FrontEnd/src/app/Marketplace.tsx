@@ -219,6 +219,10 @@ const [appState, setAppState] = useState(AppState.currentState);
       return res.data;
     } catch (axiosError) {
       setLoadingg(false)
+      if (axiosError.response && axiosError.response.status === 413){
+        setErrorMessage("Priložena slika je prevelika");
+        return "1"
+      }
       setErrorMessage("Greška prilikom slanja slike na server");
       return null;
     }
@@ -261,9 +265,10 @@ const [appState, setAppState] = useState(AppState.currentState);
         setErrorMessage("Došlo je do greške prilikom dodavanja slike");
         return; 
       }
-
-      
-  
+      if (path && imageUrl==="1") {
+        setErrorMessage("Priložena slika je prevelika");
+        return; 
+      }
       const response = await axios.post(`http://${ip}:8080/v5/api/create`, {
         name: name,
         description: description,
