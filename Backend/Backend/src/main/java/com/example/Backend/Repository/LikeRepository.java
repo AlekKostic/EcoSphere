@@ -13,10 +13,6 @@ import java.util.List;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    @Modifying
-    @Transactional
-    @Query("UPDATE Like l SET l.post = NULL WHERE l.user.Id = :userId")
-    void setLikesToNullForUser(@Param("userId") Long userId);
     List<Like> findAllByUser(User user);
 
     Like findByPost_IdAndUser_Id(Long postId, Long userId);

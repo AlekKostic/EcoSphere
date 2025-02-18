@@ -121,6 +121,7 @@ public class UserServices {
         List<Sacuvane> sacuvanes = sacuvaneRepository.findByUser(user);
         List<Product> productList = productRepository.findByUser(user);
         List<Postovi> postoviList = postoviRepository.findAllByAuthor(user);
+        List<Like> likeList = likeRepository.findAllByUser(user);
         for (Sacuvane sacuvane : sacuvanes){
             sacuvane.setUser(null);
             sacuvane.setProduct(null);
@@ -138,7 +139,12 @@ public class UserServices {
             postoviRepository.save(postovi);
             postoviRepository.delete(postovi);
         }
-        likeRepository.setLikesToNullForUser(id);
+        for (Like like : likeList){
+            like.setPost(null);
+            like.setUser(null);
+            likeRepository.save(like);
+            likeRepository.delete(like);
+        }
         userRepository.delete(user);
         return ResponseEntity.ok().build();
     }
