@@ -311,12 +311,12 @@ const Icon2 = () => {
   });
 
   return (
-    <>
+    <SafeAreaView style={{flex:1, backgroundColor:dark?'#124460':'white'}}>
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <>
       
       <BackNav />
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <Text style={styles.heading}>Ideje za ponovnu upotrebu materijala</Text>
         <Text style={styles.subheading}>
           Ovde možete pronaći kreativne ideje za ponovnu upotrebu materijala u svakodnevnom životu.
@@ -357,7 +357,7 @@ const Icon2 = () => {
             ))
           )}
         </KeyboardAwareScrollView>
-      </SafeAreaView>
+      </View>
       </>
     </TouchableWithoutFeedback>
 
@@ -400,7 +400,7 @@ const Icon2 = () => {
         </View>
       </View>
     </Modal>
-    </>
+    </SafeAreaView>
   );
 };
 
