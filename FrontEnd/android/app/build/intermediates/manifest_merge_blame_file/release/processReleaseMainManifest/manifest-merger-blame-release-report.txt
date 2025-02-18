@@ -197,7 +197,7 @@
 107                <data android:scheme="myapp" />
 107-->C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:13:7-37
 107-->C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:13:13-35
-108                <data android:scheme="com.anonymous.FrontEnd" />
+108                <data android:scheme="com.anonymous.EcoSphere" />
 108-->C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:13:7-37
 108-->C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:13:13-35
 109            </intent-filter>

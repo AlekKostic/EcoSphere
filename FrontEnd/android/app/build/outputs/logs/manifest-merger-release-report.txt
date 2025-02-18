@@ -361,7 +361,7 @@ category#android.intent.category.LAUNCHER
 ADDED from C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:24:9-68
 	android:name
 		ADDED from C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:24:19-66
-intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:com.anonymous.FrontEnd+data:scheme:myapp
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:com.anonymous.EcoSphere+data:scheme:myapp
 ADDED from C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:26:7-32:23
 category#android.intent.category.DEFAULT
 ADDED from C:\mts_app\FrontEnd\android\app\src\main\AndroidManifest.xml:28:9-67
